@@ -99,7 +99,7 @@
     attribute :>> category = ComponentCategory::Memory;
 
     attribute Base_Address : Memory_Properties::Base_Address;
-    attribute Memory_Protocol : Deployment_Properties::Memory_Protocol default Deployment_Properties::Supported_Memory_Protocols::Read_Write;
+    attribute Memory_Protocol : Deployment_Properties::Memory_Protocol default Deployment_Properties::Supported_Memory_Protocols::Read_Write as Deployment_Properties::Memory_Protocol;
     attribute Memory_Size : Memory_Properties::Memory_Size;
     attribute Word_Size : Memory_Properties::Word_Size;
   }
@@ -165,7 +165,7 @@
     attribute Data_Size : Memory_Properties::Data_Size;
     attribute Deactivate_Deadline : Timing_Properties::Deactivate_Deadline;
     attribute Deactivate_Execution_Time : Timing_Properties::Deactivate_Execution_Time;
-    attribute Deactivation_Policy : Thread_Properties::Deactivation_Policy default Thread_Properties::Supported_Deactivation_Policies::Inactive;
+    attribute Deactivation_Policy : Thread_Properties::Deactivation_Policy default Thread_Properties::Supported_Deactivation_Policies::Inactive as Thread_Properties::Deactivation_Policy;
     attribute Deadline : Timing_Properties::Deadline;
     attribute Dequeue_Protocol : Thread_Properties::Dequeue_Protocol;
     attribute Dispatch_Able : Thread_Properties::Dispatch_Able;
@@ -188,7 +188,7 @@
     attribute Source_Language : Programming_Properties::Source_Language;
     attribute Source_Text : Programming_Properties::Source_Text;
     attribute Stack_Size : Memory_Properties::Stack_Size;
-    attribute Synchronized_Component : Thread_Properties::Synchronized_Component default true;
+    attribute Synchronized_Component : Thread_Properties::Synchronized_Component default true as Thread_Properties::Synchronized_Component;
     attribute Time_Slot : Thread_Properties::Time_Slot;
   }
 
@@ -211,7 +211,7 @@
     doc AADL_Doc /* Virtual Processor, see AADLv2.3 (6.2) */
     attribute :>> category = ComponentCategory::VirtualProcessor;
     attribute Period : Timing_Properties::Period;
-    attribute Runtime_Protection : Thread_Properties::Runtime_Protection default true;
+    attribute Runtime_Protection : Thread_Properties::Runtime_Protection default true as Runtime_Protection;
   }
 
   abstract port def Feature {
@@ -235,14 +235,14 @@
     inout part type : Data;
 
     attribute Base_Address : Memory_Properties::Base_Address;
-    attribute Queue_Size : Communication_Properties::Queue_Size default 1;
+    attribute Queue_Size : Communication_Properties::Queue_Size default 1 as Communication_Properties::Queue_Size;
   }
 
   port def EventPort :> Feature {
     doc AADL_Doc /* Event Port, see AADLv2.3 (8.3) */
 
     attribute Base_Address : Memory_Properties::Base_Address;
-    attribute Queue_Size : Communication_Properties::Queue_Size default 1;
+    attribute Queue_Size : Communication_Properties::Queue_Size default 1 as Communication_Properties::Queue_Size;
   }
 
   port def DataAccess :> Feature {
@@ -269,14 +269,14 @@
     doc AADL_Doc /* Subprogram Access, see AADLv2.3 (8.4) */
     inout ref type : Component;
 
-    attribute Queue_Size : Communication_Properties::Queue_Size default 1;
+    attribute Queue_Size : Communication_Properties::Queue_Size default 1 as Communication_Properties::Queue_Size;
   }
 
   port def SubprogramGroupAccess :> Feature {
     doc AADL_Doc /* Subprogram Group Access, see AADLv2.3 (8.4) */
     inout ref type : Component;
 
-    attribute Queue_Size : Communication_Properties::Queue_Size default 1;
+    attribute Queue_Size : Communication_Properties::Queue_Size default 1 as Communication_Properties::Queue_Size;
   }
 
   abstract connection def Connection :> Connections::BinaryConnection {
@@ -295,6 +295,7 @@
     end port source : Feature;
     end port target : Feature;
 
+    /*
     flow move {
       ref :>> payload : Data;
 
@@ -310,6 +311,7 @@
 
     bind source = move.source;
     bind target = move.target;
+    */
   }
 
   connection def ParameterConnection :> Connection {
@@ -361,6 +363,7 @@
     bind source_queue.EDP = source;
     bind target_queue.EDP = target;
 
+    /*
     flow move {
       ref :>> payload : Data;
 
@@ -376,5 +379,6 @@
 
     bind source_queue.EDP_private = move.source;
     bind target_queue.EDP_private = move.target;
+    */
   }
 }

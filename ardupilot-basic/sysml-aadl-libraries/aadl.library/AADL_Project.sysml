@@ -53,7 +53,7 @@
 
   // Supported_Dispatch_Protocols: type enumeration
   //    (Periodic, Sporadic, Aperiodic, Timed, Hybrid, Background, <project-specified>);
-  enum def Supported_Dispatch_Protocols {
+  enum def Supported_Dispatch_Protocols :> AADL::Property {
     enum Periodic;
     enum Sporadic;
     enum Aperiodic;
@@ -61,12 +61,18 @@
     enum Hybrid;
     enum Background;
   }
-  alias Periodic for Supported_Dispatch_Protocols::Periodic;
-  alias Sporadic for Supported_Dispatch_Protocols::Sporadic;
-  alias Aperiodic for Supported_Dispatch_Protocols::Aperiodic;
-  alias Timed for Supported_Dispatch_Protocols::Timed;
-  alias Hybrid for Supported_Dispatch_Protocols::Hybrid;
-  alias Background for Supported_Dispatch_Protocols::Background;
+  //alias Periodic for Supported_Dispatch_Protocols::Periodic;
+  //alias Sporadic for Supported_Dispatch_Protocols::Sporadic;
+  // alias Aperiodic for Supported_Dispatch_Protocols::Aperiodic;
+  // alias Timed for Supported_Dispatch_Protocols::Timed;
+  // alias Hybrid for Supported_Dispatch_Protocols::Hybrid;
+  // alias Background for Supported_Dispatch_Protocols::Background;
+  attribute Periodic : Thread_Properties::Dispatch_Protocol = Supported_Dispatch_Protocols::Periodic as Thread_Properties::Dispatch_Protocol;
+  attribute Sporadic : Thread_Properties::Dispatch_Protocol = Supported_Dispatch_Protocols::Sporadic as Thread_Properties::Dispatch_Protocol;
+  attribute Aperiodic : Thread_Properties::Dispatch_Protocol = Supported_Dispatch_Protocols::Aperiodic as Thread_Properties::Dispatch_Protocol;
+  attribute Timed : Thread_Properties::Dispatch_Protocol = Supported_Dispatch_Protocols::Timed as Thread_Properties::Dispatch_Protocol;
+  attribute Hybrid : Thread_Properties::Dispatch_Protocol = Supported_Dispatch_Protocols::Hybrid as Thread_Properties::Dispatch_Protocol;
+  attribute Background : Thread_Properties::Dispatch_Protocol = Supported_Dispatch_Protocols::Background as Thread_Properties::Dispatch_Protocol;
 
     // Supported_Queue_Processing_Protocols: type enumeration (Fifo,  <project-specified>);
   enum def Supported_Queue_Processing_Protocols {

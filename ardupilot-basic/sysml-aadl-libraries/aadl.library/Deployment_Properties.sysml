@@ -22,7 +22,7 @@
     end part bus : AADL::Component;
   }
 
-  enum def Supported_Memory_Protocols {
+  enum def Supported_Memory_Protocols :> AADL::Property {
     enum Execute_Only; 
     enum Read_Only; 
     enum Write_Only; 

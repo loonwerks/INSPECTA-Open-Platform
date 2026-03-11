@@ -87,17 +87,17 @@
   attribute def Active_Thread_Queue_Handling_Protocol :> AADL::Property, Supported_Active_Thread_Queue_Handling_Protocols;
 
     // Deactivation_Policy: enumeration (inactive, unload) => inactive applies to (thread, process, virtual processor, processor);
-  enum def Supported_Deactivation_Policies {
+  enum def Supported_Deactivation_Policies :> AADL::Property {
     enum Inactive;
     enum Unload;
   }
   alias Inactive for Supported_Deactivation_Policies::Inactive;
   alias Unloade for Supported_Deactivation_Policies::Unload;
   attribute def Deactivation_Policy :> AADL::Property, Supported_Deactivation_Policies;
-
+  
   // Runtime_Protection: inherit aadlboolean => true applies to (process, system, virtual processor);
   attribute def Runtime_Protection :>  AADL::Property, ScalarValues::Boolean;
-
+  
   // Subprogram_Call_Type: enumeration (Synchronous, SemiSynchronous) => Synchronous applies to (subprogram);
   enum def Supported_Subprogram_Call_Types {
     enum Synchronous;
@@ -109,4 +109,4 @@
 
   // Synchronized_Component: inherit aadlboolean => true applies to (thread, thread group, process, system);
   attribute def Synchronized_Component :> AADL::Property, ScalarValues::Boolean;
-}
+ }

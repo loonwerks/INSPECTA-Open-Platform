@@ -138,7 +138,11 @@ package Base_Types {
     end String;
   */	
   
+  part def Character :> Data {
+    :> value : ScalarValues::String[1];	
+  }
+
   part def String :> Data {
-    :>  value : ScalarValues::String;	
+    :> value : ScalarValues::String;	
   }
 }
