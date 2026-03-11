@@ -43,6 +43,11 @@ val sel4_output_dir =
 
 val hamrDir = sysmlDir / "hamr"
 
+var sourcePath: String = sysmlDir.string
+if (Os.envs.contains("SYSML_AADL_LIBRARIES")) {
+  sourcePath = s"$sourcePath:${Os.env("SYSML_AADL_LIBRARIES").get}"
+}
+
 var codegenArgs = ISZ(
   sireum.value, "hamr", "sysml", "codegen",
   "--platform", platform,
@@ -56,7 +61,7 @@ var codegenArgs = ISZ(
   "--max-array-size", "1",
   "--verbose",
   "--workspace-root-dir", sysmlDir.string,
-  "--sourcepath", sysmlDir.value,
+  "--sourcepath", sourcePath,
   "--system-name", "Platform::ZCU102_Impl",
 )
 

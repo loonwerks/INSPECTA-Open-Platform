@@ -2,37 +2,35 @@ package SW {
 
 	
 	private import HAMR::*;
-	private import CASE_Scheduling::*;
 	private import SequenceFunctions::*;
 	private import ControlFunctions::*;
-	private import ScalarValues::*;
 
 	part def u16Array :> Array {
-		part :>> Base_Type : Base_Types::Unsigned_16;
+		part :>> Base_Type : Unsigned_16;
 		attribute :>> Dimensions = 1;
 		attribute :>> Data_Size = 2 [byte];
-		attribute :>> Array_Size_Kind = Array_Size_Kinds::Fixed;
+		attribute :>> Array_Size_Kind = Fixed;
 	}
 
 	part def RawEthernetMessage :> Array {
-		part :>> Base_Type : Base_Types::Unsigned_8;
+		part :>> Base_Type : Unsigned_8;
 		attribute :>> Dimensions = 1600;
-		attribute :>> Array_Size_Kind = Array_Size_Kinds::Fixed; 
+		attribute :>> Array_Size_Kind = Fixed; 
 		attribute :>> Data_Size = 1600[byte];
 	}
 
 	part def EthIpUdpHeaders :> Array {
-		part :>> Base_Type : Base_Types::Unsigned_8;
+		part :>> Base_Type : Unsigned_8;
 		attribute :>> Dimensions = 42;
 		attribute :>> Data_Size = 42 [byte];
-		attribute :>> Array_Size_Kind = Array_Size_Kinds::Fixed;
+		attribute :>> Array_Size_Kind = Fixed;
 	}
 	
 	part def UdpPayload :> Array {
-		part :>> Base_Type : Base_Types::Unsigned_8;
+		part :>> Base_Type : Unsigned_8;
 		attribute :>> Dimensions = 1558;
 		attribute :>> Data_Size = 1558 [byte];
-		attribute :>> Array_Size_Kind = Array_Size_Kinds::Fixed;
+		attribute :>> Array_Size_Kind = Fixed;
 	}
 	
 	part def UdpFrame_Impl :> Struct {
@@ -42,22 +40,24 @@ package SW {
 	
 	part def SizedEthernetMessage_Impl :> Struct {
 		part amessage : RawEthernetMessage;
-		part sz : Base_Types::Unsigned_16;
+		part sz : Unsigned_16;
 	}
 
 	part def LowLevelEthernetDriver :> Thread {
-		attribute :>> Dispatch_Protocol = Supported_Dispatch_Protocols::Periodic;
+		attribute :>> Dispatch_Protocol = Periodic;
 		attribute :>> Period = 1000 [ms]; 
-		attribute :>> Implementation_Language = Implementation_Languages::Rust;
+		attribute :>> Compute_Execution_Time = 300[ms] .. 300[ms];
+		attribute :>> Implementation_Language = Rust;
+		attribute :>> Stack_Size = 1048576[byte];
 
-		out port EthernetFramesRx0: EventDataPort {out :>> type : RawEthernetMessage; }
-		out port EthernetFramesRx1: EventDataPort {out :>> type : RawEthernetMessage; }
-		out port EthernetFramesRx2: EventDataPort {out :>> type : RawEthernetMessage; } 
-		out port EthernetFramesRx3: EventDataPort {out :>> type : RawEthernetMessage; }
-		in port EthernetFramesTx0: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
-		in port EthernetFramesTx1: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
-		in port EthernetFramesTx2: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
-		in port EthernetFramesTx3: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesRx0: EventDataPort {out :>> type : RawEthernetMessage; }
+		port EthernetFramesRx1: EventDataPort {out :>> type : RawEthernetMessage; }
+		port EthernetFramesRx2: EventDataPort {out :>> type : RawEthernetMessage; } 
+		port EthernetFramesRx3: EventDataPort {out :>> type : RawEthernetMessage; }
+		port EthernetFramesTx0: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesTx1: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesTx2: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesTx3: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
 
 		language "GUMBO" /*{
 
@@ -124,18 +124,17 @@ package SW {
 	
 	part def LowLevelEthernetDriver_seL4 :> Process {
 		attribute :>> Domain = 4; 
-		attribute Implementation_Language : HAMR::Implementation_Language = Implementation_Languages::Rust;
 
 		part LowLevelEthernetDriver : SW::LowLevelEthernetDriver; 
 
-		out port EthernetFramesRx0: EventDataPort {out :>> type : RawEthernetMessage; }
-		out port EthernetFramesRx1: EventDataPort {out :>> type : RawEthernetMessage; }
-		out port EthernetFramesRx2: EventDataPort {out :>> type : RawEthernetMessage; } 
-		out port EthernetFramesRx3: EventDataPort {out :>> type : RawEthernetMessage; }
-		in port EthernetFramesTx0: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
-		in port EthernetFramesTx1: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
-		in port EthernetFramesTx2: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
-		in port EthernetFramesTx3: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesRx0: EventDataPort {out :>> type : RawEthernetMessage; }
+		port EthernetFramesRx1: EventDataPort {out :>> type : RawEthernetMessage; }
+		port EthernetFramesRx2: EventDataPort {out :>> type : RawEthernetMessage; } 
+		port EthernetFramesRx3: EventDataPort {out :>> type : RawEthernetMessage; }
+		port EthernetFramesTx0: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesTx1: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesTx2: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesTx3: EventDataPort {in :>> type : SizedEthernetMessage_Impl; }
 
 		connection c1 : PortConnection 
 			connect EthernetFramesTx0 to LowLevelEthernetDriver.EthernetFramesTx0;
@@ -157,27 +156,24 @@ package SW {
 	}
 	
 	part def RxFirewall :> Thread {
-		in port EthernetFramesRxIn0: EventDataPort {in :>> type : RawEthernetMessage; }
-		in port EthernetFramesRxIn1: EventDataPort {in :>> type : RawEthernetMessage; }
-		in port EthernetFramesRxIn2: EventDataPort {in :>> type : RawEthernetMessage; } 
-		in port EthernetFramesRxIn3: EventDataPort {in :>> type : RawEthernetMessage; }
-		out port VmmOut0 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port VmmOut1 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port VmmOut2 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port VmmOut3 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port MavlinkOut0 : EventDataPort { out :>> type : UdpFrame_Impl; }
-		out port MavlinkOut1 : EventDataPort { out :>> type : UdpFrame_Impl; }
-		out port MavlinkOut2 : EventDataPort { out :>> type : UdpFrame_Impl; }
-		out port MavlinkOut3 : EventDataPort { out :>> type : UdpFrame_Impl; }
-		attribute :>> Dispatch_Protocol = Supported_Dispatch_Protocols::Periodic;
+		port EthernetFramesRxIn0: EventDataPort {in :>> type : RawEthernetMessage; }
+		port EthernetFramesRxIn1: EventDataPort {in :>> type : RawEthernetMessage; }
+		port EthernetFramesRxIn2: EventDataPort {in :>> type : RawEthernetMessage; } 
+		port EthernetFramesRxIn3: EventDataPort {in :>> type : RawEthernetMessage; }
+		port VmmOut0 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port VmmOut1 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port VmmOut2 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port VmmOut3 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port MavlinkOut0 : EventDataPort { out :>> type : UdpFrame_Impl; }
+		port MavlinkOut1 : EventDataPort { out :>> type : UdpFrame_Impl; }
+		port MavlinkOut2 : EventDataPort { out :>> type : UdpFrame_Impl; }
+		port MavlinkOut3 : EventDataPort { out :>> type : UdpFrame_Impl; }
+
+		attribute :>> Dispatch_Protocol = Periodic;
 		attribute :>> Period = 1000[ms]; 
-		//attribute :>> Compute_Execution_Time = 300 [ms];
-		// attribute :>> Compute_Execution_Time : Time_Range {
-		// 	attribute :>> minimum : Time { :>> num = 300[ms] }; 
-		// 	attribute :>> maximum : Time { :>> num = 300[ms] }; 
-		// }
-		attribute :>> Stack_Size : Memory_Properties::Stack_Size = 1048576; //[byte];
-		attribute :>> Implementation_Language = Implementation_Languages::Rust;			
+		attribute :>> Compute_Execution_Time =  300[ms] .. 300[ms];
+		attribute :>> Stack_Size = 1048576[byte];
+		attribute :>> Implementation_Language = Rust;			
 
 		language "GUMBO" /*{
 
@@ -276,18 +272,18 @@ package SW {
 	}
 	
 	part def RxFirewall_seL4 :> Process {
-		in port EthernetFramesRxIn0 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port EthernetFramesRxIn1 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port EthernetFramesRxIn2 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port EthernetFramesRxIn3 : EventDataPort { in :>> type : RawEthernetMessage; }
-		out port VmmOut0 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port VmmOut1 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port VmmOut2 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port VmmOut3 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port MavlinkOut0 : EventDataPort { out :>> type : UdpFrame_Impl; }
-		out port MavlinkOut1 : EventDataPort { out :>> type : UdpFrame_Impl; }
-		out port MavlinkOut2 : EventDataPort { out :>> type : UdpFrame_Impl; }
-		out port MavlinkOut3 : EventDataPort { out :>> type : UdpFrame_Impl; }
+		port EthernetFramesRxIn0 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port EthernetFramesRxIn1 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port EthernetFramesRxIn2 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port EthernetFramesRxIn3 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port VmmOut0 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port VmmOut1 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port VmmOut2 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port VmmOut3 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port MavlinkOut0 : EventDataPort { out :>> type : UdpFrame_Impl; }
+		port MavlinkOut1 : EventDataPort { out :>> type : UdpFrame_Impl; }
+		port MavlinkOut2 : EventDataPort { out :>> type : UdpFrame_Impl; }
+		port MavlinkOut3 : EventDataPort { out :>> type : UdpFrame_Impl; }
 
 		part RxFirewall : SW::RxFirewall;
 		connection c1 : PortConnection 
@@ -315,25 +311,24 @@ package SW {
 		connection c12 : PortConnection
 			connect RxFirewall.MavlinkOut3 to MavlinkOut3;
 			
-		attribute :>> Domain = 5;	
-		attribute Implementation_Language : HAMR::Implementation_Language = Implementation_Languages::Rust;
+		attribute :>> Domain = 5;
 	}
 	
 	part def TxFirewall :> Thread {
-		in port EthernetFramesTxIn0 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port EthernetFramesTxIn1 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port EthernetFramesTxIn2 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port EthernetFramesTxIn3 : EventDataPort { in :>> type : RawEthernetMessage; }
-		out port EthernetFramesTxOut0 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
-		out port EthernetFramesTxOut1 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
-		out port EthernetFramesTxOut2 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
-		out port EthernetFramesTxOut3 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesTxIn0 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port EthernetFramesTxIn1 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port EthernetFramesTxIn2 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port EthernetFramesTxIn3 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port EthernetFramesTxOut0 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesTxOut1 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesTxOut2 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesTxOut3 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
 	
-		attribute :>> Dispatch_Protocol = Supported_Dispatch_Protocols::Periodic;
+		attribute :>> Dispatch_Protocol = Periodic;
 		attribute :>> Period = 1000 [ms];
-		// attribute :>> Compute_Execution_Time = 300[ms];
-		attribute :>> Stack_Size : Memory_Properties::Stack_Size = 1048576; //[byte];
-		attribute :>> Implementation_Language : HAMR::Implementation_Language = Implementation_Languages::Rust;
+		attribute :>> Compute_Execution_Time = 300[ms] .. 300[ms];
+		attribute :>> Stack_Size = 1048576[byte];
+		attribute :>> Implementation_Language = Rust;
 		
 		language "GUMBO" /*{
 	       
@@ -413,14 +408,14 @@ package SW {
 	}
 	
 	part def TxFirewall_seL4 :> Process {
-		in port EthernetFramesTxIn0 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port EthernetFramesTxIn1 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port EthernetFramesTxIn2 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port EthernetFramesTxIn3 : EventDataPort { in :>> type : RawEthernetMessage; }
-		out port EthernetFramesTxOut0 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
-		out port EthernetFramesTxOut1 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
-		out port EthernetFramesTxOut2 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
-		out port EthernetFramesTxOut3 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesTxIn0 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port EthernetFramesTxIn1 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port EthernetFramesTxIn2 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port EthernetFramesTxIn3 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port EthernetFramesTxOut0 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesTxOut1 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesTxOut2 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
+		port EthernetFramesTxOut3 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
 	
 		part TxFirewall : SW::TxFirewall;
 		
@@ -441,33 +436,25 @@ package SW {
 		connection c8 : PortConnection
 			connect TxFirewall.EthernetFramesTxOut3 to EthernetFramesTxOut3;
 			
-		attribute :>> Domain : CASE_Scheduling::Domain = 3; 
-		attribute Implementation_Language : HAMR::Implementation_Language = Implementation_Languages::Rust;
+		attribute :>> Domain = 3;
 	}
 	
 	part def MavlinkFirewall :> Thread {
-		in port In0 : EventDataPort { in :>> type : UdpFrame_Impl; }
-		in port In1 : EventDataPort { in :>> type : UdpFrame_Impl; }
-		in port In2 : EventDataPort { in :>> type : UdpFrame_Impl; }
-		in port In3 : EventDataPort { in :>> type : UdpFrame_Impl; }
-		out port Out0 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port Out1 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port Out2 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port Out3 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port In0 : EventDataPort { in :>> type : UdpFrame_Impl; }
+		port In1 : EventDataPort { in :>> type : UdpFrame_Impl; }
+		port In2 : EventDataPort { in :>> type : UdpFrame_Impl; }
+		port In3 : EventDataPort { in :>> type : UdpFrame_Impl; }
+		port Out0 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port Out1 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port Out2 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port Out3 : EventDataPort { out :>> type : RawEthernetMessage; }
 		
-		attribute :>> Dispatch_Protocol = Supported_Dispatch_Protocols::Periodic;
+		attribute :>> Dispatch_Protocol = Periodic;
 		attribute :>> Period = 1000[ms]; 
-		// attribute :>> Compute_Execution_Time = 300 [ms];
-		// attribute :>> Compute_Execution_Time : Time_Range {
-		// 	attribute :>> minimum : Time { attribute :>> num = 300[ms]; }
-		// 	attribute :>> maximum : Time { attribute :>> num = 300[ms]; }
-		// }
-		attribute :>> Stack_Size : Memory_Properties::Stack_Size = 1048576; //[byte];
-		attribute :>> Implementation_Language : HAMR::Implementation_Language = Implementation_Languages::Rust;
-		attribute :>> Source_Text  = "src/MavlinkFirewall.c";
-		attribute Initialize_Entrypoint_Source_Text : ScalarValues::String = "init";
-		attribute Compute_Entrypoint_Source_Text : ScalarValues::String = "compute";
-		
+		attribute :>> Compute_Execution_Time = 300 [ms] .. 300[ms];
+		attribute :>> Stack_Size = 1048576[byte];
+		attribute :>> Implementation_Language = Rust;
+
 		language "GUMBO" /*{
 		
 	      compute
@@ -511,14 +498,14 @@ package SW {
 	}
 	
 	part def MavlinkFirewall_seL4 :> Process {
-		in port In0 : EventDataPort { in :>> type : UdpFrame_Impl; }
-		in port In1 : EventDataPort { in :>> type : UdpFrame_Impl; }
-		in port In2 : EventDataPort { in :>> type : UdpFrame_Impl; }
-		in port In3 : EventDataPort { in :>> type : UdpFrame_Impl; }
-		out port Out0 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port Out1 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port Out2 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port Out3 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port In0 : EventDataPort { in :>> type : UdpFrame_Impl; }
+		port In1 : EventDataPort { in :>> type : UdpFrame_Impl; }
+		port In2 : EventDataPort { in :>> type : UdpFrame_Impl; }
+		port In3 : EventDataPort { in :>> type : UdpFrame_Impl; }
+		port Out0 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port Out1 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port Out2 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port Out3 : EventDataPort { out :>> type : RawEthernetMessage; }
 		
 		part MavlinkFirewall : SW::MavlinkFirewall;
 		
@@ -540,49 +527,42 @@ package SW {
 			connect MavlinkFirewall.Out3 to Out3;
 			
 		attribute :>> Domain = 6;
-		attribute Implementation_Language : HAMR::Implementation_Language = Implementation_Languages::Rust;
 	}
 	
 	part def ArduPilot :> Thread {
-		in port FirewallRx0 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port FirewallRx1 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port FirewallRx2 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port FirewallRx3 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port MavlinkRx0 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port MavlinkRx1 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port MavlinkRx2 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port MavlinkRx3 : EventDataPort { in :>> type : RawEthernetMessage; }
-		out port EthernetFramesTx0 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port EthernetFramesTx1 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port EthernetFramesTx2 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port EthernetFramesTx3 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port FirewallRx0 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port FirewallRx1 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port FirewallRx2 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port FirewallRx3 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port MavlinkRx0 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port MavlinkRx1 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port MavlinkRx2 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port MavlinkRx3 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port EthernetFramesTx0 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port EthernetFramesTx1 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port EthernetFramesTx2 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port EthernetFramesTx3 : EventDataPort { out :>> type : RawEthernetMessage; }
 	
-		attribute :>> Dispatch_Protocol = Supported_Dispatch_Protocols::Periodic;
+		attribute :>> Dispatch_Protocol = Periodic;
 		attribute :>> Period = 1000 [ms]; 
-		// attribute :>> Compute_Execution_Time = 600 [ms];
-		// attribute :>> Compute_Execution_Time : Time_Range { 
-		// 	attribute :>> minimum = 600[ms]; 
-		// 	attribute :>> maximum = 600[ms]; 
-		// }
-		attribute :>> Stack_Size : Memory_Properties::Stack_Size = 1048576; //[byte];
-		attribute :>> Source_Text = "src/Ardupilot.c";
-		attribute Initialize_Entrypoint_Source_Text : ScalarValues::String = "init";
-		attribute Compute_Entrypoint_Source_Text : ScalarValues::String = "compute";
+		attribute :>> Compute_Execution_Time = 600[ms] .. 600 [ms];
+		attribute :>> Stack_Size = 1048576[byte];
+		attribute :>> SMC = true;
 	}
 	
 	part def ArduPilot_seL4 :> Process {
-		in port FirewallRx0 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port FirewallRx1 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port FirewallRx2 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port FirewallRx3 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port MavlinkRx0 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port MavlinkRx1 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port MavlinkRx2 : EventDataPort { in :>> type : RawEthernetMessage; }
-		in port MavlinkRx3 : EventDataPort { in :>> type : RawEthernetMessage; }
-		out port EthernetFramesTx0 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port EthernetFramesTx1 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port EthernetFramesTx2 : EventDataPort { out :>> type : RawEthernetMessage; }
-		out port EthernetFramesTx3 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port FirewallRx0 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port FirewallRx1 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port FirewallRx2 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port FirewallRx3 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port MavlinkRx0 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port MavlinkRx1 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port MavlinkRx2 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port MavlinkRx3 : EventDataPort { in :>> type : RawEthernetMessage; }
+		port EthernetFramesTx0 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port EthernetFramesTx1 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port EthernetFramesTx2 : EventDataPort { out :>> type : RawEthernetMessage; }
+		port EthernetFramesTx3 : EventDataPort { out :>> type : RawEthernetMessage; }
 	
 		part ArduPilot : SW::ArduPilot;
 		
@@ -612,7 +592,6 @@ package SW {
 			connect ArduPilot.EthernetFramesTx3 to EthernetFramesTx3;
 			
 		attribute :>> Domain = 2;
-		attribute SMC : ScalarValues::Boolean = true;
 	} 
 
 	part def seL4 :> System {

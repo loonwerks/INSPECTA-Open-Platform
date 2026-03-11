@@ -1,13 +1,12 @@
+//@ HAMR: --platform Microkit --output-dir hamr
 package Platform {
-	private import CASE_Scheduling::*;
 	private import HAMR::*;
 	private import SW::*;
 	
 	part def Proc :> Processor {
 		attribute :>> Frame_Period = 1850 [ms];
 		attribute :>> Clock_Period = 2 [ms];
-		attribute Max_Domain : CASE_Scheduling::Max_Domain = 6;
-		attribute Schedule_Source_Text : ScalarValues::String = "domain_schedule.c";
+		attribute :>> Max_Domain = 6;
 	}
 	
 	part def ZCU102_Impl :> System {
