@@ -183,47 +183,6 @@ package GumboLib {
 				
 
 				// MavlinkFirewall
-				def msg_v1_is_command_int(msg: SW::UdpPayload): Base_Types::Boolean :=
-					size(msg) == 1558 and msg#(5) == 75[u8];
-	
-				def command_int_msg_v1_is_bootloader_flash(msg: SW::UdpPayload): Base_Types::Boolean :=
-					size(msg) == 1558 and two_bytes_to_u16_le(msg#(33), msg#(34)) == 42650[u16];
-
-				def msg_v1_is_command_long(msg: SW::UdpPayload): Base_Types::Boolean :=
-					size(msg) == 1558 and msg#(5) == 76[u8];
-			
-				def command_long_msg_v1_is_bootloader_flash(msg: SW::UdpPayload): Base_Types::Boolean :=
-					size(msg) == 1558 and two_bytes_to_u16_le(msg#(34), msg#(35)) == 42650[u16];
-	
-				def msg_is_mavlinkv1(msg: SW::UdpPayload): Base_Types::Boolean :=
-					size(msg) == 1558 and msg#(0) == 254[u8]; //"0xFE"
-	
-				def msg_v2_is_command_int(msg: SW::UdpPayload): Base_Types::Boolean :=
-					size(msg) == 1558 and three_bytes_to_u32(msg#(7), msg#(8), msg#(9)) == 75[u32];
-	
-				def command_int_msg_v2_is_bootloader_flash(msg: SW::UdpPayload): Base_Types::Boolean :=
-					size(msg) == 1558 and two_bytes_to_u16_le(msg#(37), msg#(38)) == 42650[u16];
-
-				def msg_v2_is_command_long(msg: SW::UdpPayload): Base_Types::Boolean :=
-					size(msg) == 1558 and three_bytes_to_u32(msg#(7), msg#(8), msg#(9)) == 76[u32];
-			
-				def command_long_msg_v2_is_bootloader_flash(msg: SW::UdpPayload): Base_Types::Boolean :=
-					size(msg) == 1558 and two_bytes_to_u16_le(msg#(38), msg#(39)) == 42650[u16];
-	
-				def msg_is_mavlinkv2(msg: SW::UdpPayload): Base_Types::Boolean :=
-					size(msg) == 1558 and msg#(0) == 253[u8]; //"0xFD"
-	
-				def msg_is_mav_v2_cmd_flash_bootloader(msg: SW::UdpPayload): Base_Types::Boolean :=
-					msg_is_mavlinkv2(msg) and ((msg_v2_is_command_int(msg) and command_int_msg_v2_is_bootloader_flash(msg)) or
-					(msg_v2_is_command_long(msg) and command_long_msg_v2_is_bootloader_flash(msg)));
-	
-				def msg_is_mav_v1_cmd_flash_bootloader(msg: SW::UdpPayload): Base_Types::Boolean :=
-					msg_is_mavlinkv1(msg) and ((msg_v1_is_command_int(msg) and command_int_msg_v1_is_bootloader_flash(msg)) or
-					(msg_v1_is_command_long(msg) and command_long_msg_v1_is_bootloader_flash(msg)));
-	
-				def msg_is_mav_cmd_flash_bootloader(msg: SW::UdpPayload): Base_Types::Boolean :=
-					msg_is_mav_v2_cmd_flash_bootloader(msg) or msg_is_mav_v1_cmd_flash_bootloader(msg);
-	
 				def mav_input_headers_eq_output(headers: SW::EthIpUdpHeaders, aframe: SW::RawEthernetMessage): Base_Types::Boolean :=
 					size(aframe) == 1600 and (0 .. (size(headers) - 1)) -> forAll{in i; headers#(i) == aframe#(i)};
 	
@@ -232,9 +191,7 @@ package GumboLib {
 	
 				def mav_input_eq_output(input: SW::UdpFrame_Impl, aframe: SW::RawEthernetMessage): Base_Types::Boolean :=
 					mav_input_headers_eq_output(input.headers, aframe) and mav_input_payload_eq_output(input.payload, input.headers, aframe);
-	
-				def msg_is_blacklisted(msg: SW::UdpPayload): Base_Types::Boolean :=
-					msg_is_mav_cmd_flash_bootloader(msg);
+
 	     
         }*/
 }

@@ -332,85 +332,6 @@ pub fn input_eq_mav_output(
   input_eq_mav_output_headers(aframe, output.headers) && input_eq_mav_output_payload(aframe, output.payload, output.headers)
 }
 
-pub fn msg_v1_is_command_int(msg: SW::UdpPayload) -> bool
-{
-  (msg.len() == 1558) &&
-    (msg[5] == 75u8)
-}
-
-pub fn command_int_msg_v1_is_bootloader_flash(msg: SW::UdpPayload) -> bool
-{
-  (msg.len() == 1558) &&
-    (two_bytes_to_u16_le(msg[33], msg[34]) == 42650u16)
-}
-
-pub fn msg_v1_is_command_long(msg: SW::UdpPayload) -> bool
-{
-  (msg.len() == 1558) &&
-    (msg[5] == 76u8)
-}
-
-pub fn command_long_msg_v1_is_bootloader_flash(msg: SW::UdpPayload) -> bool
-{
-  (msg.len() == 1558) &&
-    (two_bytes_to_u16_le(msg[34], msg[35]) == 42650u16)
-}
-
-pub fn msg_is_mavlinkv1(msg: SW::UdpPayload) -> bool
-{
-  (msg.len() == 1558) &&
-    (msg[0] == 254u8)
-}
-
-pub fn msg_v2_is_command_int(msg: SW::UdpPayload) -> bool
-{
-  (msg.len() == 1558) &&
-    (three_bytes_to_u32(msg[7], msg[8], msg[9]) == 75u32)
-}
-
-pub fn command_int_msg_v2_is_bootloader_flash(msg: SW::UdpPayload) -> bool
-{
-  (msg.len() == 1558) &&
-    (two_bytes_to_u16_le(msg[37], msg[38]) == 42650u16)
-}
-
-pub fn msg_v2_is_command_long(msg: SW::UdpPayload) -> bool
-{
-  (msg.len() == 1558) &&
-    (three_bytes_to_u32(msg[7], msg[8], msg[9]) == 76u32)
-}
-
-pub fn command_long_msg_v2_is_bootloader_flash(msg: SW::UdpPayload) -> bool
-{
-  (msg.len() == 1558) &&
-    (two_bytes_to_u16_le(msg[38], msg[39]) == 42650u16)
-}
-
-pub fn msg_is_mavlinkv2(msg: SW::UdpPayload) -> bool
-{
-  (msg.len() == 1558) &&
-    (msg[0] == 253u8)
-}
-
-pub fn msg_is_mav_v2_cmd_flash_bootloader(msg: SW::UdpPayload) -> bool
-{
-  msg_is_mavlinkv2(msg) &&
-    (msg_v2_is_command_int(msg) && command_int_msg_v2_is_bootloader_flash(msg) ||
-      msg_v2_is_command_long(msg) && command_long_msg_v2_is_bootloader_flash(msg))
-}
-
-pub fn msg_is_mav_v1_cmd_flash_bootloader(msg: SW::UdpPayload) -> bool
-{
-  msg_is_mavlinkv1(msg) &&
-    (msg_v1_is_command_int(msg) && command_int_msg_v1_is_bootloader_flash(msg) ||
-      msg_v1_is_command_long(msg) && command_long_msg_v1_is_bootloader_flash(msg))
-}
-
-pub fn msg_is_mav_cmd_flash_bootloader(msg: SW::UdpPayload) -> bool
-{
-  msg_is_mav_v2_cmd_flash_bootloader(msg) || msg_is_mav_v1_cmd_flash_bootloader(msg)
-}
-
 pub fn mav_input_headers_eq_output(
   headers: SW::EthIpUdpHeaders,
   aframe: SW::RawEthernetMessage) -> bool
@@ -434,11 +355,6 @@ pub fn mav_input_eq_output(
   aframe: SW::RawEthernetMessage) -> bool
 {
   mav_input_headers_eq_output(input.headers, aframe) && mav_input_payload_eq_output(input.payload, input.headers, aframe)
-}
-
-pub fn msg_is_blacklisted(msg: SW::UdpPayload) -> bool
-{
-  msg_is_mav_cmd_flash_bootloader(msg)
 }
 // END MARKER GUMBO RUST MARKER
 
@@ -746,85 +662,6 @@ verus! {
     input_eq_mav_output_headers_spec(aframe, output.headers) && input_eq_mav_output_payload_spec(aframe, output.payload, output.headers)
   }
 
-  pub open spec fn msg_v1_is_command_int_spec(msg: SW::UdpPayload) -> bool
-  {
-    (msg.len() == 1558) &&
-      (msg[5] == 75u8)
-  }
-
-  pub open spec fn command_int_msg_v1_is_bootloader_flash_spec(msg: SW::UdpPayload) -> bool
-  {
-    (msg.len() == 1558) &&
-      (two_bytes_to_u16_le_spec(msg[33], msg[34]) == 42650u16)
-  }
-
-  pub open spec fn msg_v1_is_command_long_spec(msg: SW::UdpPayload) -> bool
-  {
-    (msg.len() == 1558) &&
-      (msg[5] == 76u8)
-  }
-
-  pub open spec fn command_long_msg_v1_is_bootloader_flash_spec(msg: SW::UdpPayload) -> bool
-  {
-    (msg.len() == 1558) &&
-      (two_bytes_to_u16_le_spec(msg[34], msg[35]) == 42650u16)
-  }
-
-  pub open spec fn msg_is_mavlinkv1_spec(msg: SW::UdpPayload) -> bool
-  {
-    (msg.len() == 1558) &&
-      (msg[0] == 254u8)
-  }
-
-  pub open spec fn msg_v2_is_command_int_spec(msg: SW::UdpPayload) -> bool
-  {
-    (msg.len() == 1558) &&
-      (three_bytes_to_u32_spec(msg[7], msg[8], msg[9]) == 75u32)
-  }
-
-  pub open spec fn command_int_msg_v2_is_bootloader_flash_spec(msg: SW::UdpPayload) -> bool
-  {
-    (msg.len() == 1558) &&
-      (two_bytes_to_u16_le_spec(msg[37], msg[38]) == 42650u16)
-  }
-
-  pub open spec fn msg_v2_is_command_long_spec(msg: SW::UdpPayload) -> bool
-  {
-    (msg.len() == 1558) &&
-      (three_bytes_to_u32_spec(msg[7], msg[8], msg[9]) == 76u32)
-  }
-
-  pub open spec fn command_long_msg_v2_is_bootloader_flash_spec(msg: SW::UdpPayload) -> bool
-  {
-    (msg.len() == 1558) &&
-      (two_bytes_to_u16_le_spec(msg[38], msg[39]) == 42650u16)
-  }
-
-  pub open spec fn msg_is_mavlinkv2_spec(msg: SW::UdpPayload) -> bool
-  {
-    (msg.len() == 1558) &&
-      (msg[0] == 253u8)
-  }
-
-  pub open spec fn msg_is_mav_v2_cmd_flash_bootloader_spec(msg: SW::UdpPayload) -> bool
-  {
-    msg_is_mavlinkv2_spec(msg) &&
-      (msg_v2_is_command_int_spec(msg) && command_int_msg_v2_is_bootloader_flash_spec(msg) ||
-        msg_v2_is_command_long_spec(msg) && command_long_msg_v2_is_bootloader_flash_spec(msg))
-  }
-
-  pub open spec fn msg_is_mav_v1_cmd_flash_bootloader_spec(msg: SW::UdpPayload) -> bool
-  {
-    msg_is_mavlinkv1_spec(msg) &&
-      (msg_v1_is_command_int_spec(msg) && command_int_msg_v1_is_bootloader_flash_spec(msg) ||
-        msg_v1_is_command_long_spec(msg) && command_long_msg_v1_is_bootloader_flash_spec(msg))
-  }
-
-  pub open spec fn msg_is_mav_cmd_flash_bootloader_spec(msg: SW::UdpPayload) -> bool
-  {
-    msg_is_mav_v2_cmd_flash_bootloader_spec(msg) || msg_is_mav_v1_cmd_flash_bootloader_spec(msg)
-  }
-
   pub open spec fn mav_input_headers_eq_output_spec(
     headers: SW::EthIpUdpHeaders,
     aframe: SW::RawEthernetMessage) -> bool
@@ -848,11 +685,6 @@ verus! {
     aframe: SW::RawEthernetMessage) -> bool
   {
     mav_input_headers_eq_output_spec(input.headers, aframe) && mav_input_payload_eq_output_spec(input.payload, input.headers, aframe)
-  }
-
-  pub open spec fn msg_is_blacklisted_spec(msg: SW::UdpPayload) -> bool
-  {
-    msg_is_mav_cmd_flash_bootloader_spec(msg)
   }
   // END MARKER GUMBO VERUS MARKER
 }

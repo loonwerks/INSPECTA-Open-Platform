@@ -456,43 +456,62 @@ package SW {
 		attribute :>> Implementation_Language = Rust;
 
 		language "GUMBO" /*{
-		
-	      compute
+			functions
+				@spec def msg_is_wellformed(msg: UdpPayload): Base_Types::Boolean;
+
+				@spec def msg_is_mav_cmd_flash_bootloader(msg: UdpPayload): Base_Types::Boolean;
+
+				def msg_is_blacklisted(msg: UdpPayload): Base_Types::Boolean :=
+					msg_is_mav_cmd_flash_bootloader(msg);
+
+			compute
 	
 				guarantee hlr_19_mav0_drop_mav_cmd_flash_bootloader:
-				  ((HasEvent(In0) and GumboLib::GUMBO__Library::msg_is_mav_cmd_flash_bootloader(In0.payload)) implies
-				    (NoSend(Out0)));
+					((HasEvent(In0) and msg_is_wellformed(In0.payload) and msg_is_mav_cmd_flash_bootloader(In0.payload)) implies
+						(NoSend(Out0)));
+				guarantee hlr_20_mav0_drop_malformed_msg:
+					((HasEvent(In0) and not msg_is_wellformed(In0.payload)) implies
+						(NoSend(Out0)));
 				guarantee hlr_21_mav0_no_input:
 				   (not HasEvent(In0) implies (NoSend(Out0)));
 				guarantee hlr_22_mav0_allow:
-				   (HasEvent(In0) and not GumboLib::GUMBO__Library::msg_is_blacklisted(In0.payload)) implies 
+				   (HasEvent(In0) and msg_is_wellformed(In0.payload) and not msg_is_blacklisted(In0.payload)) implies
 				     (HasEvent(Out0) and GumboLib::GUMBO__Library::mav_input_eq_output(In0, Out0));
 
 				guarantee hlr_19_mav1_drop_mav_cmd_flash_bootloader:
-				  ((HasEvent(In1) and GumboLib::GUMBO__Library::msg_is_mav_cmd_flash_bootloader(In1.payload)) implies
-				    (NoSend(Out1)));
+					((HasEvent(In1) and msg_is_wellformed(In1.payload) and msg_is_mav_cmd_flash_bootloader(In1.payload)) implies
+						(NoSend(Out1)));
+				guarantee hlr_20_mav1_drop_malformed_msg:
+					((HasEvent(In1) and not msg_is_wellformed(In1.payload)) implies
+						(NoSend(Out1)));
 				guarantee hlr_21_mav1_no_input:
 				   (not HasEvent(In1) implies (NoSend(Out1)));
 				guarantee hlr_22_mav1_allow:
-				   (HasEvent(In1) and not GumboLib::GUMBO__Library::msg_is_blacklisted(In1.payload)) implies 
+				   (HasEvent(In1) and msg_is_wellformed(In1.payload) and not msg_is_blacklisted(In1.payload)) implies
 				     (HasEvent(Out1) and GumboLib::GUMBO__Library::mav_input_eq_output(In1, Out1));
 
 				guarantee hlr_19_mav2_drop_mav_cmd_flash_bootloader:
-				  ((HasEvent(In2) and GumboLib::GUMBO__Library::msg_is_mav_cmd_flash_bootloader(In2.payload)) implies
-				    (NoSend(Out2)));
+					((HasEvent(In2) and msg_is_wellformed(In2.payload) and msg_is_mav_cmd_flash_bootloader(In2.payload)) implies
+						(NoSend(Out2)));
+				guarantee hlr_20_mav2_drop_malformed_msg:
+					((HasEvent(In2) and not msg_is_wellformed(In2.payload)) implies
+						(NoSend(Out2)));
 				guarantee hlr_21_mav2_no_input:
 				   (not HasEvent(In2) implies (NoSend(Out2)));
 				guarantee hlr_22_mav2_allow:
-				   (HasEvent(In2) and not GumboLib::GUMBO__Library::msg_is_blacklisted(In2.payload)) implies 
+				   (HasEvent(In2) and msg_is_wellformed(In2.payload) and not msg_is_blacklisted(In2.payload)) implies
 				     (HasEvent(Out2) and GumboLib::GUMBO__Library::mav_input_eq_output(In2, Out2));
 
 				guarantee hlr_19_mav3_drop_mav_cmd_flash_bootloader:
-				  ((HasEvent(In3) and GumboLib::GUMBO__Library::msg_is_mav_cmd_flash_bootloader(In3.payload)) implies
-				    (NoSend(Out3)));
+					((HasEvent(In3) and msg_is_wellformed(In3.payload) and msg_is_mav_cmd_flash_bootloader(In3.payload)) implies
+						(NoSend(Out3)));
+				guarantee hlr_20_mav3_drop_malformed_msg:
+					((HasEvent(In3) and not msg_is_wellformed(In3.payload)) implies
+						(NoSend(Out3)));
 				guarantee hlr_21_mav3_no_input:
 				   (not HasEvent(In3) implies (NoSend(Out3)));
 				guarantee hlr_22_mav3_allow:
-				   (HasEvent(In3) and not GumboLib::GUMBO__Library::msg_is_blacklisted(In3.payload)) implies 
+				   (HasEvent(In3) and msg_is_wellformed(In3.payload) and not msg_is_blacklisted(In3.payload)) implies
 				     (HasEvent(Out3) and GumboLib::GUMBO__Library::mav_input_eq_output(In3, Out3));
 		}*/			
 	}

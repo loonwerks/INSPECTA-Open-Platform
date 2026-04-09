@@ -14,6 +14,33 @@ macro_rules! impliesL {
   };
 }
 
+/// GUMBOX wrapper for the GUMBO spec function `test` that delegates to the developer-supplied GUMBOX
+/// specification function that must have the following signature:
+/// 
+///   pub exec fn msg_is_wellformed__developer_gumbox(msg: SW::UdpPayload) -> (res: bool) { ... }
+/// 
+/// The semantics of the GUMBO spec function are entirely defined by the developer-supplied implementation.
+pub fn msg_is_wellformed(msg: SW::UdpPayload) -> bool
+{
+  crate::component::seL4_MavlinkFirewall_MavlinkFirewall_app::msg_is_wellformed__developer_gumbox(msg)
+}
+
+/// GUMBOX wrapper for the GUMBO spec function `test` that delegates to the developer-supplied GUMBOX
+/// specification function that must have the following signature:
+/// 
+///   pub exec fn msg_is_mav_cmd_flash_bootloader__developer_gumbox(msg: SW::UdpPayload) -> (res: bool) { ... }
+/// 
+/// The semantics of the GUMBO spec function are entirely defined by the developer-supplied implementation.
+pub fn msg_is_mav_cmd_flash_bootloader(msg: SW::UdpPayload) -> bool
+{
+  crate::component::seL4_MavlinkFirewall_MavlinkFirewall_app::msg_is_mav_cmd_flash_bootloader__developer_gumbox(msg)
+}
+
+pub fn msg_is_blacklisted(msg: SW::UdpPayload) -> bool
+{
+  msg_is_mav_cmd_flash_bootloader(msg)
+}
+
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_19_mav0_drop_mav_cmd_flash_bootloader
@@ -25,7 +52,23 @@ pub fn compute_spec_hlr_19_mav0_drop_mav_cmd_flash_bootloader_guarantee(
   api_Out0: Option<SW::RawEthernetMessage>) -> bool
 {
   implies!(
-    api_In0.is_some() && GumboLib::msg_is_mav_cmd_flash_bootloader(api_In0.unwrap().payload),
+    api_In0.is_some() &&
+      (msg_is_wellformed(api_In0.unwrap().payload) && msg_is_mav_cmd_flash_bootloader(api_In0.unwrap().payload)),
+    api_Out0.is_none())
+}
+
+/** Compute Entrypoint Contract
+  *
+  * guarantee hlr_20_mav0_drop_malformed_msg
+  * @param api_In0 incoming event data port
+  * @param api_Out0 outgoing event data port
+  */
+pub fn compute_spec_hlr_20_mav0_drop_malformed_msg_guarantee(
+  api_In0: Option<SW::UdpFrame_Impl>,
+  api_Out0: Option<SW::RawEthernetMessage>) -> bool
+{
+  implies!(
+    api_In0.is_some() && !(msg_is_wellformed(api_In0.unwrap().payload)),
     api_Out0.is_none())
 }
 
@@ -55,7 +98,8 @@ pub fn compute_spec_hlr_22_mav0_allow_guarantee(
   api_Out0: Option<SW::RawEthernetMessage>) -> bool
 {
   implies!(
-    api_In0.is_some() && !(GumboLib::msg_is_blacklisted(api_In0.unwrap().payload)),
+    api_In0.is_some() &&
+      (msg_is_wellformed(api_In0.unwrap().payload) && !(msg_is_blacklisted(api_In0.unwrap().payload))),
     api_Out0.is_some() && GumboLib::mav_input_eq_output(api_In0.unwrap(), api_Out0.unwrap()))
 }
 
@@ -70,7 +114,23 @@ pub fn compute_spec_hlr_19_mav1_drop_mav_cmd_flash_bootloader_guarantee(
   api_Out1: Option<SW::RawEthernetMessage>) -> bool
 {
   implies!(
-    api_In1.is_some() && GumboLib::msg_is_mav_cmd_flash_bootloader(api_In1.unwrap().payload),
+    api_In1.is_some() &&
+      (msg_is_wellformed(api_In1.unwrap().payload) && msg_is_mav_cmd_flash_bootloader(api_In1.unwrap().payload)),
+    api_Out1.is_none())
+}
+
+/** Compute Entrypoint Contract
+  *
+  * guarantee hlr_20_mav1_drop_malformed_msg
+  * @param api_In1 incoming event data port
+  * @param api_Out1 outgoing event data port
+  */
+pub fn compute_spec_hlr_20_mav1_drop_malformed_msg_guarantee(
+  api_In1: Option<SW::UdpFrame_Impl>,
+  api_Out1: Option<SW::RawEthernetMessage>) -> bool
+{
+  implies!(
+    api_In1.is_some() && !(msg_is_wellformed(api_In1.unwrap().payload)),
     api_Out1.is_none())
 }
 
@@ -100,7 +160,8 @@ pub fn compute_spec_hlr_22_mav1_allow_guarantee(
   api_Out1: Option<SW::RawEthernetMessage>) -> bool
 {
   implies!(
-    api_In1.is_some() && !(GumboLib::msg_is_blacklisted(api_In1.unwrap().payload)),
+    api_In1.is_some() &&
+      (msg_is_wellformed(api_In1.unwrap().payload) && !(msg_is_blacklisted(api_In1.unwrap().payload))),
     api_Out1.is_some() && GumboLib::mav_input_eq_output(api_In1.unwrap(), api_Out1.unwrap()))
 }
 
@@ -115,7 +176,23 @@ pub fn compute_spec_hlr_19_mav2_drop_mav_cmd_flash_bootloader_guarantee(
   api_Out2: Option<SW::RawEthernetMessage>) -> bool
 {
   implies!(
-    api_In2.is_some() && GumboLib::msg_is_mav_cmd_flash_bootloader(api_In2.unwrap().payload),
+    api_In2.is_some() &&
+      (msg_is_wellformed(api_In2.unwrap().payload) && msg_is_mav_cmd_flash_bootloader(api_In2.unwrap().payload)),
+    api_Out2.is_none())
+}
+
+/** Compute Entrypoint Contract
+  *
+  * guarantee hlr_20_mav2_drop_malformed_msg
+  * @param api_In2 incoming event data port
+  * @param api_Out2 outgoing event data port
+  */
+pub fn compute_spec_hlr_20_mav2_drop_malformed_msg_guarantee(
+  api_In2: Option<SW::UdpFrame_Impl>,
+  api_Out2: Option<SW::RawEthernetMessage>) -> bool
+{
+  implies!(
+    api_In2.is_some() && !(msg_is_wellformed(api_In2.unwrap().payload)),
     api_Out2.is_none())
 }
 
@@ -145,7 +222,8 @@ pub fn compute_spec_hlr_22_mav2_allow_guarantee(
   api_Out2: Option<SW::RawEthernetMessage>) -> bool
 {
   implies!(
-    api_In2.is_some() && !(GumboLib::msg_is_blacklisted(api_In2.unwrap().payload)),
+    api_In2.is_some() &&
+      (msg_is_wellformed(api_In2.unwrap().payload) && !(msg_is_blacklisted(api_In2.unwrap().payload))),
     api_Out2.is_some() && GumboLib::mav_input_eq_output(api_In2.unwrap(), api_Out2.unwrap()))
 }
 
@@ -160,7 +238,23 @@ pub fn compute_spec_hlr_19_mav3_drop_mav_cmd_flash_bootloader_guarantee(
   api_Out3: Option<SW::RawEthernetMessage>) -> bool
 {
   implies!(
-    api_In3.is_some() && GumboLib::msg_is_mav_cmd_flash_bootloader(api_In3.unwrap().payload),
+    api_In3.is_some() &&
+      (msg_is_wellformed(api_In3.unwrap().payload) && msg_is_mav_cmd_flash_bootloader(api_In3.unwrap().payload)),
+    api_Out3.is_none())
+}
+
+/** Compute Entrypoint Contract
+  *
+  * guarantee hlr_20_mav3_drop_malformed_msg
+  * @param api_In3 incoming event data port
+  * @param api_Out3 outgoing event data port
+  */
+pub fn compute_spec_hlr_20_mav3_drop_malformed_msg_guarantee(
+  api_In3: Option<SW::UdpFrame_Impl>,
+  api_Out3: Option<SW::RawEthernetMessage>) -> bool
+{
+  implies!(
+    api_In3.is_some() && !(msg_is_wellformed(api_In3.unwrap().payload)),
     api_Out3.is_none())
 }
 
@@ -190,7 +284,8 @@ pub fn compute_spec_hlr_22_mav3_allow_guarantee(
   api_Out3: Option<SW::RawEthernetMessage>) -> bool
 {
   implies!(
-    api_In3.is_some() && !(GumboLib::msg_is_blacklisted(api_In3.unwrap().payload)),
+    api_In3.is_some() &&
+      (msg_is_wellformed(api_In3.unwrap().payload) && !(msg_is_blacklisted(api_In3.unwrap().payload))),
     api_Out3.is_some() && GumboLib::mav_input_eq_output(api_In3.unwrap(), api_Out3.unwrap()))
 }
 
@@ -216,19 +311,23 @@ pub fn compute_CEP_T_Guar(
   api_Out3: Option<SW::RawEthernetMessage>) -> bool
 {
   let r0: bool = compute_spec_hlr_19_mav0_drop_mav_cmd_flash_bootloader_guarantee(api_In0, api_Out0);
-  let r1: bool = compute_spec_hlr_21_mav0_no_input_guarantee(api_In0, api_Out0);
-  let r2: bool = compute_spec_hlr_22_mav0_allow_guarantee(api_In0, api_Out0);
-  let r3: bool = compute_spec_hlr_19_mav1_drop_mav_cmd_flash_bootloader_guarantee(api_In1, api_Out1);
-  let r4: bool = compute_spec_hlr_21_mav1_no_input_guarantee(api_In1, api_Out1);
-  let r5: bool = compute_spec_hlr_22_mav1_allow_guarantee(api_In1, api_Out1);
-  let r6: bool = compute_spec_hlr_19_mav2_drop_mav_cmd_flash_bootloader_guarantee(api_In2, api_Out2);
-  let r7: bool = compute_spec_hlr_21_mav2_no_input_guarantee(api_In2, api_Out2);
-  let r8: bool = compute_spec_hlr_22_mav2_allow_guarantee(api_In2, api_Out2);
-  let r9: bool = compute_spec_hlr_19_mav3_drop_mav_cmd_flash_bootloader_guarantee(api_In3, api_Out3);
-  let r10: bool = compute_spec_hlr_21_mav3_no_input_guarantee(api_In3, api_Out3);
-  let r11: bool = compute_spec_hlr_22_mav3_allow_guarantee(api_In3, api_Out3);
+  let r1: bool = compute_spec_hlr_20_mav0_drop_malformed_msg_guarantee(api_In0, api_Out0);
+  let r2: bool = compute_spec_hlr_21_mav0_no_input_guarantee(api_In0, api_Out0);
+  let r3: bool = compute_spec_hlr_22_mav0_allow_guarantee(api_In0, api_Out0);
+  let r4: bool = compute_spec_hlr_19_mav1_drop_mav_cmd_flash_bootloader_guarantee(api_In1, api_Out1);
+  let r5: bool = compute_spec_hlr_20_mav1_drop_malformed_msg_guarantee(api_In1, api_Out1);
+  let r6: bool = compute_spec_hlr_21_mav1_no_input_guarantee(api_In1, api_Out1);
+  let r7: bool = compute_spec_hlr_22_mav1_allow_guarantee(api_In1, api_Out1);
+  let r8: bool = compute_spec_hlr_19_mav2_drop_mav_cmd_flash_bootloader_guarantee(api_In2, api_Out2);
+  let r9: bool = compute_spec_hlr_20_mav2_drop_malformed_msg_guarantee(api_In2, api_Out2);
+  let r10: bool = compute_spec_hlr_21_mav2_no_input_guarantee(api_In2, api_Out2);
+  let r11: bool = compute_spec_hlr_22_mav2_allow_guarantee(api_In2, api_Out2);
+  let r12: bool = compute_spec_hlr_19_mav3_drop_mav_cmd_flash_bootloader_guarantee(api_In3, api_Out3);
+  let r13: bool = compute_spec_hlr_20_mav3_drop_malformed_msg_guarantee(api_In3, api_Out3);
+  let r14: bool = compute_spec_hlr_21_mav3_no_input_guarantee(api_In3, api_Out3);
+  let r15: bool = compute_spec_hlr_22_mav3_allow_guarantee(api_In3, api_Out3);
 
-  return r0 && r1 && r2 && r3 && r4 && r5 && r6 && r7 && r8 && r9 && r10 && r11;
+  return r0 && r1 && r2 && r3 && r4 && r5 && r6 && r7 && r8 && r9 && r10 && r11 && r12 && r13 && r14 && r15;
 }
 
 /** CEP-Post: Compute Entrypoint Post-Condition for MavlinkFirewall
