@@ -1,0 +1,21 @@
+--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs
++++ replace tcp_port_allowed -> bool with true
+@@ -435,17 +435,17 @@
+ 
+ /// Returns true if the given TCP destination port is in the TCP allowlist.
+ #[verus_verify]
+ #[verus_spec(r =>
+     ensures
+         r == config::tcp::ALLOWED_PORTS@.contains(port),
+ )]
+ fn tcp_port_allowed(port: u16) -> bool {
+-    port_allowed(&config::tcp::ALLOWED_PORTS, port)
++    true /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Generic allowlist check: linearly scans `allowed_ports` and returns true if `port`
+ /// is found. Used by both `udp_port_allowed` and `tcp_port_allowed`.
+ #[verus_verify]
+ #[verus_spec(r =>
+     ensures
+         r == allowed_ports@.contains(port),

@@ -1,0 +1,1314 @@
+[
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace get_frame_packet -> Option<firewall_core::EthFrame> with None\n@@ -297,21 +297,17 @@\n     ensures\n         GumboLib::valid_arp_spec(*frame) == firewall_core::res_is_arp(r),\n         GumboLib::valid_ipv4_udp_spec(*frame) == firewall_core::res_is_udp(r),\n         GumboLib::valid_ipv4_tcp_spec(*frame) == firewall_core::res_is_tcp(r),\n         GumboLib::valid_ipv4_tcp_spec(*frame) ==> firewall_core::tcp_port_bytes_match(frame, r),\n         GumboLib::valid_ipv4_udp_spec(*frame) ==> firewall_core::udp_port_bytes_match(frame, r),\n )]\n fn get_frame_packet(frame: &SW::RawEthernetMessage) -> Option<firewall_core::EthFrame> {\n-    let eth = firewall_core::EthFrame::parse(frame);\n-    if eth.is_none() {\n-        log_info(\"Malformed packet. Throw it away.\")\n-    }\n-    eth\n+    None /* ~ changed by cargo-mutants ~ */\n }\n \n /// Returns true if the parsed packet is a MAVLink UDP packet (src port 14550,\n /// dst port 14562). MAVLink packets are routed to the MavlinkOut port rather\n /// than the VmmOut port.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "get_frame_packet",
+      "return_type": "-> Option<firewall_core::EthFrame>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 310
+        },
+        "start": {
+          "column": 1,
+          "line": 286
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:305:5: replace get_frame_packet -> Option<firewall_core::EthFrame> with None",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "None",
+    "span": {
+      "end": {
+        "column": 8,
+        "line": 309
+      },
+      "start": {
+        "column": 5,
+        "line": 305
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace get_frame_packet -> Option<firewall_core::EthFrame> with Some(Default::default())\n@@ -297,21 +297,17 @@\n     ensures\n         GumboLib::valid_arp_spec(*frame) == firewall_core::res_is_arp(r),\n         GumboLib::valid_ipv4_udp_spec(*frame) == firewall_core::res_is_udp(r),\n         GumboLib::valid_ipv4_tcp_spec(*frame) == firewall_core::res_is_tcp(r),\n         GumboLib::valid_ipv4_tcp_spec(*frame) ==> firewall_core::tcp_port_bytes_match(frame, r),\n         GumboLib::valid_ipv4_udp_spec(*frame) ==> firewall_core::udp_port_bytes_match(frame, r),\n )]\n fn get_frame_packet(frame: &SW::RawEthernetMessage) -> Option<firewall_core::EthFrame> {\n-    let eth = firewall_core::EthFrame::parse(frame);\n-    if eth.is_none() {\n-        log_info(\"Malformed packet. Throw it away.\")\n-    }\n-    eth\n+    Some(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Returns true if the parsed packet is a MAVLink UDP packet (src port 14550,\n /// dst port 14562). MAVLink packets are routed to the MavlinkOut port rather\n /// than the VmmOut port.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "get_frame_packet",
+      "return_type": "-> Option<firewall_core::EthFrame>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 310
+        },
+        "start": {
+          "column": 1,
+          "line": 286
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:305:5: replace get_frame_packet -> Option<firewall_core::EthFrame> with Some(Default::default())",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "Some(Default::default())",
+    "span": {
+      "end": {
+        "column": 8,
+        "line": 309
+      },
+      "start": {
+        "column": 5,
+        "line": 305
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace can_send_to_mavlink -> bool with true\n@@ -313,22 +313,17 @@\n /// dst port 14562). MAVLink packets are routed to the MavlinkOut port rather\n /// than the VmmOut port.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         packet_is_mavlink_udp(packet) == (r == true),\n )]\n fn can_send_to_mavlink(packet: &firewall_core::PacketType) -> bool {\n-    if let firewall_core::PacketType::Ipv4(ip) = packet {\n-        if let firewall_core::Ipv4ProtoPacket::Udp(udp) = &ip.protocol {\n-            return udp.src_port == MAV_UDP_SRC_PORT && udp.dst_port == MAV_UDP_DST_PORT;\n-        }\n-    }\n-    false\n+    true /* ~ changed by cargo-mutants ~ */\n }\n \n /// Splits a raw Ethernet frame into a `UdpFrame_Impl` containing separate header and\n /// payload byte arrays. The headers are the first `EthIpUdpHeaders_DIM_0` bytes\n /// (Ethernet + IP + UDP headers) and the payload is the remainder.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "can_send_to_mavlink",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 327
+        },
+        "start": {
+          "column": 1,
+          "line": 312
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:321:5: replace can_send_to_mavlink -> bool with true",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 326
+      },
+      "start": {
+        "column": 5,
+        "line": 321
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace can_send_to_mavlink -> bool with false\n@@ -313,22 +313,17 @@\n /// dst port 14562). MAVLink packets are routed to the MavlinkOut port rather\n /// than the VmmOut port.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         packet_is_mavlink_udp(packet) == (r == true),\n )]\n fn can_send_to_mavlink(packet: &firewall_core::PacketType) -> bool {\n-    if let firewall_core::PacketType::Ipv4(ip) = packet {\n-        if let firewall_core::Ipv4ProtoPacket::Udp(udp) = &ip.protocol {\n-            return udp.src_port == MAV_UDP_SRC_PORT && udp.dst_port == MAV_UDP_DST_PORT;\n-        }\n-    }\n-    false\n+    false /* ~ changed by cargo-mutants ~ */\n }\n \n /// Splits a raw Ethernet frame into a `UdpFrame_Impl` containing separate header and\n /// payload byte arrays. The headers are the first `EthIpUdpHeaders_DIM_0` bytes\n /// (Ethernet + IP + UDP headers) and the payload is the remainder.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "can_send_to_mavlink",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 327
+        },
+        "start": {
+          "column": 1,
+          "line": 312
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:321:5: replace can_send_to_mavlink -> bool with false",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 326
+      },
+      "start": {
+        "column": 5,
+        "line": 321
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace && with || in can_send_to_mavlink\n@@ -315,17 +315,17 @@\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         packet_is_mavlink_udp(packet) == (r == true),\n )]\n fn can_send_to_mavlink(packet: &firewall_core::PacketType) -> bool {\n     if let firewall_core::PacketType::Ipv4(ip) = packet {\n         if let firewall_core::Ipv4ProtoPacket::Udp(udp) = &ip.protocol {\n-            return udp.src_port == MAV_UDP_SRC_PORT && udp.dst_port == MAV_UDP_DST_PORT;\n+            return udp.src_port == MAV_UDP_SRC_PORT || /* ~ changed by cargo-mutants ~ */ udp.dst_port == MAV_UDP_DST_PORT;\n         }\n     }\n     false\n }\n \n /// Splits a raw Ethernet frame into a `UdpFrame_Impl` containing separate header and\n /// payload byte arrays. The headers are the first `EthIpUdpHeaders_DIM_0` bytes\n /// (Ethernet + IP + UDP headers) and the payload is the remainder.\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "can_send_to_mavlink",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 327
+        },
+        "start": {
+          "column": 1,
+          "line": 312
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:323:53: replace && with || in can_send_to_mavlink",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "||",
+    "span": {
+      "end": {
+        "column": 55,
+        "line": 323
+      },
+      "start": {
+        "column": 53,
+        "line": 323
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace == with != in can_send_to_mavlink\n@@ -315,17 +315,17 @@\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         packet_is_mavlink_udp(packet) == (r == true),\n )]\n fn can_send_to_mavlink(packet: &firewall_core::PacketType) -> bool {\n     if let firewall_core::PacketType::Ipv4(ip) = packet {\n         if let firewall_core::Ipv4ProtoPacket::Udp(udp) = &ip.protocol {\n-            return udp.src_port == MAV_UDP_SRC_PORT && udp.dst_port == MAV_UDP_DST_PORT;\n+            return udp.src_port != /* ~ changed by cargo-mutants ~ */ MAV_UDP_SRC_PORT && udp.dst_port == MAV_UDP_DST_PORT;\n         }\n     }\n     false\n }\n \n /// Splits a raw Ethernet frame into a `UdpFrame_Impl` containing separate header and\n /// payload byte arrays. The headers are the first `EthIpUdpHeaders_DIM_0` bytes\n /// (Ethernet + IP + UDP headers) and the payload is the remainder.\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "can_send_to_mavlink",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 327
+        },
+        "start": {
+          "column": 1,
+          "line": 312
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:323:33: replace == with != in can_send_to_mavlink",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 35,
+        "line": 323
+      },
+      "start": {
+        "column": 33,
+        "line": 323
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace == with != in can_send_to_mavlink\n@@ -315,17 +315,17 @@\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         packet_is_mavlink_udp(packet) == (r == true),\n )]\n fn can_send_to_mavlink(packet: &firewall_core::PacketType) -> bool {\n     if let firewall_core::PacketType::Ipv4(ip) = packet {\n         if let firewall_core::Ipv4ProtoPacket::Udp(udp) = &ip.protocol {\n-            return udp.src_port == MAV_UDP_SRC_PORT && udp.dst_port == MAV_UDP_DST_PORT;\n+            return udp.src_port == MAV_UDP_SRC_PORT && udp.dst_port != /* ~ changed by cargo-mutants ~ */ MAV_UDP_DST_PORT;\n         }\n     }\n     false\n }\n \n /// Splits a raw Ethernet frame into a `UdpFrame_Impl` containing separate header and\n /// payload byte arrays. The headers are the first `EthIpUdpHeaders_DIM_0` bytes\n /// (Ethernet + IP + UDP headers) and the payload is the remainder.\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "can_send_to_mavlink",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 327
+        },
+        "start": {
+          "column": 1,
+          "line": 312
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:323:69: replace == with != in can_send_to_mavlink",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 71,
+        "line": 323
+      },
+      "start": {
+        "column": 69,
+        "line": 323
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace udp_frame_from_raw_eth -> SW::UdpFrame_Impl with Default::default()\n@@ -331,19 +331,17 @@\n /// (Ethernet + IP + UDP headers) and the payload is the remainder.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r.headers@ =~= value@.subrange(0, SW::SW_EthIpUdpHeaders_DIM_0 as int),\n         r.payload@ =~= value@.subrange(SW::SW_EthIpUdpHeaders_DIM_0 as int, SW::SW_RawEthernetMessage_DIM_0 as int),\n )]\n fn udp_frame_from_raw_eth(value: SW::RawEthernetMessage) -> SW::UdpFrame_Impl {\n-    let headers = udp_headers_from_raw_eth(value);\n-    let payload = udp_payload_from_raw_eth(value);\n-    SW::UdpFrame_Impl { headers, payload }\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n /// Copies the first `EthIpUdpHeaders_DIM_0` bytes from a raw Ethernet frame into\n /// a fixed-size header array (Ethernet + IP + UDP headers).\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r@ =~= value@.subrange(0, SW::SW_EthIpUdpHeaders_DIM_0 as int),\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_frame_from_raw_eth",
+      "return_type": "-> SW::UdpFrame_Impl",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 342
+        },
+        "start": {
+          "column": 1,
+          "line": 329
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:339:5: replace udp_frame_from_raw_eth -> SW::UdpFrame_Impl with Default::default()",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "Default::default()",
+    "span": {
+      "end": {
+        "column": 43,
+        "line": 341
+      },
+      "start": {
+        "column": 5,
+        "line": 339
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace udp_headers_from_raw_eth -> SW::EthIpUdpHeaders with Default::default()\n@@ -344,30 +344,17 @@\n /// Copies the first `EthIpUdpHeaders_DIM_0` bytes from a raw Ethernet frame into\n /// a fixed-size header array (Ethernet + IP + UDP headers).\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r@ =~= value@.subrange(0, SW::SW_EthIpUdpHeaders_DIM_0 as int),\n )]\n fn udp_headers_from_raw_eth(value: SW::RawEthernetMessage) -> SW::EthIpUdpHeaders {\n-    let mut headers = [0u8; SW::SW_EthIpUdpHeaders_DIM_0];\n-    let mut i = 0;\n-    #[verus_spec(\n-        invariant\n-            0 <= i <= headers@.len() < value@.len(),\n-            forall |j| 0 <= j < i ==> headers[j] == value[j],\n-        decreases\n-            SW::SW_EthIpUdpHeaders_DIM_0 - i,\n-    )]\n-    while i < SW::SW_EthIpUdpHeaders_DIM_0 {\n-        headers.set(i, value[i]);\n-        i += 1;\n-    }\n-    headers\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n /// Copies the bytes following the Ethernet/IP/UDP headers from a raw Ethernet frame\n /// into a fixed-size payload array (everything after the first `EthIpUdpHeaders_DIM_0` bytes).\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r@ =~= value@.subrange(SW::SW_EthIpUdpHeaders_DIM_0 as int, SW::SW_RawEthernetMessage_DIM_0 as int),\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_headers_from_raw_eth",
+      "return_type": "-> SW::EthIpUdpHeaders",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 366
+        },
+        "start": {
+          "column": 1,
+          "line": 344
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:352:5: replace udp_headers_from_raw_eth -> SW::EthIpUdpHeaders with Default::default()",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "Default::default()",
+    "span": {
+      "end": {
+        "column": 12,
+        "line": 365
+      },
+      "start": {
+        "column": 5,
+        "line": 352
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace < with == in udp_headers_from_raw_eth\n@@ -353,17 +353,17 @@\n     let mut i = 0;\n     #[verus_spec(\n         invariant\n             0 <= i <= headers@.len() < value@.len(),\n             forall |j| 0 <= j < i ==> headers[j] == value[j],\n         decreases\n             SW::SW_EthIpUdpHeaders_DIM_0 - i,\n     )]\n-    while i < SW::SW_EthIpUdpHeaders_DIM_0 {\n+    while i == /* ~ changed by cargo-mutants ~ */ SW::SW_EthIpUdpHeaders_DIM_0 {\n         headers.set(i, value[i]);\n         i += 1;\n     }\n     headers\n }\n \n /// Copies the bytes following the Ethernet/IP/UDP headers from a raw Ethernet frame\n /// into a fixed-size payload array (everything after the first `EthIpUdpHeaders_DIM_0` bytes).\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_headers_from_raw_eth",
+      "return_type": "-> SW::EthIpUdpHeaders",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 366
+        },
+        "start": {
+          "column": 1,
+          "line": 344
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:361:13: replace < with == in udp_headers_from_raw_eth",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 14,
+        "line": 361
+      },
+      "start": {
+        "column": 13,
+        "line": 361
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace < with > in udp_headers_from_raw_eth\n@@ -353,17 +353,17 @@\n     let mut i = 0;\n     #[verus_spec(\n         invariant\n             0 <= i <= headers@.len() < value@.len(),\n             forall |j| 0 <= j < i ==> headers[j] == value[j],\n         decreases\n             SW::SW_EthIpUdpHeaders_DIM_0 - i,\n     )]\n-    while i < SW::SW_EthIpUdpHeaders_DIM_0 {\n+    while i > /* ~ changed by cargo-mutants ~ */ SW::SW_EthIpUdpHeaders_DIM_0 {\n         headers.set(i, value[i]);\n         i += 1;\n     }\n     headers\n }\n \n /// Copies the bytes following the Ethernet/IP/UDP headers from a raw Ethernet frame\n /// into a fixed-size payload array (everything after the first `EthIpUdpHeaders_DIM_0` bytes).\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_headers_from_raw_eth",
+      "return_type": "-> SW::EthIpUdpHeaders",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 366
+        },
+        "start": {
+          "column": 1,
+          "line": 344
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:361:13: replace < with > in udp_headers_from_raw_eth",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": ">",
+    "span": {
+      "end": {
+        "column": 14,
+        "line": 361
+      },
+      "start": {
+        "column": 13,
+        "line": 361
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace < with <= in udp_headers_from_raw_eth\n@@ -353,17 +353,17 @@\n     let mut i = 0;\n     #[verus_spec(\n         invariant\n             0 <= i <= headers@.len() < value@.len(),\n             forall |j| 0 <= j < i ==> headers[j] == value[j],\n         decreases\n             SW::SW_EthIpUdpHeaders_DIM_0 - i,\n     )]\n-    while i < SW::SW_EthIpUdpHeaders_DIM_0 {\n+    while i <= /* ~ changed by cargo-mutants ~ */ SW::SW_EthIpUdpHeaders_DIM_0 {\n         headers.set(i, value[i]);\n         i += 1;\n     }\n     headers\n }\n \n /// Copies the bytes following the Ethernet/IP/UDP headers from a raw Ethernet frame\n /// into a fixed-size payload array (everything after the first `EthIpUdpHeaders_DIM_0` bytes).\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_headers_from_raw_eth",
+      "return_type": "-> SW::EthIpUdpHeaders",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 366
+        },
+        "start": {
+          "column": 1,
+          "line": 344
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:361:13: replace < with <= in udp_headers_from_raw_eth",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "<=",
+    "span": {
+      "end": {
+        "column": 14,
+        "line": 361
+      },
+      "start": {
+        "column": 13,
+        "line": 361
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace += with -= in udp_headers_from_raw_eth\n@@ -355,17 +355,17 @@\n         invariant\n             0 <= i <= headers@.len() < value@.len(),\n             forall |j| 0 <= j < i ==> headers[j] == value[j],\n         decreases\n             SW::SW_EthIpUdpHeaders_DIM_0 - i,\n     )]\n     while i < SW::SW_EthIpUdpHeaders_DIM_0 {\n         headers.set(i, value[i]);\n-        i += 1;\n+        i -= /* ~ changed by cargo-mutants ~ */ 1;\n     }\n     headers\n }\n \n /// Copies the bytes following the Ethernet/IP/UDP headers from a raw Ethernet frame\n /// into a fixed-size payload array (everything after the first `EthIpUdpHeaders_DIM_0` bytes).\n #[verus_verify]\n #[verus_spec(r =>\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_headers_from_raw_eth",
+      "return_type": "-> SW::EthIpUdpHeaders",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 366
+        },
+        "start": {
+          "column": 1,
+          "line": 344
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:363:11: replace += with -= in udp_headers_from_raw_eth",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 13,
+        "line": 363
+      },
+      "start": {
+        "column": 11,
+        "line": 363
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace += with *= in udp_headers_from_raw_eth\n@@ -355,17 +355,17 @@\n         invariant\n             0 <= i <= headers@.len() < value@.len(),\n             forall |j| 0 <= j < i ==> headers[j] == value[j],\n         decreases\n             SW::SW_EthIpUdpHeaders_DIM_0 - i,\n     )]\n     while i < SW::SW_EthIpUdpHeaders_DIM_0 {\n         headers.set(i, value[i]);\n-        i += 1;\n+        i *= /* ~ changed by cargo-mutants ~ */ 1;\n     }\n     headers\n }\n \n /// Copies the bytes following the Ethernet/IP/UDP headers from a raw Ethernet frame\n /// into a fixed-size payload array (everything after the first `EthIpUdpHeaders_DIM_0` bytes).\n #[verus_verify]\n #[verus_spec(r =>\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_headers_from_raw_eth",
+      "return_type": "-> SW::EthIpUdpHeaders",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 366
+        },
+        "start": {
+          "column": 1,
+          "line": 344
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:363:11: replace += with *= in udp_headers_from_raw_eth",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 13,
+        "line": 363
+      },
+      "start": {
+        "column": 11,
+        "line": 363
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace udp_payload_from_raw_eth -> SW::UdpPayload with Default::default()\n@@ -368,30 +368,17 @@\n /// Copies the bytes following the Ethernet/IP/UDP headers from a raw Ethernet frame\n /// into a fixed-size payload array (everything after the first `EthIpUdpHeaders_DIM_0` bytes).\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r@ =~= value@.subrange(SW::SW_EthIpUdpHeaders_DIM_0 as int, SW::SW_RawEthernetMessage_DIM_0 as int),\n )]\n fn udp_payload_from_raw_eth(value: SW::RawEthernetMessage) -> SW::UdpPayload {\n-    let mut payload = [0u8; SW::SW_RawEthernetMessage_DIM_0 - SW::SW_EthIpUdpHeaders_DIM_0];\n-    let mut i = 0;\n-    #[verus_spec(\n-        invariant\n-            0 <= i <= payload@.len() <= value@.len() - SW::SW_EthIpUdpHeaders_DIM_0,\n-            forall |j| 0 <= j < i ==> #[trigger] payload[j] == value[j + SW::SW_EthIpUdpHeaders_DIM_0],\n-        decreases\n-            SW::SW_UdpPayload_DIM_0 - i,\n-    )]\n-    while i < SW::SW_UdpPayload_DIM_0 {\n-        payload.set(i, value[i + SW::SW_EthIpUdpHeaders_DIM_0]);\n-        i += 1;\n-    }\n-    payload\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n /// Returns true if the parsed packet should be forwarded to the VMM. ARP packets are\n /// always allowed. IPv4 UDP packets are allowed only if their destination port is in\n /// the UDP allowlist (port 68/DHCP). All other traffic (IPv4 TCP, IPv6, unknown\n /// protocols) is rejected.\n #[verus_verify]\n #[verus_spec(r =>\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_payload_from_raw_eth",
+      "return_type": "-> SW::UdpPayload",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 390
+        },
+        "start": {
+          "column": 1,
+          "line": 368
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:376:5: replace udp_payload_from_raw_eth -> SW::UdpPayload with Default::default()",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "Default::default()",
+    "span": {
+      "end": {
+        "column": 12,
+        "line": 389
+      },
+      "start": {
+        "column": 5,
+        "line": 376
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace - with + in udp_payload_from_raw_eth\n@@ -368,17 +368,17 @@\n /// Copies the bytes following the Ethernet/IP/UDP headers from a raw Ethernet frame\n /// into a fixed-size payload array (everything after the first `EthIpUdpHeaders_DIM_0` bytes).\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r@ =~= value@.subrange(SW::SW_EthIpUdpHeaders_DIM_0 as int, SW::SW_RawEthernetMessage_DIM_0 as int),\n )]\n fn udp_payload_from_raw_eth(value: SW::RawEthernetMessage) -> SW::UdpPayload {\n-    let mut payload = [0u8; SW::SW_RawEthernetMessage_DIM_0 - SW::SW_EthIpUdpHeaders_DIM_0];\n+    let mut payload = [0u8; SW::SW_RawEthernetMessage_DIM_0 + /* ~ changed by cargo-mutants ~ */ SW::SW_EthIpUdpHeaders_DIM_0];\n     let mut i = 0;\n     #[verus_spec(\n         invariant\n             0 <= i <= payload@.len() <= value@.len() - SW::SW_EthIpUdpHeaders_DIM_0,\n             forall |j| 0 <= j < i ==> #[trigger] payload[j] == value[j + SW::SW_EthIpUdpHeaders_DIM_0],\n         decreases\n             SW::SW_UdpPayload_DIM_0 - i,\n     )]\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_payload_from_raw_eth",
+      "return_type": "-> SW::UdpPayload",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 390
+        },
+        "start": {
+          "column": 1,
+          "line": 368
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:376:61: replace - with + in udp_payload_from_raw_eth",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "+",
+    "span": {
+      "end": {
+        "column": 62,
+        "line": 376
+      },
+      "start": {
+        "column": 61,
+        "line": 376
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace - with / in udp_payload_from_raw_eth\n@@ -368,17 +368,17 @@\n /// Copies the bytes following the Ethernet/IP/UDP headers from a raw Ethernet frame\n /// into a fixed-size payload array (everything after the first `EthIpUdpHeaders_DIM_0` bytes).\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r@ =~= value@.subrange(SW::SW_EthIpUdpHeaders_DIM_0 as int, SW::SW_RawEthernetMessage_DIM_0 as int),\n )]\n fn udp_payload_from_raw_eth(value: SW::RawEthernetMessage) -> SW::UdpPayload {\n-    let mut payload = [0u8; SW::SW_RawEthernetMessage_DIM_0 - SW::SW_EthIpUdpHeaders_DIM_0];\n+    let mut payload = [0u8; SW::SW_RawEthernetMessage_DIM_0 / /* ~ changed by cargo-mutants ~ */ SW::SW_EthIpUdpHeaders_DIM_0];\n     let mut i = 0;\n     #[verus_spec(\n         invariant\n             0 <= i <= payload@.len() <= value@.len() - SW::SW_EthIpUdpHeaders_DIM_0,\n             forall |j| 0 <= j < i ==> #[trigger] payload[j] == value[j + SW::SW_EthIpUdpHeaders_DIM_0],\n         decreases\n             SW::SW_UdpPayload_DIM_0 - i,\n     )]\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_payload_from_raw_eth",
+      "return_type": "-> SW::UdpPayload",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 390
+        },
+        "start": {
+          "column": 1,
+          "line": 368
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:376:61: replace - with / in udp_payload_from_raw_eth",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "/",
+    "span": {
+      "end": {
+        "column": 62,
+        "line": 376
+      },
+      "start": {
+        "column": 61,
+        "line": 376
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace < with == in udp_payload_from_raw_eth\n@@ -377,17 +377,17 @@\n     let mut i = 0;\n     #[verus_spec(\n         invariant\n             0 <= i <= payload@.len() <= value@.len() - SW::SW_EthIpUdpHeaders_DIM_0,\n             forall |j| 0 <= j < i ==> #[trigger] payload[j] == value[j + SW::SW_EthIpUdpHeaders_DIM_0],\n         decreases\n             SW::SW_UdpPayload_DIM_0 - i,\n     )]\n-    while i < SW::SW_UdpPayload_DIM_0 {\n+    while i == /* ~ changed by cargo-mutants ~ */ SW::SW_UdpPayload_DIM_0 {\n         payload.set(i, value[i + SW::SW_EthIpUdpHeaders_DIM_0]);\n         i += 1;\n     }\n     payload\n }\n \n /// Returns true if the parsed packet should be forwarded to the VMM. ARP packets are\n /// always allowed. IPv4 UDP packets are allowed only if their destination port is in\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_payload_from_raw_eth",
+      "return_type": "-> SW::UdpPayload",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 390
+        },
+        "start": {
+          "column": 1,
+          "line": 368
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:385:13: replace < with == in udp_payload_from_raw_eth",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 14,
+        "line": 385
+      },
+      "start": {
+        "column": 13,
+        "line": 385
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace < with > in udp_payload_from_raw_eth\n@@ -377,17 +377,17 @@\n     let mut i = 0;\n     #[verus_spec(\n         invariant\n             0 <= i <= payload@.len() <= value@.len() - SW::SW_EthIpUdpHeaders_DIM_0,\n             forall |j| 0 <= j < i ==> #[trigger] payload[j] == value[j + SW::SW_EthIpUdpHeaders_DIM_0],\n         decreases\n             SW::SW_UdpPayload_DIM_0 - i,\n     )]\n-    while i < SW::SW_UdpPayload_DIM_0 {\n+    while i > /* ~ changed by cargo-mutants ~ */ SW::SW_UdpPayload_DIM_0 {\n         payload.set(i, value[i + SW::SW_EthIpUdpHeaders_DIM_0]);\n         i += 1;\n     }\n     payload\n }\n \n /// Returns true if the parsed packet should be forwarded to the VMM. ARP packets are\n /// always allowed. IPv4 UDP packets are allowed only if their destination port is in\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_payload_from_raw_eth",
+      "return_type": "-> SW::UdpPayload",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 390
+        },
+        "start": {
+          "column": 1,
+          "line": 368
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:385:13: replace < with > in udp_payload_from_raw_eth",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": ">",
+    "span": {
+      "end": {
+        "column": 14,
+        "line": 385
+      },
+      "start": {
+        "column": 13,
+        "line": 385
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace < with <= in udp_payload_from_raw_eth\n@@ -377,17 +377,17 @@\n     let mut i = 0;\n     #[verus_spec(\n         invariant\n             0 <= i <= payload@.len() <= value@.len() - SW::SW_EthIpUdpHeaders_DIM_0,\n             forall |j| 0 <= j < i ==> #[trigger] payload[j] == value[j + SW::SW_EthIpUdpHeaders_DIM_0],\n         decreases\n             SW::SW_UdpPayload_DIM_0 - i,\n     )]\n-    while i < SW::SW_UdpPayload_DIM_0 {\n+    while i <= /* ~ changed by cargo-mutants ~ */ SW::SW_UdpPayload_DIM_0 {\n         payload.set(i, value[i + SW::SW_EthIpUdpHeaders_DIM_0]);\n         i += 1;\n     }\n     payload\n }\n \n /// Returns true if the parsed packet should be forwarded to the VMM. ARP packets are\n /// always allowed. IPv4 UDP packets are allowed only if their destination port is in\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_payload_from_raw_eth",
+      "return_type": "-> SW::UdpPayload",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 390
+        },
+        "start": {
+          "column": 1,
+          "line": 368
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:385:13: replace < with <= in udp_payload_from_raw_eth",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "<=",
+    "span": {
+      "end": {
+        "column": 14,
+        "line": 385
+      },
+      "start": {
+        "column": 13,
+        "line": 385
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace + with - in udp_payload_from_raw_eth\n@@ -378,17 +378,17 @@\n     #[verus_spec(\n         invariant\n             0 <= i <= payload@.len() <= value@.len() - SW::SW_EthIpUdpHeaders_DIM_0,\n             forall |j| 0 <= j < i ==> #[trigger] payload[j] == value[j + SW::SW_EthIpUdpHeaders_DIM_0],\n         decreases\n             SW::SW_UdpPayload_DIM_0 - i,\n     )]\n     while i < SW::SW_UdpPayload_DIM_0 {\n-        payload.set(i, value[i + SW::SW_EthIpUdpHeaders_DIM_0]);\n+        payload.set(i, value[i - /* ~ changed by cargo-mutants ~ */ SW::SW_EthIpUdpHeaders_DIM_0]);\n         i += 1;\n     }\n     payload\n }\n \n /// Returns true if the parsed packet should be forwarded to the VMM. ARP packets are\n /// always allowed. IPv4 UDP packets are allowed only if their destination port is in\n /// the UDP allowlist (port 68/DHCP). All other traffic (IPv4 TCP, IPv6, unknown\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_payload_from_raw_eth",
+      "return_type": "-> SW::UdpPayload",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 390
+        },
+        "start": {
+          "column": 1,
+          "line": 368
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:386:32: replace + with - in udp_payload_from_raw_eth",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "-",
+    "span": {
+      "end": {
+        "column": 33,
+        "line": 386
+      },
+      "start": {
+        "column": 32,
+        "line": 386
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace + with * in udp_payload_from_raw_eth\n@@ -378,17 +378,17 @@\n     #[verus_spec(\n         invariant\n             0 <= i <= payload@.len() <= value@.len() - SW::SW_EthIpUdpHeaders_DIM_0,\n             forall |j| 0 <= j < i ==> #[trigger] payload[j] == value[j + SW::SW_EthIpUdpHeaders_DIM_0],\n         decreases\n             SW::SW_UdpPayload_DIM_0 - i,\n     )]\n     while i < SW::SW_UdpPayload_DIM_0 {\n-        payload.set(i, value[i + SW::SW_EthIpUdpHeaders_DIM_0]);\n+        payload.set(i, value[i * /* ~ changed by cargo-mutants ~ */ SW::SW_EthIpUdpHeaders_DIM_0]);\n         i += 1;\n     }\n     payload\n }\n \n /// Returns true if the parsed packet should be forwarded to the VMM. ARP packets are\n /// always allowed. IPv4 UDP packets are allowed only if their destination port is in\n /// the UDP allowlist (port 68/DHCP). All other traffic (IPv4 TCP, IPv6, unknown\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_payload_from_raw_eth",
+      "return_type": "-> SW::UdpPayload",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 390
+        },
+        "start": {
+          "column": 1,
+          "line": 368
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:386:32: replace + with * in udp_payload_from_raw_eth",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "*",
+    "span": {
+      "end": {
+        "column": 33,
+        "line": 386
+      },
+      "start": {
+        "column": 32,
+        "line": 386
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace += with -= in udp_payload_from_raw_eth\n@@ -379,17 +379,17 @@\n         invariant\n             0 <= i <= payload@.len() <= value@.len() - SW::SW_EthIpUdpHeaders_DIM_0,\n             forall |j| 0 <= j < i ==> #[trigger] payload[j] == value[j + SW::SW_EthIpUdpHeaders_DIM_0],\n         decreases\n             SW::SW_UdpPayload_DIM_0 - i,\n     )]\n     while i < SW::SW_UdpPayload_DIM_0 {\n         payload.set(i, value[i + SW::SW_EthIpUdpHeaders_DIM_0]);\n-        i += 1;\n+        i -= /* ~ changed by cargo-mutants ~ */ 1;\n     }\n     payload\n }\n \n /// Returns true if the parsed packet should be forwarded to the VMM. ARP packets are\n /// always allowed. IPv4 UDP packets are allowed only if their destination port is in\n /// the UDP allowlist (port 68/DHCP). All other traffic (IPv4 TCP, IPv6, unknown\n /// protocols) is rejected.\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_payload_from_raw_eth",
+      "return_type": "-> SW::UdpPayload",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 390
+        },
+        "start": {
+          "column": 1,
+          "line": 368
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:387:11: replace += with -= in udp_payload_from_raw_eth",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 13,
+        "line": 387
+      },
+      "start": {
+        "column": 11,
+        "line": 387
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace += with *= in udp_payload_from_raw_eth\n@@ -379,17 +379,17 @@\n         invariant\n             0 <= i <= payload@.len() <= value@.len() - SW::SW_EthIpUdpHeaders_DIM_0,\n             forall |j| 0 <= j < i ==> #[trigger] payload[j] == value[j + SW::SW_EthIpUdpHeaders_DIM_0],\n         decreases\n             SW::SW_UdpPayload_DIM_0 - i,\n     )]\n     while i < SW::SW_UdpPayload_DIM_0 {\n         payload.set(i, value[i + SW::SW_EthIpUdpHeaders_DIM_0]);\n-        i += 1;\n+        i *= /* ~ changed by cargo-mutants ~ */ 1;\n     }\n     payload\n }\n \n /// Returns true if the parsed packet should be forwarded to the VMM. ARP packets are\n /// always allowed. IPv4 UDP packets are allowed only if their destination port is in\n /// the UDP allowlist (port 68/DHCP). All other traffic (IPv4 TCP, IPv6, unknown\n /// protocols) is rejected.\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_payload_from_raw_eth",
+      "return_type": "-> SW::UdpPayload",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 390
+        },
+        "start": {
+          "column": 1,
+          "line": 368
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:387:11: replace += with *= in udp_payload_from_raw_eth",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 13,
+        "line": 387
+      },
+      "start": {
+        "column": 11,
+        "line": 387
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace can_send_to_vmm -> bool with true\n@@ -396,36 +396,17 @@\n #[verus_verify]\n #[verus_spec(r =>\n     requires\n         config::udp::ALLOWED_PORTS =~= GumboLib::UDP_ALLOWED_PORTS_spec(),\n     ensures\n         ((packet is Arp) || packet_is_whitelisted_udp(packet)) == (r == true),\n )]\n fn can_send_to_vmm(packet: &firewall_core::PacketType) -> bool {\n-    match packet {\n-        firewall_core::PacketType::Arp(_) => true,\n-        firewall_core::PacketType::Ipv4(ip) => match &ip.protocol {\n-            firewall_core::Ipv4ProtoPacket::Udp(udp) => {\n-                let allowed = udp_port_allowed(udp.dst_port);\n-                if !allowed {\n-                    log_info(\"UDP packet filtered out\");\n-                }\n-                allowed\n-            }\n-            _ => {\n-                info_protocol(ip.header.protocol);\n-                false\n-            }\n-        },\n-        firewall_core::PacketType::Ipv6 => {\n-            log_info(\"Not an IPv4 or Arp packet. Throw it away.\");\n-            false\n-        }\n-    }\n+    true /* ~ changed by cargo-mutants ~ */\n }\n \n /// Returns true if the given UDP destination port is in the UDP allowlist.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r == config::udp::ALLOWED_PORTS@.contains(port),\n )]\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "can_send_to_vmm",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 424
+        },
+        "start": {
+          "column": 1,
+          "line": 392
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:404:5: replace can_send_to_vmm -> bool with true",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 6,
+        "line": 423
+      },
+      "start": {
+        "column": 5,
+        "line": 404
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace can_send_to_vmm -> bool with false\n@@ -396,36 +396,17 @@\n #[verus_verify]\n #[verus_spec(r =>\n     requires\n         config::udp::ALLOWED_PORTS =~= GumboLib::UDP_ALLOWED_PORTS_spec(),\n     ensures\n         ((packet is Arp) || packet_is_whitelisted_udp(packet)) == (r == true),\n )]\n fn can_send_to_vmm(packet: &firewall_core::PacketType) -> bool {\n-    match packet {\n-        firewall_core::PacketType::Arp(_) => true,\n-        firewall_core::PacketType::Ipv4(ip) => match &ip.protocol {\n-            firewall_core::Ipv4ProtoPacket::Udp(udp) => {\n-                let allowed = udp_port_allowed(udp.dst_port);\n-                if !allowed {\n-                    log_info(\"UDP packet filtered out\");\n-                }\n-                allowed\n-            }\n-            _ => {\n-                info_protocol(ip.header.protocol);\n-                false\n-            }\n-        },\n-        firewall_core::PacketType::Ipv6 => {\n-            log_info(\"Not an IPv4 or Arp packet. Throw it away.\");\n-            false\n-        }\n-    }\n+    false /* ~ changed by cargo-mutants ~ */\n }\n \n /// Returns true if the given UDP destination port is in the UDP allowlist.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r == config::udp::ALLOWED_PORTS@.contains(port),\n )]\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "can_send_to_vmm",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 424
+        },
+        "start": {
+          "column": 1,
+          "line": 392
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:404:5: replace can_send_to_vmm -> bool with false",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 6,
+        "line": 423
+      },
+      "start": {
+        "column": 5,
+        "line": 404
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ delete match arm firewall_core::Ipv4ProtoPacket::Udp(udp) in can_send_to_vmm\n@@ -399,23 +399,17 @@\n         config::udp::ALLOWED_PORTS =~= GumboLib::UDP_ALLOWED_PORTS_spec(),\n     ensures\n         ((packet is Arp) || packet_is_whitelisted_udp(packet)) == (r == true),\n )]\n fn can_send_to_vmm(packet: &firewall_core::PacketType) -> bool {\n     match packet {\n         firewall_core::PacketType::Arp(_) => true,\n         firewall_core::PacketType::Ipv4(ip) => match &ip.protocol {\n-            firewall_core::Ipv4ProtoPacket::Udp(udp) => {\n-                let allowed = udp_port_allowed(udp.dst_port);\n-                if !allowed {\n-                    log_info(\"UDP packet filtered out\");\n-                }\n-                allowed\n-            }\n+             /* ~ changed by cargo-mutants ~ */\n             _ => {\n                 info_protocol(ip.header.protocol);\n                 false\n             }\n         },\n         firewall_core::PacketType::Ipv6 => {\n             log_info(\"Not an IPv4 or Arp packet. Throw it away.\");\n             false\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "can_send_to_vmm",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 424
+        },
+        "start": {
+          "column": 1,
+          "line": 392
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:407:13: delete match arm firewall_core::Ipv4ProtoPacket::Udp(udp) in can_send_to_vmm",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 14,
+        "line": 413
+      },
+      "start": {
+        "column": 13,
+        "line": 407
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ delete ! in can_send_to_vmm\n@@ -401,17 +401,17 @@\n         ((packet is Arp) || packet_is_whitelisted_udp(packet)) == (r == true),\n )]\n fn can_send_to_vmm(packet: &firewall_core::PacketType) -> bool {\n     match packet {\n         firewall_core::PacketType::Arp(_) => true,\n         firewall_core::PacketType::Ipv4(ip) => match &ip.protocol {\n             firewall_core::Ipv4ProtoPacket::Udp(udp) => {\n                 let allowed = udp_port_allowed(udp.dst_port);\n-                if !allowed {\n+                if  /* ~ changed by cargo-mutants ~ */allowed {\n                     log_info(\"UDP packet filtered out\");\n                 }\n                 allowed\n             }\n             _ => {\n                 info_protocol(ip.header.protocol);\n                 false\n             }\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "can_send_to_vmm",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 424
+        },
+        "start": {
+          "column": 1,
+          "line": 392
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:409:20: delete ! in can_send_to_vmm",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 21,
+        "line": 409
+      },
+      "start": {
+        "column": 20,
+        "line": 409
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace udp_port_allowed -> bool with true\n@@ -425,17 +425,17 @@\n \n /// Returns true if the given UDP destination port is in the UDP allowlist.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r == config::udp::ALLOWED_PORTS@.contains(port),\n )]\n fn udp_port_allowed(port: u16) -> bool {\n-    port_allowed(&config::udp::ALLOWED_PORTS, port)\n+    true /* ~ changed by cargo-mutants ~ */\n }\n \n /// Returns true if the given TCP destination port is in the TCP allowlist.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r == config::tcp::ALLOWED_PORTS@.contains(port),\n )]\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_port_allowed",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 434
+        },
+        "start": {
+          "column": 1,
+          "line": 426
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:433:5: replace udp_port_allowed -> bool with true",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 52,
+        "line": 433
+      },
+      "start": {
+        "column": 5,
+        "line": 433
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace udp_port_allowed -> bool with false\n@@ -425,17 +425,17 @@\n \n /// Returns true if the given UDP destination port is in the UDP allowlist.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r == config::udp::ALLOWED_PORTS@.contains(port),\n )]\n fn udp_port_allowed(port: u16) -> bool {\n-    port_allowed(&config::udp::ALLOWED_PORTS, port)\n+    false /* ~ changed by cargo-mutants ~ */\n }\n \n /// Returns true if the given TCP destination port is in the TCP allowlist.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r == config::tcp::ALLOWED_PORTS@.contains(port),\n )]\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "udp_port_allowed",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 434
+        },
+        "start": {
+          "column": 1,
+          "line": 426
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:433:5: replace udp_port_allowed -> bool with false",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 52,
+        "line": 433
+      },
+      "start": {
+        "column": 5,
+        "line": 433
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace tcp_port_allowed -> bool with true\n@@ -435,17 +435,17 @@\n \n /// Returns true if the given TCP destination port is in the TCP allowlist.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r == config::tcp::ALLOWED_PORTS@.contains(port),\n )]\n fn tcp_port_allowed(port: u16) -> bool {\n-    port_allowed(&config::tcp::ALLOWED_PORTS, port)\n+    true /* ~ changed by cargo-mutants ~ */\n }\n \n /// Generic allowlist check: linearly scans `allowed_ports` and returns true if `port`\n /// is found. Used by both `udp_port_allowed` and `tcp_port_allowed`.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r == allowed_ports@.contains(port),\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "tcp_port_allowed",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 444
+        },
+        "start": {
+          "column": 1,
+          "line": 436
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:443:5: replace tcp_port_allowed -> bool with true",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 52,
+        "line": 443
+      },
+      "start": {
+        "column": 5,
+        "line": 443
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace tcp_port_allowed -> bool with false\n@@ -435,17 +435,17 @@\n \n /// Returns true if the given TCP destination port is in the TCP allowlist.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r == config::tcp::ALLOWED_PORTS@.contains(port),\n )]\n fn tcp_port_allowed(port: u16) -> bool {\n-    port_allowed(&config::tcp::ALLOWED_PORTS, port)\n+    false /* ~ changed by cargo-mutants ~ */\n }\n \n /// Generic allowlist check: linearly scans `allowed_ports` and returns true if `port`\n /// is found. Used by both `udp_port_allowed` and `tcp_port_allowed`.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r == allowed_ports@.contains(port),\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "tcp_port_allowed",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 444
+        },
+        "start": {
+          "column": 1,
+          "line": 436
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:443:5: replace tcp_port_allowed -> bool with false",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 52,
+        "line": 443
+      },
+      "start": {
+        "column": 5,
+        "line": 443
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace port_allowed -> bool with true\n@@ -446,30 +446,16 @@\n /// Generic allowlist check: linearly scans `allowed_ports` and returns true if `port`\n /// is found. Used by both `udp_port_allowed` and `tcp_port_allowed`.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r == allowed_ports@.contains(port),\n )]\n fn port_allowed(allowed_ports: &[u16], port: u16) -> bool {\n-    let mut i: usize = 0;\n-    #[verus_spec(\n-        invariant\n-            0 <= i <= allowed_ports@.len(),\n-            forall |j| 0 <= j < i ==> allowed_ports@[j] != port,\n-        decreases\n-            allowed_ports@.len() - i,\n-    )]\n-    while i < allowed_ports.len() {\n-        if allowed_ports[i] == port {\n-            return true;\n-        }\n-        i += 1;\n-    }\n-    false\n+    true /* ~ changed by cargo-mutants ~ */\n }\n \n /// Logs the IP protocol number of a dropped packet (neither TCP nor UDP).\n #[verus_verify(external_body)]\n fn info_protocol(protocol: firewall_core::IpProtocol) {\n     log::info!(\"Not a TCP or UDP packet. ({:?}) Throw it away.\", protocol);\n }\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "port_allowed",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 469
+        },
+        "start": {
+          "column": 1,
+          "line": 446
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:454:5: replace port_allowed -> bool with true",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 468
+      },
+      "start": {
+        "column": 5,
+        "line": 454
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace port_allowed -> bool with false\n@@ -446,30 +446,16 @@\n /// Generic allowlist check: linearly scans `allowed_ports` and returns true if `port`\n /// is found. Used by both `udp_port_allowed` and `tcp_port_allowed`.\n #[verus_verify]\n #[verus_spec(r =>\n     ensures\n         r == allowed_ports@.contains(port),\n )]\n fn port_allowed(allowed_ports: &[u16], port: u16) -> bool {\n-    let mut i: usize = 0;\n-    #[verus_spec(\n-        invariant\n-            0 <= i <= allowed_ports@.len(),\n-            forall |j| 0 <= j < i ==> allowed_ports@[j] != port,\n-        decreases\n-            allowed_ports@.len() - i,\n-    )]\n-    while i < allowed_ports.len() {\n-        if allowed_ports[i] == port {\n-            return true;\n-        }\n-        i += 1;\n-    }\n-    false\n+    false /* ~ changed by cargo-mutants ~ */\n }\n \n /// Logs the IP protocol number of a dropped packet (neither TCP nor UDP).\n #[verus_verify(external_body)]\n fn info_protocol(protocol: firewall_core::IpProtocol) {\n     log::info!(\"Not a TCP or UDP packet. ({:?}) Throw it away.\", protocol);\n }\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "port_allowed",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 469
+        },
+        "start": {
+          "column": 1,
+          "line": 446
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:454:5: replace port_allowed -> bool with false",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 468
+      },
+      "start": {
+        "column": 5,
+        "line": 454
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace < with == in port_allowed\n@@ -454,17 +454,17 @@\n     let mut i: usize = 0;\n     #[verus_spec(\n         invariant\n             0 <= i <= allowed_ports@.len(),\n             forall |j| 0 <= j < i ==> allowed_ports@[j] != port,\n         decreases\n             allowed_ports@.len() - i,\n     )]\n-    while i < allowed_ports.len() {\n+    while i == /* ~ changed by cargo-mutants ~ */ allowed_ports.len() {\n         if allowed_ports[i] == port {\n             return true;\n         }\n         i += 1;\n     }\n     false\n }\n \n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "port_allowed",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 469
+        },
+        "start": {
+          "column": 1,
+          "line": 446
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:462:13: replace < with == in port_allowed",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 14,
+        "line": 462
+      },
+      "start": {
+        "column": 13,
+        "line": 462
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace < with > in port_allowed\n@@ -454,17 +454,17 @@\n     let mut i: usize = 0;\n     #[verus_spec(\n         invariant\n             0 <= i <= allowed_ports@.len(),\n             forall |j| 0 <= j < i ==> allowed_ports@[j] != port,\n         decreases\n             allowed_ports@.len() - i,\n     )]\n-    while i < allowed_ports.len() {\n+    while i > /* ~ changed by cargo-mutants ~ */ allowed_ports.len() {\n         if allowed_ports[i] == port {\n             return true;\n         }\n         i += 1;\n     }\n     false\n }\n \n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "port_allowed",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 469
+        },
+        "start": {
+          "column": 1,
+          "line": 446
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:462:13: replace < with > in port_allowed",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": ">",
+    "span": {
+      "end": {
+        "column": 14,
+        "line": 462
+      },
+      "start": {
+        "column": 13,
+        "line": 462
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace < with <= in port_allowed\n@@ -454,17 +454,17 @@\n     let mut i: usize = 0;\n     #[verus_spec(\n         invariant\n             0 <= i <= allowed_ports@.len(),\n             forall |j| 0 <= j < i ==> allowed_ports@[j] != port,\n         decreases\n             allowed_ports@.len() - i,\n     )]\n-    while i < allowed_ports.len() {\n+    while i <= /* ~ changed by cargo-mutants ~ */ allowed_ports.len() {\n         if allowed_ports[i] == port {\n             return true;\n         }\n         i += 1;\n     }\n     false\n }\n \n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "port_allowed",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 469
+        },
+        "start": {
+          "column": 1,
+          "line": 446
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:462:13: replace < with <= in port_allowed",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "<=",
+    "span": {
+      "end": {
+        "column": 14,
+        "line": 462
+      },
+      "start": {
+        "column": 13,
+        "line": 462
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace == with != in port_allowed\n@@ -455,17 +455,17 @@\n     #[verus_spec(\n         invariant\n             0 <= i <= allowed_ports@.len(),\n             forall |j| 0 <= j < i ==> allowed_ports@[j] != port,\n         decreases\n             allowed_ports@.len() - i,\n     )]\n     while i < allowed_ports.len() {\n-        if allowed_ports[i] == port {\n+        if allowed_ports[i] != /* ~ changed by cargo-mutants ~ */ port {\n             return true;\n         }\n         i += 1;\n     }\n     false\n }\n \n /// Logs the IP protocol number of a dropped packet (neither TCP nor UDP).\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "port_allowed",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 469
+        },
+        "start": {
+          "column": 1,
+          "line": 446
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:463:29: replace == with != in port_allowed",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 31,
+        "line": 463
+      },
+      "start": {
+        "column": 29,
+        "line": 463
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace += with -= in port_allowed\n@@ -458,17 +458,17 @@\n             forall |j| 0 <= j < i ==> allowed_ports@[j] != port,\n         decreases\n             allowed_ports@.len() - i,\n     )]\n     while i < allowed_ports.len() {\n         if allowed_ports[i] == port {\n             return true;\n         }\n-        i += 1;\n+        i -= /* ~ changed by cargo-mutants ~ */ 1;\n     }\n     false\n }\n \n /// Logs the IP protocol number of a dropped packet (neither TCP nor UDP).\n #[verus_verify(external_body)]\n fn info_protocol(protocol: firewall_core::IpProtocol) {\n     log::info!(\"Not a TCP or UDP packet. ({:?}) Throw it away.\", protocol);\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "port_allowed",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 469
+        },
+        "start": {
+          "column": 1,
+          "line": 446
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:466:11: replace += with -= in port_allowed",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 13,
+        "line": 466
+      },
+      "start": {
+        "column": 11,
+        "line": 466
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace += with *= in port_allowed\n@@ -458,17 +458,17 @@\n             forall |j| 0 <= j < i ==> allowed_ports@[j] != port,\n         decreases\n             allowed_ports@.len() - i,\n     )]\n     while i < allowed_ports.len() {\n         if allowed_ports[i] == port {\n             return true;\n         }\n-        i += 1;\n+        i *= /* ~ changed by cargo-mutants ~ */ 1;\n     }\n     false\n }\n \n /// Logs the IP protocol number of a dropped packet (neither TCP nor UDP).\n #[verus_verify(external_body)]\n fn info_protocol(protocol: firewall_core::IpProtocol) {\n     log::info!(\"Not a TCP or UDP packet. ({:?}) Throw it away.\", protocol);\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "port_allowed",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 469
+        },
+        "start": {
+          "column": 1,
+          "line": 446
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:466:11: replace += with *= in port_allowed",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 13,
+        "line": 466
+      },
+      "start": {
+        "column": 11,
+        "line": 466
+      }
+    }
+  },
+  {
+    "diff": "--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs\n+++ replace info_protocol with ()\n@@ -466,10 +466,10 @@\n         i += 1;\n     }\n     false\n }\n \n /// Logs the IP protocol number of a dropped packet (neither TCP nor UDP).\n #[verus_verify(external_body)]\n fn info_protocol(protocol: firewall_core::IpProtocol) {\n-    log::info!(\"Not a TCP or UDP packet. ({:?}) Throw it away.\", protocol);\n+    () /* ~ changed by cargo-mutants ~ */\n }\n",
+    "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+    "function": {
+      "function_name": "info_protocol",
+      "return_type": "",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 475
+        },
+        "start": {
+          "column": 1,
+          "line": 471
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:474:5: replace info_protocol with ()",
+    "package": "seL4_RxFirewall_RxFirewall",
+    "replacement": "()",
+    "span": {
+      "end": {
+        "column": 76,
+        "line": 474
+      },
+      "start": {
+        "column": 5,
+        "line": 474
+      }
+    }
+  }
+]

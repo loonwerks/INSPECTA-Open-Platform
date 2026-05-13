@@ -48,9 +48,9 @@ All documentation was derived from the following source files:
 
 | File | Referenced In |
 |------|--------------|
-| `SW.sysml` | All documents (data types, thread defs, GUMBO contracts) |
-| `GumboLib.sysml` | 01 (byte checks), 03 (predicate catalog), 04/05/06 (contracts) |
-| `Platform.sysml` | 00 (processor config) |
+| `sysml/SW.sysml` | All documents (data types, thread defs, GUMBO contracts) |
+| `sysml/GumboLib.sysml` | 01 (byte checks), 03 (predicate catalog), 04/05/06 (contracts) |
+| `sysml/Platform.sysml` | 00 (processor config) |
 | `requirements/Inspecta-HLRs.pdf` | 04, 05, 06 (HLR requirements) |
 | `hamr/microkit/crates/firewall_core/src/lib.rs` | 04, 05 (ethereum parsing library) |
 | `hamr/microkit/crates/firewall_core/src/net.rs` | 04, 05 (protocol type definitions) |

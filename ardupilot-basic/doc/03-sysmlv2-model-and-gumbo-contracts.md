@@ -6,13 +6,13 @@ This document describes the SysMLv2 architecture model for the ardupilot-basic s
 
 | File | Purpose |
 |------|---------|
-| `SW.sysml` | All software components: data types, thread definitions, process definitions, system assembly, GUMBO contracts |
-| `GumboLib.sysml` | Reusable GUMBO predicate library for frame validation and port checking |
-| `Platform.sysml` | Processor definition (`Frame_Period = 1850ms`, `Clock_Period = 2ms`) and top-level system binding |
+| `sysml/SW.sysml` | All software components: data types, thread definitions, process definitions, system assembly, GUMBO contracts |
+| `sysml/GumboLib.sysml` | Reusable GUMBO predicate library for frame validation and port checking |
+| `sysml/Platform.sysml` | Processor definition (`Frame_Period = 1850ms`, `Clock_Period = 2ms`) and top-level system binding |
 
 ## Architecture Model Structure
 
-### Data Types (`SW.sysml`, lines 7-43)
+### Data Types (`sysml/SW.sysml`, lines 7-43)
 
 See [00-overview.md](00-overview.md) for the complete data types table. The key types are `RawEthernetMessage` (1600-byte array), `UdpFrame_Impl` (headers + payload split), and `SizedEthernetMessage_Impl` (frame + size).
 
@@ -42,7 +42,7 @@ Each thread is wrapped in a Process that assigns it to a seL4 scheduling domain:
 | `RxFirewall_seL4` | `RxFirewall` | 5 |
 | `MavlinkFirewall_seL4` | `MavlinkFirewall` | 6 |
 
-### System Assembly (`SW.sysml`, lines 616-679)
+### System Assembly (`sysml/SW.sysml`, lines 616-679)
 
 The `seL4` system definition instantiates all five processes and defines the connections:
 - `LowLevelEthernetDriver.EthernetFramesRx{0-3}` -> `RxFirewall.EthernetFramesRxIn{0-3}`
@@ -101,7 +101,7 @@ This pattern ensures completeness: every possible input scenario (allowed input,
 
 ## GumboLib Predicate Library
 
-The `GumboLib.sysml` file defines reusable predicate functions organized by category. Each GUMBO predicate corresponds to a check described in [01-ethernet-frame-formats.md](01-ethernet-frame-formats.md).
+The `sysml/GumboLib.sysml` file defines reusable predicate functions organized by category. Each GUMBO predicate corresponds to a check described in [01-ethernet-frame-formats.md](01-ethernet-frame-formats.md).
 
 ### Byte Conversion Utilities
 
@@ -197,7 +197,7 @@ These predicates verify that outputs faithfully reproduce inputs:
 
 ### Mavlink Firewall Uninterpreted Functions
 
-The MavlinkFirewall thread defines two `@spec def` functions in its GUMBO block (`SW.sysml`, lines 460-465):
+The MavlinkFirewall thread defines two `@spec def` functions in its GUMBO block (`sysml/SW.sysml`, lines 460-465):
 
 ```gumbo
 @spec def msg_is_wellformed(msg: UdpPayload): Base_Types::Boolean;
@@ -216,7 +216,7 @@ HAMR generates a Rust crate (`hamr/microkit/crates/GumboLib/src/lib.rs`) that re
 1. **Executable functions** (e.g., `valid_arp()`) -- Used at runtime for GUMBOX contract checking in tests.
 2. **Verus spec functions** (e.g., `valid_arp_spec()`) -- Used in Verus `requires`/`ensures` clauses for compile-time verification.
 
-Both forms are auto-generated from the GUMBO definitions in `GumboLib.sysml`. The spec functions carry the `_spec` suffix and are defined inside `verus!` blocks with `pub open spec fn`.
+Both forms are auto-generated from the GUMBO definitions in `sysml/GumboLib.sysml`. The spec functions carry the `_spec` suffix and are defined inside `verus!` blocks with `pub open spec fn`.
 
 The Verus `ensures` clauses on component entry points (e.g., `timeTriggered`) reference the `_spec` variants. For example, the TX Firewall's guarantee that valid ARP frames are forwarded appears as:
 

@@ -1,0 +1,21 @@
+--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs
++++ replace == with != in port_allowed
+@@ -455,17 +455,17 @@
+     #[verus_spec(
+         invariant
+             0 <= i <= allowed_ports@.len(),
+             forall |j| 0 <= j < i ==> allowed_ports@[j] != port,
+         decreases
+             allowed_ports@.len() - i,
+     )]
+     while i < allowed_ports.len() {
+-        if allowed_ports[i] == port {
++        if allowed_ports[i] != /* ~ changed by cargo-mutants ~ */ port {
+             return true;
+         }
+         i += 1;
+     }
+     false
+ }
+ 
+ /// Logs the IP protocol number of a dropped packet (neither TCP nor UDP).

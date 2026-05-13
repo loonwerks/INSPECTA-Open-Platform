@@ -36,7 +36,7 @@ See [01-ethernet-frame-formats.md](01-ethernet-frame-formats.md) for complete by
 
 ## GUMBO Contracts
 
-### Integration Assumes (`SW.sysml`, lines 182-208)
+### Integration Assumes (`sysml/SW.sysml`, lines 182-208)
 
 The RX Firewall assumes that each input frame is one of the categories that the `LowLevelEthernetDriver` can produce:
 
@@ -50,7 +50,7 @@ assume valid_message_port0:
 
 This is a tautology (it says the frame is either allowed or not allowed), but it makes the categorization explicit and mirrors the guarantees from the `LowLevelEthernetDriver`.
 
-### Compute Guarantees (`SW.sysml`, lines 210-271)
+### Compute Guarantees (`sysml/SW.sysml`, lines 210-271)
 
 Shown for port 0 (ports 1-3 are identical):
 

@@ -1,0 +1,14 @@
+--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs
++++ replace info_protocol with ()
+@@ -466,10 +466,10 @@
+         i += 1;
+     }
+     false
+ }
+ 
+ /// Logs the IP protocol number of a dropped packet (neither TCP nor UDP).
+ #[verus_verify(external_body)]
+ fn info_protocol(protocol: firewall_core::IpProtocol) {
+-    log::info!("Not a TCP or UDP packet. ({:?}) Throw it away.", protocol);
++    () /* ~ changed by cargo-mutants ~ */
+ }

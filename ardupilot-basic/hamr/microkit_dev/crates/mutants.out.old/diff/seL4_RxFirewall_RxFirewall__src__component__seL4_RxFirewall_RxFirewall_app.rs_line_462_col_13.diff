@@ -1,0 +1,21 @@
+--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs
++++ replace < with == in port_allowed
+@@ -454,17 +454,17 @@
+     let mut i: usize = 0;
+     #[verus_spec(
+         invariant
+             0 <= i <= allowed_ports@.len(),
+             forall |j| 0 <= j < i ==> allowed_ports@[j] != port,
+         decreases
+             allowed_ports@.len() - i,
+     )]
+-    while i < allowed_ports.len() {
++    while i == /* ~ changed by cargo-mutants ~ */ allowed_ports.len() {
+         if allowed_ports[i] == port {
+             return true;
+         }
+         i += 1;
+     }
+     false
+ }
+ 

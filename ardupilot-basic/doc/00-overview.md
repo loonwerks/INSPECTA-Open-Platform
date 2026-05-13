@@ -65,7 +65,7 @@ Each component has 4 replicated port sets (ports 0 through 3), supporting up to 
 
 ## Data Types
 
-The following data types are defined in `SW.sysml` and used throughout the firewall components:
+The following data types are defined in `sysml/SW.sysml` and used throughout the firewall components:
 
 | Type | Structure | Size | Description |
 |------|-----------|------|-------------|
@@ -94,9 +94,9 @@ The formal requirements for all three firewall components are documented in [`re
 
 | File | Role |
 |------|------|
-| `SW.sysml` | System architecture model: data types, thread definitions, process definitions, connections, GUMBO contracts |
-| `GumboLib.sysml` | GUMBO library: reusable predicate functions for frame validation, port checking, and output equality |
-| `Platform.sysml` | Processor definition and system-level binding |
+| `sysml/SW.sysml` | System architecture model: data types, thread definitions, process definitions, connections, GUMBO contracts |
+| `sysml/GumboLib.sysml` | GUMBO library: reusable predicate functions for frame validation, port checking, and output equality |
+| `sysml/Platform.sysml` | Processor definition and system-level binding |
 | `hamr/microkit/crates/firewall_core/` | Hand-built Rust library for parsing ethernet, ARP, IPv4, TCP, and UDP headers with Verus verification |
 | `hamr/microkit/crates/mavlink_parser_vest/` | Vest-generated MAVLink parser with verified combinators |
 | `hamr/microkit/crates/GumboLib/` | HAMR-generated Rust realization of GumboLib predicates (executable + Verus spec functions) |

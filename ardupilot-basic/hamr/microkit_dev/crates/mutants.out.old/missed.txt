@@ -1,0 +1,5 @@
+seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:323:53: replace && with || in can_send_to_mavlink
+seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:409:20: delete ! in can_send_to_vmm
+seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:443:5: replace tcp_port_allowed -> bool with true
+seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:443:5: replace tcp_port_allowed -> bool with false
+seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:474:5: replace info_protocol with ()

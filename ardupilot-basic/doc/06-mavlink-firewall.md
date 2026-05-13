@@ -29,7 +29,7 @@ See [02-mavlink-message-format.md](02-mavlink-message-format.md) for complete MA
 
 ## GUMBO Contracts
 
-### Uninterpreted Functions (`SW.sysml`, lines 458-465)
+### Uninterpreted Functions (`sysml/SW.sysml`, lines 458-465)
 
 The Mavlink Firewall defines two `@spec def` functions whose semantics are too complex for GUMBO to express directly (they require parsing a binary protocol):
 
@@ -48,7 +48,7 @@ functions
 
 The developer supplies the runtime and Verus spec implementations of these functions in the component code.
 
-### Compute Guarantees (`SW.sysml`, lines 467-516)
+### Compute Guarantees (`sysml/SW.sysml`, lines 467-516)
 
 Shown for port 0 (ports 1-3 are identical):
 

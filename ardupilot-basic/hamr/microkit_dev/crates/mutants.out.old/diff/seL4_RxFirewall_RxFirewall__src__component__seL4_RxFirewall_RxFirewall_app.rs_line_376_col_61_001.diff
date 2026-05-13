@@ -1,0 +1,21 @@
+--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs
++++ replace - with / in udp_payload_from_raw_eth
+@@ -368,17 +368,17 @@
+ /// Copies the bytes following the Ethernet/IP/UDP headers from a raw Ethernet frame
+ /// into a fixed-size payload array (everything after the first `EthIpUdpHeaders_DIM_0` bytes).
+ #[verus_verify]
+ #[verus_spec(r =>
+     ensures
+         r@ =~= value@.subrange(SW::SW_EthIpUdpHeaders_DIM_0 as int, SW::SW_RawEthernetMessage_DIM_0 as int),
+ )]
+ fn udp_payload_from_raw_eth(value: SW::RawEthernetMessage) -> SW::UdpPayload {
+-    let mut payload = [0u8; SW::SW_RawEthernetMessage_DIM_0 - SW::SW_EthIpUdpHeaders_DIM_0];
++    let mut payload = [0u8; SW::SW_RawEthernetMessage_DIM_0 / /* ~ changed by cargo-mutants ~ */ SW::SW_EthIpUdpHeaders_DIM_0];
+     let mut i = 0;
+     #[verus_spec(
+         invariant
+             0 <= i <= payload@.len() <= value@.len() - SW::SW_EthIpUdpHeaders_DIM_0,
+             forall |j| 0 <= j < i ==> #[trigger] payload[j] == value[j + SW::SW_EthIpUdpHeaders_DIM_0],
+         decreases
+             SW::SW_UdpPayload_DIM_0 - i,
+     )]

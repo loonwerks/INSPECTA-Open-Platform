@@ -1,0 +1,26 @@
+--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs
++++ replace can_send_to_mavlink -> bool with false
+@@ -313,22 +313,17 @@
+ /// dst port 14562). MAVLink packets are routed to the MavlinkOut port rather
+ /// than the VmmOut port.
+ #[verus_verify]
+ #[verus_spec(r =>
+     ensures
+         packet_is_mavlink_udp(packet) == (r == true),
+ )]
+ fn can_send_to_mavlink(packet: &firewall_core::PacketType) -> bool {
+-    if let firewall_core::PacketType::Ipv4(ip) = packet {
+-        if let firewall_core::Ipv4ProtoPacket::Udp(udp) = &ip.protocol {
+-            return udp.src_port == MAV_UDP_SRC_PORT && udp.dst_port == MAV_UDP_DST_PORT;
+-        }
+-    }
+-    false
++    false /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Splits a raw Ethernet frame into a `UdpFrame_Impl` containing separate header and
+ /// payload byte arrays. The headers are the first `EthIpUdpHeaders_DIM_0` bytes
+ /// (Ethernet + IP + UDP headers) and the payload is the remainder.
+ #[verus_verify]
+ #[verus_spec(r =>
+     ensures

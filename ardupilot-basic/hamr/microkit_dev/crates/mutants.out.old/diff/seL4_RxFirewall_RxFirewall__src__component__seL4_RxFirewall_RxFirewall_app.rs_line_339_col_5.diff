@@ -1,0 +1,23 @@
+--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs
++++ replace udp_frame_from_raw_eth -> SW::UdpFrame_Impl with Default::default()
+@@ -331,19 +331,17 @@
+ /// (Ethernet + IP + UDP headers) and the payload is the remainder.
+ #[verus_verify]
+ #[verus_spec(r =>
+     ensures
+         r.headers@ =~= value@.subrange(0, SW::SW_EthIpUdpHeaders_DIM_0 as int),
+         r.payload@ =~= value@.subrange(SW::SW_EthIpUdpHeaders_DIM_0 as int, SW::SW_RawEthernetMessage_DIM_0 as int),
+ )]
+ fn udp_frame_from_raw_eth(value: SW::RawEthernetMessage) -> SW::UdpFrame_Impl {
+-    let headers = udp_headers_from_raw_eth(value);
+-    let payload = udp_payload_from_raw_eth(value);
+-    SW::UdpFrame_Impl { headers, payload }
++    Default::default() /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Copies the first `EthIpUdpHeaders_DIM_0` bytes from a raw Ethernet frame into
+ /// a fixed-size header array (Ethernet + IP + UDP headers).
+ #[verus_verify]
+ #[verus_spec(r =>
+     ensures
+         r@ =~= value@.subrange(0, SW::SW_EthIpUdpHeaders_DIM_0 as int),

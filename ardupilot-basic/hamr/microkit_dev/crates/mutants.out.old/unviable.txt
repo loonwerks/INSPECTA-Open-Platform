@@ -1,0 +1,5 @@
+seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:305:5: replace get_frame_packet -> Option<firewall_core::EthFrame> with Some(Default::default())
+seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:352:5: replace udp_headers_from_raw_eth -> SW::EthIpUdpHeaders with Default::default()
+seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:376:5: replace udp_payload_from_raw_eth -> SW::UdpPayload with Default::default()
+seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:376:61: replace - with + in udp_payload_from_raw_eth
+seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:376:61: replace - with / in udp_payload_from_raw_eth

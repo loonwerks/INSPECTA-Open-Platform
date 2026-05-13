@@ -1,0 +1,34 @@
+--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs
++++ replace udp_payload_from_raw_eth -> SW::UdpPayload with Default::default()
+@@ -368,30 +368,17 @@
+ /// Copies the bytes following the Ethernet/IP/UDP headers from a raw Ethernet frame
+ /// into a fixed-size payload array (everything after the first `EthIpUdpHeaders_DIM_0` bytes).
+ #[verus_verify]
+ #[verus_spec(r =>
+     ensures
+         r@ =~= value@.subrange(SW::SW_EthIpUdpHeaders_DIM_0 as int, SW::SW_RawEthernetMessage_DIM_0 as int),
+ )]
+ fn udp_payload_from_raw_eth(value: SW::RawEthernetMessage) -> SW::UdpPayload {
+-    let mut payload = [0u8; SW::SW_RawEthernetMessage_DIM_0 - SW::SW_EthIpUdpHeaders_DIM_0];
+-    let mut i = 0;
+-    #[verus_spec(
+-        invariant
+-            0 <= i <= payload@.len() <= value@.len() - SW::SW_EthIpUdpHeaders_DIM_0,
+-            forall |j| 0 <= j < i ==> #[trigger] payload[j] == value[j + SW::SW_EthIpUdpHeaders_DIM_0],
+-        decreases
+-            SW::SW_UdpPayload_DIM_0 - i,
+-    )]
+-    while i < SW::SW_UdpPayload_DIM_0 {
+-        payload.set(i, value[i + SW::SW_EthIpUdpHeaders_DIM_0]);
+-        i += 1;
+-    }
+-    payload
++    Default::default() /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Returns true if the parsed packet should be forwarded to the VMM. ARP packets are
+ /// always allowed. IPv4 UDP packets are allowed only if their destination port is in
+ /// the UDP allowlist (port 68/DHCP). All other traffic (IPv4 TCP, IPv6, unknown
+ /// protocols) is rejected.
+ #[verus_verify]
+ #[verus_spec(r =>

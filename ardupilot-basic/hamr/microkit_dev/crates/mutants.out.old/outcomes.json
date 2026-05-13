@@ -1,0 +1,2675 @@
+{
+  "outcomes": [
+    {
+      "scenario": "Baseline",
+      "summary": "Success",
+      "log_path": "log/baseline.log",
+      "diff_path": null,
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 6.964075333,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.1318553749999998,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:305:5: replace get_frame_packet -> Option<firewall_core::EthFrame> with None",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "get_frame_packet",
+            "return_type": "-> Option<firewall_core::EthFrame>",
+            "span": {
+              "start": {
+                "line": 286,
+                "column": 1
+              },
+              "end": {
+                "line": 310,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 305,
+              "column": 5
+            },
+            "end": {
+              "line": 309,
+              "column": 8
+            }
+          },
+          "replacement": "None",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_305_col_5.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_305_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.44141325,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.415031833,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:305:5: replace get_frame_packet -> Option<firewall_core::EthFrame> with Some(Default::default())",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "get_frame_packet",
+            "return_type": "-> Option<firewall_core::EthFrame>",
+            "span": {
+              "start": {
+                "line": 286,
+                "column": 1
+              },
+              "end": {
+                "line": 310,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 305,
+              "column": 5
+            },
+            "end": {
+              "line": 309,
+              "column": 8
+            }
+          },
+          "replacement": "Some(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_305_col_5_001.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_305_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.276351917,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:321:5: replace can_send_to_mavlink -> bool with true",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "can_send_to_mavlink",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 312,
+                "column": 1
+              },
+              "end": {
+                "line": 327,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 321,
+              "column": 5
+            },
+            "end": {
+              "line": 326,
+              "column": 10
+            }
+          },
+          "replacement": "true",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_321_col_5.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_321_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.4381005,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.479308875,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:321:5: replace can_send_to_mavlink -> bool with false",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "can_send_to_mavlink",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 312,
+                "column": 1
+              },
+              "end": {
+                "line": 327,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 321,
+              "column": 5
+            },
+            "end": {
+              "line": 326,
+              "column": 10
+            }
+          },
+          "replacement": "false",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_321_col_5_001.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_321_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.383250209,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.8647817089999998,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:323:53: replace && with || in can_send_to_mavlink",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "can_send_to_mavlink",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 312,
+                "column": 1
+              },
+              "end": {
+                "line": 327,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 323,
+              "column": 53
+            },
+            "end": {
+              "line": 323,
+              "column": 55
+            }
+          },
+          "replacement": "||",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_323_col_53.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_323_col_53.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.433507,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.127571291,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:323:33: replace == with != in can_send_to_mavlink",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "can_send_to_mavlink",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 312,
+                "column": 1
+              },
+              "end": {
+                "line": 327,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 323,
+              "column": 33
+            },
+            "end": {
+              "line": 323,
+              "column": 35
+            }
+          },
+          "replacement": "!=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_323_col_33.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_323_col_33.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.386852917,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.810316875,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:323:69: replace == with != in can_send_to_mavlink",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "can_send_to_mavlink",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 312,
+                "column": 1
+              },
+              "end": {
+                "line": 327,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 323,
+              "column": 69
+            },
+            "end": {
+              "line": 323,
+              "column": 71
+            }
+          },
+          "replacement": "!=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_323_col_69.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_323_col_69.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.37864875,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.8059409579999999,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:339:5: replace udp_frame_from_raw_eth -> SW::UdpFrame_Impl with Default::default()",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_frame_from_raw_eth",
+            "return_type": "-> SW::UdpFrame_Impl",
+            "span": {
+              "start": {
+                "line": 329,
+                "column": 1
+              },
+              "end": {
+                "line": 342,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 339,
+              "column": 5
+            },
+            "end": {
+              "line": 341,
+              "column": 43
+            }
+          },
+          "replacement": "Default::default()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_339_col_5.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_339_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.386302333,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.797020291,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:352:5: replace udp_headers_from_raw_eth -> SW::EthIpUdpHeaders with Default::default()",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_headers_from_raw_eth",
+            "return_type": "-> SW::EthIpUdpHeaders",
+            "span": {
+              "start": {
+                "line": 344,
+                "column": 1
+              },
+              "end": {
+                "line": 366,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 352,
+              "column": 5
+            },
+            "end": {
+              "line": 365,
+              "column": 12
+            }
+          },
+          "replacement": "Default::default()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_352_col_5.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_352_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.220037625,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:361:13: replace < with == in udp_headers_from_raw_eth",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_headers_from_raw_eth",
+            "return_type": "-> SW::EthIpUdpHeaders",
+            "span": {
+              "start": {
+                "line": 344,
+                "column": 1
+              },
+              "end": {
+                "line": 366,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 361,
+              "column": 13
+            },
+            "end": {
+              "line": 361,
+              "column": 14
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_361_col_13.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_361_col_13.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.382161334,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.847003167,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:361:13: replace < with > in udp_headers_from_raw_eth",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_headers_from_raw_eth",
+            "return_type": "-> SW::EthIpUdpHeaders",
+            "span": {
+              "start": {
+                "line": 344,
+                "column": 1
+              },
+              "end": {
+                "line": 366,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 361,
+              "column": 13
+            },
+            "end": {
+              "line": 361,
+              "column": 14
+            }
+          },
+          "replacement": ">",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_361_col_13_001.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_361_col_13_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.379325542,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.788828417,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:361:13: replace < with <= in udp_headers_from_raw_eth",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_headers_from_raw_eth",
+            "return_type": "-> SW::EthIpUdpHeaders",
+            "span": {
+              "start": {
+                "line": 344,
+                "column": 1
+              },
+              "end": {
+                "line": 366,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 361,
+              "column": 13
+            },
+            "end": {
+              "line": 361,
+              "column": 14
+            }
+          },
+          "replacement": "<=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_361_col_13_002.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_361_col_13_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.384085834,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.5238266660000002,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:363:11: replace += with -= in udp_headers_from_raw_eth",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_headers_from_raw_eth",
+            "return_type": "-> SW::EthIpUdpHeaders",
+            "span": {
+              "start": {
+                "line": 344,
+                "column": 1
+              },
+              "end": {
+                "line": 366,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 363,
+              "column": 11
+            },
+            "end": {
+              "line": 363,
+              "column": 13
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_363_col_11.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_363_col_11.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.373987875,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.759528875,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:363:11: replace += with *= in udp_headers_from_raw_eth",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_headers_from_raw_eth",
+            "return_type": "-> SW::EthIpUdpHeaders",
+            "span": {
+              "start": {
+                "line": 344,
+                "column": 1
+              },
+              "end": {
+                "line": 366,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 363,
+              "column": 11
+            },
+            "end": {
+              "line": 363,
+              "column": 13
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "Timeout",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_363_col_11_001.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_363_col_11_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.379754542,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 20.004770917,
+          "process_status": "Timeout",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:376:5: replace udp_payload_from_raw_eth -> SW::UdpPayload with Default::default()",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_payload_from_raw_eth",
+            "return_type": "-> SW::UdpPayload",
+            "span": {
+              "start": {
+                "line": 368,
+                "column": 1
+              },
+              "end": {
+                "line": 390,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 376,
+              "column": 5
+            },
+            "end": {
+              "line": 389,
+              "column": 12
+            }
+          },
+          "replacement": "Default::default()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_376_col_5.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_376_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.221253125,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:376:61: replace - with + in udp_payload_from_raw_eth",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_payload_from_raw_eth",
+            "return_type": "-> SW::UdpPayload",
+            "span": {
+              "start": {
+                "line": 368,
+                "column": 1
+              },
+              "end": {
+                "line": 390,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 376,
+              "column": 61
+            },
+            "end": {
+              "line": 376,
+              "column": 62
+            }
+          },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_376_col_61.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_376_col_61.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.217696166,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:376:61: replace - with / in udp_payload_from_raw_eth",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_payload_from_raw_eth",
+            "return_type": "-> SW::UdpPayload",
+            "span": {
+              "start": {
+                "line": 368,
+                "column": 1
+              },
+              "end": {
+                "line": 390,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 376,
+              "column": 61
+            },
+            "end": {
+              "line": 376,
+              "column": 62
+            }
+          },
+          "replacement": "/",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_376_col_61_001.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_376_col_61_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.218975292,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:385:13: replace < with == in udp_payload_from_raw_eth",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_payload_from_raw_eth",
+            "return_type": "-> SW::UdpPayload",
+            "span": {
+              "start": {
+                "line": 368,
+                "column": 1
+              },
+              "end": {
+                "line": 390,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 385,
+              "column": 13
+            },
+            "end": {
+              "line": 385,
+              "column": 14
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_385_col_13.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_385_col_13.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.330594416,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.8042805,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:385:13: replace < with > in udp_payload_from_raw_eth",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_payload_from_raw_eth",
+            "return_type": "-> SW::UdpPayload",
+            "span": {
+              "start": {
+                "line": 368,
+                "column": 1
+              },
+              "end": {
+                "line": 390,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 385,
+              "column": 13
+            },
+            "end": {
+              "line": 385,
+              "column": 14
+            }
+          },
+          "replacement": ">",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_385_col_13_001.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_385_col_13_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.384704917,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.805938375,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:385:13: replace < with <= in udp_payload_from_raw_eth",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_payload_from_raw_eth",
+            "return_type": "-> SW::UdpPayload",
+            "span": {
+              "start": {
+                "line": 368,
+                "column": 1
+              },
+              "end": {
+                "line": 390,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 385,
+              "column": 13
+            },
+            "end": {
+              "line": 385,
+              "column": 14
+            }
+          },
+          "replacement": "<=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_385_col_13_002.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_385_col_13_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.380810208,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.441599625,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:386:32: replace + with - in udp_payload_from_raw_eth",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_payload_from_raw_eth",
+            "return_type": "-> SW::UdpPayload",
+            "span": {
+              "start": {
+                "line": 368,
+                "column": 1
+              },
+              "end": {
+                "line": 390,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 386,
+              "column": 32
+            },
+            "end": {
+              "line": 386,
+              "column": 33
+            }
+          },
+          "replacement": "-",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_386_col_32.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_386_col_32.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.37776075,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.144296833,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:386:32: replace + with * in udp_payload_from_raw_eth",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_payload_from_raw_eth",
+            "return_type": "-> SW::UdpPayload",
+            "span": {
+              "start": {
+                "line": 368,
+                "column": 1
+              },
+              "end": {
+                "line": 390,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 386,
+              "column": 32
+            },
+            "end": {
+              "line": 386,
+              "column": 33
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_386_col_32_001.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_386_col_32_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.378338334,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.494637208,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:387:11: replace += with -= in udp_payload_from_raw_eth",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_payload_from_raw_eth",
+            "return_type": "-> SW::UdpPayload",
+            "span": {
+              "start": {
+                "line": 368,
+                "column": 1
+              },
+              "end": {
+                "line": 390,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 387,
+              "column": 11
+            },
+            "end": {
+              "line": 387,
+              "column": 13
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_387_col_11.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_387_col_11.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.375978417,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.822744375,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:387:11: replace += with *= in udp_payload_from_raw_eth",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_payload_from_raw_eth",
+            "return_type": "-> SW::UdpPayload",
+            "span": {
+              "start": {
+                "line": 368,
+                "column": 1
+              },
+              "end": {
+                "line": 390,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 387,
+              "column": 11
+            },
+            "end": {
+              "line": 387,
+              "column": 13
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "Timeout",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_387_col_11_001.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_387_col_11_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.379821,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 20.006281292,
+          "process_status": "Timeout",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:404:5: replace can_send_to_vmm -> bool with true",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "can_send_to_vmm",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 392,
+                "column": 1
+              },
+              "end": {
+                "line": 424,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 404,
+              "column": 5
+            },
+            "end": {
+              "line": 423,
+              "column": 6
+            }
+          },
+          "replacement": "true",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_404_col_5.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_404_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.382255208,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.804176208,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:404:5: replace can_send_to_vmm -> bool with false",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "can_send_to_vmm",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 392,
+                "column": 1
+              },
+              "end": {
+                "line": 424,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 404,
+              "column": 5
+            },
+            "end": {
+              "line": 423,
+              "column": 6
+            }
+          },
+          "replacement": "false",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_404_col_5_001.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_404_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.382013083,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.642607875,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:407:13: delete match arm firewall_core::Ipv4ProtoPacket::Udp(udp) in can_send_to_vmm",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "can_send_to_vmm",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 392,
+                "column": 1
+              },
+              "end": {
+                "line": 424,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 407,
+              "column": 13
+            },
+            "end": {
+              "line": 413,
+              "column": 14
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_407_col_13.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_407_col_13.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.37864925,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.856510833,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:409:20: delete ! in can_send_to_vmm",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "can_send_to_vmm",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 392,
+                "column": 1
+              },
+              "end": {
+                "line": 424,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 409,
+              "column": 20
+            },
+            "end": {
+              "line": 409,
+              "column": 21
+            }
+          },
+          "replacement": "",
+          "genre": "UnaryOperator"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_409_col_20.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_409_col_20.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.385446208,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.18273975,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:433:5: replace udp_port_allowed -> bool with true",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_port_allowed",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 426,
+                "column": 1
+              },
+              "end": {
+                "line": 434,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 433,
+              "column": 5
+            },
+            "end": {
+              "line": 433,
+              "column": 52
+            }
+          },
+          "replacement": "true",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_433_col_5.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_433_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.38236625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.8687635839999999,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:433:5: replace udp_port_allowed -> bool with false",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "udp_port_allowed",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 426,
+                "column": 1
+              },
+              "end": {
+                "line": 434,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 433,
+              "column": 5
+            },
+            "end": {
+              "line": 433,
+              "column": 52
+            }
+          },
+          "replacement": "false",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_433_col_5_001.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_433_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.377362042,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.9097118339999999,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:443:5: replace tcp_port_allowed -> bool with true",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "tcp_port_allowed",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 436,
+                "column": 1
+              },
+              "end": {
+                "line": 444,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 443,
+              "column": 5
+            },
+            "end": {
+              "line": 443,
+              "column": 52
+            }
+          },
+          "replacement": "true",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_443_col_5.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_443_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.386475375,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.183758792,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:443:5: replace tcp_port_allowed -> bool with false",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "tcp_port_allowed",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 436,
+                "column": 1
+              },
+              "end": {
+                "line": 444,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 443,
+              "column": 5
+            },
+            "end": {
+              "line": 443,
+              "column": 52
+            }
+          },
+          "replacement": "false",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_443_col_5_001.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_443_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.3845685,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.170602,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:454:5: replace port_allowed -> bool with true",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "port_allowed",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 446,
+                "column": 1
+              },
+              "end": {
+                "line": 469,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 454,
+              "column": 5
+            },
+            "end": {
+              "line": 468,
+              "column": 10
+            }
+          },
+          "replacement": "true",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_454_col_5.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_454_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.386511125,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.849291292,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:454:5: replace port_allowed -> bool with false",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "port_allowed",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 446,
+                "column": 1
+              },
+              "end": {
+                "line": 469,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 454,
+              "column": 5
+            },
+            "end": {
+              "line": 468,
+              "column": 10
+            }
+          },
+          "replacement": "false",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_454_col_5_001.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_454_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.385232458,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.910594583,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:462:13: replace < with == in port_allowed",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "port_allowed",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 446,
+                "column": 1
+              },
+              "end": {
+                "line": 469,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 462,
+              "column": 13
+            },
+            "end": {
+              "line": 462,
+              "column": 14
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_462_col_13.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_462_col_13.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.37869925,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.85183675,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:462:13: replace < with > in port_allowed",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "port_allowed",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 446,
+                "column": 1
+              },
+              "end": {
+                "line": 469,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 462,
+              "column": 13
+            },
+            "end": {
+              "line": 462,
+              "column": 14
+            }
+          },
+          "replacement": ">",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_462_col_13_001.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_462_col_13_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.383687042,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.858008167,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:462:13: replace < with <= in port_allowed",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "port_allowed",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 446,
+                "column": 1
+              },
+              "end": {
+                "line": 469,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 462,
+              "column": 13
+            },
+            "end": {
+              "line": 462,
+              "column": 14
+            }
+          },
+          "replacement": "<=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_462_col_13_002.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_462_col_13_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.383172584,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.146667375,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:463:29: replace == with != in port_allowed",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "port_allowed",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 446,
+                "column": 1
+              },
+              "end": {
+                "line": 469,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 463,
+              "column": 29
+            },
+            "end": {
+              "line": 463,
+              "column": 31
+            }
+          },
+          "replacement": "!=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_463_col_29.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_463_col_29.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.379633834,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.6964725,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:466:11: replace += with -= in port_allowed",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "port_allowed",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 446,
+                "column": 1
+              },
+              "end": {
+                "line": 469,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 466,
+              "column": 11
+            },
+            "end": {
+              "line": 466,
+              "column": 13
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_466_col_11.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_466_col_11.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.381578792,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.492442041,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:466:11: replace += with *= in port_allowed",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "port_allowed",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 446,
+                "column": 1
+              },
+              "end": {
+                "line": 469,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 466,
+              "column": 11
+            },
+            "end": {
+              "line": 466,
+              "column": 13
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "Timeout",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_466_col_11_001.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_466_col_11_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.372350375,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 20.051761875,
+          "process_status": "Timeout",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:474:5: replace info_protocol with ()",
+          "package": "seL4_RxFirewall_RxFirewall",
+          "file": "seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs",
+          "function": {
+            "function_name": "info_protocol",
+            "return_type": "",
+            "span": {
+              "start": {
+                "line": 471,
+                "column": 1
+              },
+              "end": {
+                "line": 475,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 474,
+              "column": 5
+            },
+            "end": {
+              "line": 474,
+              "column": 76
+            }
+          },
+          "replacement": "()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_474_col_5.log",
+      "diff_path": "diff/seL4_RxFirewall_RxFirewall__src__component__seL4_RxFirewall_RxFirewall_app.rs_line_474_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.385059,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.181409042,
+          "process_status": "Success",
+          "argv": [
+            "/Users/belt/.rustup/toolchains/nightly-2026-01-25-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=seL4_RxFirewall_RxFirewall@0.1.0",
+            "claude"
+          ]
+        }
+      ]
+    }
+  ],
+  "total_mutants": 41,
+  "missed": 5,
+  "caught": 28,
+  "timeout": 3,
+  "unviable": 5,
+  "success": 0,
+  "start_time": "2026-05-08T18:01:46.557091Z",
+  "end_time": "2026-05-08T18:04:06.198124Z",
+  "cargo_mutants_version": "27.0.0"
+}

@@ -29,7 +29,7 @@ See [01-ethernet-frame-formats.md](01-ethernet-frame-formats.md) for complete by
 
 ## GUMBO Contracts
 
-### Integration Guarantees (`SW.sysml`, lines 337-355)
+### Integration Guarantees (`sysml/SW.sysml`, lines 337-355)
 
 The TX Firewall guarantees that every output message is either a valid ARP frame with size 64, or a valid IPv4 frame with the correct computed size:
 
@@ -43,7 +43,7 @@ guarantee valid_tx_out_message_port0:
 
 This integration guarantee flows to the `LowLevelEthernetDriver`, which assumes it as an integration constraint on its input ports.
 
-### Compute Guarantees (`SW.sysml`, lines 357-407)
+### Compute Guarantees (`sysml/SW.sysml`, lines 357-407)
 
 The compute contracts specify behavior for each dispatch cycle. Shown here for port 0 (ports 1-3 are identical):
 

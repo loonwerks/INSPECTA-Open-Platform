@@ -1,0 +1,25 @@
+--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs
++++ replace get_frame_packet -> Option<firewall_core::EthFrame> with Some(Default::default())
+@@ -297,21 +297,17 @@
+     ensures
+         GumboLib::valid_arp_spec(*frame) == firewall_core::res_is_arp(r),
+         GumboLib::valid_ipv4_udp_spec(*frame) == firewall_core::res_is_udp(r),
+         GumboLib::valid_ipv4_tcp_spec(*frame) == firewall_core::res_is_tcp(r),
+         GumboLib::valid_ipv4_tcp_spec(*frame) ==> firewall_core::tcp_port_bytes_match(frame, r),
+         GumboLib::valid_ipv4_udp_spec(*frame) ==> firewall_core::udp_port_bytes_match(frame, r),
+ )]
+ fn get_frame_packet(frame: &SW::RawEthernetMessage) -> Option<firewall_core::EthFrame> {
+-    let eth = firewall_core::EthFrame::parse(frame);
+-    if eth.is_none() {
+-        log_info("Malformed packet. Throw it away.")
+-    }
+-    eth
++    Some(Default::default()) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Returns true if the parsed packet is a MAVLink UDP packet (src port 14550,
+ /// dst port 14562). MAVLink packets are routed to the MavlinkOut port rather
+ /// than the VmmOut port.
+ #[verus_verify]
+ #[verus_spec(r =>
+     ensures

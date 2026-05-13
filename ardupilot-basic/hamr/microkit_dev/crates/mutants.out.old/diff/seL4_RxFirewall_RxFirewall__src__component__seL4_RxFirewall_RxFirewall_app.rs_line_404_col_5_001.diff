@@ -1,0 +1,40 @@
+--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs
++++ replace can_send_to_vmm -> bool with false
+@@ -396,36 +396,17 @@
+ #[verus_verify]
+ #[verus_spec(r =>
+     requires
+         config::udp::ALLOWED_PORTS =~= GumboLib::UDP_ALLOWED_PORTS_spec(),
+     ensures
+         ((packet is Arp) || packet_is_whitelisted_udp(packet)) == (r == true),
+ )]
+ fn can_send_to_vmm(packet: &firewall_core::PacketType) -> bool {
+-    match packet {
+-        firewall_core::PacketType::Arp(_) => true,
+-        firewall_core::PacketType::Ipv4(ip) => match &ip.protocol {
+-            firewall_core::Ipv4ProtoPacket::Udp(udp) => {
+-                let allowed = udp_port_allowed(udp.dst_port);
+-                if !allowed {
+-                    log_info("UDP packet filtered out");
+-                }
+-                allowed
+-            }
+-            _ => {
+-                info_protocol(ip.header.protocol);
+-                false
+-            }
+-        },
+-        firewall_core::PacketType::Ipv6 => {
+-            log_info("Not an IPv4 or Arp packet. Throw it away.");
+-            false
+-        }
+-    }
++    false /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Returns true if the given UDP destination port is in the UDP allowlist.
+ #[verus_verify]
+ #[verus_spec(r =>
+     ensures
+         r == config::udp::ALLOWED_PORTS@.contains(port),
+ )]

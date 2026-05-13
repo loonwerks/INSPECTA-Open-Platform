@@ -1,0 +1,21 @@
+--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs
++++ replace += with *= in udp_payload_from_raw_eth
+@@ -379,17 +379,17 @@
+         invariant
+             0 <= i <= payload@.len() <= value@.len() - SW::SW_EthIpUdpHeaders_DIM_0,
+             forall |j| 0 <= j < i ==> #[trigger] payload[j] == value[j + SW::SW_EthIpUdpHeaders_DIM_0],
+         decreases
+             SW::SW_UdpPayload_DIM_0 - i,
+     )]
+     while i < SW::SW_UdpPayload_DIM_0 {
+         payload.set(i, value[i + SW::SW_EthIpUdpHeaders_DIM_0]);
+-        i += 1;
++        i *= /* ~ changed by cargo-mutants ~ */ 1;
+     }
+     payload
+ }
+ 
+ /// Returns true if the parsed packet should be forwarded to the VMM. ARP packets are
+ /// always allowed. IPv4 UDP packets are allowed only if their destination port is in
+ /// the UDP allowlist (port 68/DHCP). All other traffic (IPv4 TCP, IPv6, unknown
+ /// protocols) is rejected.

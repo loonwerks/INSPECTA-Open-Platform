@@ -1,0 +1,21 @@
+--- seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs
++++ replace udp_port_allowed -> bool with true
+@@ -425,17 +425,17 @@
+ 
+ /// Returns true if the given UDP destination port is in the UDP allowlist.
+ #[verus_verify]
+ #[verus_spec(r =>
+     ensures
+         r == config::udp::ALLOWED_PORTS@.contains(port),
+ )]
+ fn udp_port_allowed(port: u16) -> bool {
+-    port_allowed(&config::udp::ALLOWED_PORTS, port)
++    true /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Returns true if the given TCP destination port is in the TCP allowlist.
+ #[verus_verify]
+ #[verus_spec(r =>
+     ensures
+         r == config::tcp::ALLOWED_PORTS@.contains(port),
+ )]

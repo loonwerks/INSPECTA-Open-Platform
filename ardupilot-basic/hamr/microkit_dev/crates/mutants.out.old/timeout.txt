@@ -1,0 +1,3 @@
+seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:363:11: replace += with *= in udp_headers_from_raw_eth
+seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:387:11: replace += with *= in udp_payload_from_raw_eth
+seL4_RxFirewall_RxFirewall/src/component/seL4_RxFirewall_RxFirewall_app.rs:466:11: replace += with *= in port_allowed
