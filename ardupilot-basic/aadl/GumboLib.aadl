@@ -1,0 +1,204 @@
+package GumboLib
+public
+
+  with SW;
+  with Base_Types;
+
+  annex GUMBO {**
+    functions
+      def TCP_ALLOWED_PORTS(): SW::u16Array := SW::u16Array(u16"5760");
+
+      def UDP_ALLOWED_PORTS(): SW::u16Array := SW::u16Array(u16"68");
+
+      def two_bytes_to_u16_le(byte0: Base_Types::Unsigned_8, byte1: Base_Types::Unsigned_8): Base_Types::Unsigned_16 :=
+        byte1.toU16 * u16"256" + byte0.toU16;
+
+      def two_bytes_to_u16_be(byte0: Base_Types::Unsigned_8, byte1: Base_Types::Unsigned_8): Base_Types::Unsigned_16 :=
+        byte0.toU16 * u16"256" + byte1.toU16;
+
+      def three_bytes_to_u32(byte0: Base_Types::Unsigned_8, byte1: Base_Types::Unsigned_8, byte2: Base_Types::Unsigned_8): Base_Types::Unsigned_32 :=
+        byte2.toU32 * u32"65536" + byte1.toU32 * u32"256" + byte0.toU32;
+
+      -- Ethernet frame predicates
+
+      def frame_is_wellformed_eth2(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        valid_frame_ethertype(frame) & valid_frame_dst_addr(frame);
+
+      def valid_frame_ethertype(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame_has_ipv4(frame) | frame_has_arp(frame) | frame_has_ipv6(frame);
+
+      def valid_frame_dst_addr(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 &&
+        !((frame(0) == u8"0") &
+        (frame(1) == u8"0") &
+        (frame(2) == u8"0") &
+        (frame(3) == u8"0") &
+        (frame(4) == u8"0") &
+        (frame(5) == u8"0"));
+
+      def frame_has_ipv4(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 &&
+        (frame(12) == u8"8" & frame(13) == u8"0");
+
+      def frame_has_ipv6(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 &&
+        (frame(12) == u8"134" & frame(13) == u8"221");
+
+      def frame_has_arp(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 &&
+        (frame(12) == u8"8" & frame(13) == u8"6");
+
+      -- ARP predicates
+
+      def arp_has_ipv4(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 &&
+        (frame(16) == u8"8" & frame(17) == u8"0");
+
+      def arp_has_ipv6(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 &&
+        (frame(16) == u8"134" & frame(17) == u8"221");
+
+      def valid_arp_ptype(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        arp_has_ipv4(frame) | arp_has_ipv6(frame);
+
+      def valid_arp_op(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 &&
+        (frame(20) == u8"0" & (frame(21) == u8"1" | frame(21) == u8"2"));
+
+      def valid_arp_htype(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 &&
+        (frame(14) == u8"0" & frame(15) == u8"1");
+
+      def wellformed_arp_frame(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        valid_arp_op(frame) & valid_arp_htype(frame) & valid_arp_ptype(frame);
+
+      -- IPv4 predicates
+
+      def valid_ipv4_length(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 &&
+        (two_bytes_to_u16_be(frame(16), frame(17)) <= u16"9000");
+
+      def valid_ipv4_protocol(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 &&
+        ((frame(23) == u8"0") |
+        (frame(23) == u8"1") |
+        (frame(23) == u8"2") |
+        (frame(23) == u8"6") |
+        (frame(23) == u8"17") |
+        (frame(23) == u8"43") |
+        (frame(23) == u8"44") |
+        (frame(23) == u8"58") |
+        (frame(23) == u8"59") |
+        (frame(23) == u8"60"));
+
+      def valid_ipv4_vers_ihl(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 &&
+        (frame(14) == u8"69");
+
+      def wellformed_ipv4_frame(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        valid_ipv4_protocol(frame) & valid_ipv4_length(frame) & valid_ipv4_vers_ihl(frame);
+
+      -- TX Firewall composite predicates
+
+      def valid_ipv6(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame_is_wellformed_eth2(frame) & frame_has_ipv6(frame);
+
+      def valid_arp(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame_is_wellformed_eth2(frame) & frame_has_arp(frame) & wellformed_arp_frame(frame);
+
+      def valid_ipv4(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame_is_wellformed_eth2(frame) & frame_has_ipv4(frame) & wellformed_ipv4_frame(frame);
+
+      def ipv4_length(frame: SW::RawEthernetMessage): Base_Types::Unsigned_16 :=
+        two_bytes_to_u16_le(frame(16), frame(17));
+
+      def valid_output_arp_size(output: SW::SizedEthernetMessage.Impl): Base_Types::Boolean :=
+        output.sz == u16"64";
+
+      def valid_output_ipv4_size(input: SW::RawEthernetMessage, output: SW::SizedEthernetMessage.Impl): Base_Types::Boolean :=
+        (input.size == 1600) && (output.sz == (two_bytes_to_u16_be(input(16), input(17)) + u16"14"));
+
+      def tx_allow_outbound_frame(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        valid_arp(frame) | valid_ipv4(frame);
+
+      -- RX Firewall predicates
+
+      def ipv4_is_tcp(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 && (frame(23) == u8"6");
+
+      def ipv4_is_udp(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 && (frame(23) == u8"17");
+
+      def tcp_is_valid_port(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 && (two_bytes_to_u16_be(frame(36), frame(37)) == TCP_ALLOWED_PORTS()(0));
+
+      def udp_is_valid_port(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 && (two_bytes_to_u16_be(frame(36), frame(37)) == UDP_ALLOWED_PORTS()(0));
+
+      def udp_is_mavlink_src_port(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 && (two_bytes_to_u16_be(frame(34), frame(35)) == u16"14550");
+
+      def udp_is_mavlink_dst_port(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 && (two_bytes_to_u16_be(frame(36), frame(37)) == u16"14562");
+
+      def udp_is_mavlink(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        udp_is_mavlink_src_port(frame) & udp_is_mavlink_dst_port(frame);
+
+      def frame_has_ipv4_tcp_on_allowed_port_quant(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 &&
+        (Exists(0 until TCP_ALLOWED_PORTS().size)(i =>
+          TCP_ALLOWED_PORTS()(i) == two_bytes_to_u16_be(frame(36), frame(37))));
+
+      def udp_is_valid_direct_dst_port(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 &&
+        (Exists(0 until UDP_ALLOWED_PORTS().size)(i =>
+          UDP_ALLOWED_PORTS()(i) == two_bytes_to_u16_be(frame(36), frame(37))));
+
+      def valid_ipv4_tcp(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame_is_wellformed_eth2(frame) & frame_has_ipv4(frame) & wellformed_ipv4_frame(frame) & ipv4_is_tcp(frame);
+
+      def valid_ipv4_udp(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame_is_wellformed_eth2(frame) & frame_has_ipv4(frame) & wellformed_ipv4_frame(frame) & ipv4_is_udp(frame);
+
+      def valid_ipv4_tcp_port(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        valid_ipv4_tcp(frame) & frame_has_ipv4_tcp_on_allowed_port_quant(frame);
+
+      def valid_ipv4_udp_port(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        valid_ipv4_udp(frame) & udp_is_valid_direct_dst_port(frame) & !udp_is_mavlink(frame);
+
+      def valid_ipv4_udp_mavlink(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        valid_ipv4_udp(frame) & udp_is_mavlink(frame);
+
+      def rx_allow_outbound_frame(frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        valid_arp(frame) |
+        valid_ipv4_udp_mavlink(frame) |
+        valid_ipv4_udp_port(frame);
+
+      -- RX Firewall output equality predicates
+
+      def input_eq_mav_output_headers(frame: SW::RawEthernetMessage, headers: SW::EthIpUdpHeaders): Base_Types::Boolean :=
+        frame.size == 1600 &&
+        (All(0 until headers.size)(i => headers(i) == frame(i)));
+
+      def input_eq_mav_output_payload(frame: SW::RawEthernetMessage, payload: SW::UdpPayload, headers: SW::EthIpUdpHeaders): Base_Types::Boolean :=
+        (frame.size == 1600 & payload.size == 1558) &&
+        (All(0 until payload.size)(i => frame(i + headers.size) == payload(i)));
+
+      def input_eq_mav_output(frame: SW::RawEthernetMessage, output: SW::UdpFrame.Impl): Base_Types::Boolean :=
+        input_eq_mav_output_headers(frame, output.headers) & input_eq_mav_output_payload(frame, output.payload, output.headers);
+
+      -- MAVLink Firewall output equality predicates
+
+      def mav_input_headers_eq_output(headers: SW::EthIpUdpHeaders, frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        frame.size == 1600 &&
+        (All(0 until headers.size)(i => headers(i) == frame(i)));
+
+      def mav_input_payload_eq_output(payload: SW::UdpPayload, headers: SW::EthIpUdpHeaders, frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        (frame.size == 1600 & payload.size == 1558) &&
+        (All(0 until payload.size)(i => frame(i + headers.size) == payload(i)));
+
+      def mav_input_eq_output(input: SW::UdpFrame.Impl, frame: SW::RawEthernetMessage): Base_Types::Boolean :=
+        mav_input_headers_eq_output(input.headers, frame) & mav_input_payload_eq_output(input.payload, input.headers, frame);
+  **};
+
+end GumboLib;

@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="ASCII"?>
 <diagram:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:diagram="http://osate.org/diagram" formatVersion="7">
+  <element uuid="4aac50c2-92dc-4173-acb1-0be5eef265ef" manual="true">
+    <bo>
+      <seg>classifier</seg>
+      <seg>ZCU102</seg>
+    </bo>
+    <position/>
+    <size width="200.0" height="100.0"/>
+  </element>
   <config type="structure" connectionPrimaryLabelsVisible="false">
     <enabledAadlProperties/>
     <context>
       <seg>classifier</seg>
-      <seg>platform::ZCU102</seg>
+      <seg>Platform::ZCU102</seg>
     </context>
   </config>
 </diagram:Diagram>

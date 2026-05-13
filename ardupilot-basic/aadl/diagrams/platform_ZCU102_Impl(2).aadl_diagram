@@ -1,10 +1,34 @@
 <?xml version="1.0" encoding="ASCII"?>
 <diagram:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:diagram="http://osate.org/diagram" formatVersion="7">
+  <element uuid="a5856b77-6b60-402f-9381-ec84a5fba5c4" manual="true">
+    <element uuid="fa21f688-80d6-44f9-a269-dd477b5597ec" manual="true">
+      <bo>
+        <seg>subcomponent</seg>
+        <seg>proc</seg>
+      </bo>
+      <position x="12.0" y="38.0"/>
+      <size width="83.12630081176758" height="35.0"/>
+    </element>
+    <element uuid="a2cef428-18a8-4146-b7da-89edc3fbe9bd" manual="true">
+      <bo>
+        <seg>subcomponent</seg>
+        <seg>seL4</seg>
+      </bo>
+      <position x="12.0" y="93.0"/>
+      <size width="86.10155868530273" height="35.0"/>
+    </element>
+    <bo>
+      <seg>classifier</seg>
+      <seg>ZCU102.Impl</seg>
+    </bo>
+    <position/>
+    <size width="200.0" height="140.0"/>
+  </element>
   <config type="structure" connectionPrimaryLabelsVisible="false">
     <enabledAadlProperties/>
     <context>
       <seg>classifier</seg>
-      <seg>platform::ZCU102.Impl</seg>
+      <seg>Platform::ZCU102.Impl</seg>
     </context>
   </config>
 </diagram:Diagram>

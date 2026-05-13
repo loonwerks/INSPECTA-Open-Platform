@@ -53,6 +53,12 @@ val platform: String =
   if(Os.cliArgs.nonEmpty) Os.cliArgs(0)
   else "Microkit"
 
+val hamrDir = aadlDir.up / "hamr"
+
+val sel4_output_dir = 
+  if (platform == "Microkit") "microkit"
+  else "sysml"
+  
 val packageName = "microkit" // not used for 'microkit' platform 
 
 val excludeComponentImpl = T
@@ -60,16 +66,16 @@ val excludeComponentImpl = T
 // commenting out options that are not used by 'microkit' platform
 var codegenArgs = ISZ("hamr", "codegen",
   "--platform", platform,
-  //"--package-name", packageName,
-  "--output-dir", (aadlDir.up).string,
-  //"--output-c-dir", (aadlDir.up / "hamr" / "c").string,
-  // "--sel4-output-dir", (aadlDir.up / "microkit").string,  
-  //"--run-transpiler",
-  //"--bit-width", "32",
-  //"--max-string-size", "256",
-  //"--max-array-size", "1",
+  "--package-name", packageName,
+  "--slang-output-dir", (hamrDir / "slang").string,
+  "--output-c-dir", (hamrDir / "c").string,
+  "--sel4-output-dir", (hamrDir / sel4_output_dir).string,  
+  "--run-transpiler",
+  "--bit-width", "32",
+  "--max-string-size", "256",
+  "--max-array-size", "1",
   "--verbose",
-  //"--workspace-root-dir", aadlDir.string
+  "--workspace-root-dir", aadlDir.string,
   )
 
 if (platform == "JVM" || platform == "Microkit") {

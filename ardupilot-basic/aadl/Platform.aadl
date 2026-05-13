@@ -1,0 +1,33 @@
+package Platform
+public
+  
+  with SW;
+  with CASE_Scheduling;
+  
+  processor proc
+  end proc;
+  
+  processor implementation proc.Impl
+    properties
+      Frame_Period => 1950ms;
+      Clock_Period => 2ms;
+      CASE_Scheduling::Max_Domain => 6;
+  end proc.Impl;
+  
+  system ZCU102
+
+  end ZCU102;
+  
+  system implementation ZCU102.Impl
+    subcomponents 
+      proc : processor proc.Impl;
+      seL4 : system SW::seL4.Impl;
+    properties
+      Actual_Processor_Binding => (reference (proc)) applies to seL4;
+  end ZCU102.Impl;
+    
+  system implementation ZCU102.Impl_MOCK extends ZCU102.Impl
+    subcomponents
+      seL4: refined to system SW::seL4.Impl_MOCK;
+  end ZCU102.Impl_MOCK;
+end Platform;
