@@ -1,14 +1,17 @@
 <!-- This file will not be overwritten if codegen is rerun -->
 
+<!-- Lenth is in ticks, which is dependent on the platform's clock rate.
+     The ZCU102 has a clock rate of 100 MHz.
+     Therefore the value in length is (us length)*100. -->
 <domain_schedule>
-  <domain name="domain_1" length="30" />
-  <domain name="domain_2" length="600" />
-  <domain name="domain_1" length="30" />
-  <domain name="domain_3" length="300" />
-  <domain name="domain_1" length="30" />
-  <domain name="domain_4" length="300" />
-  <domain name="domain_1" length="30" />
-  <domain name="domain_5" length="300" />
-  <domain name="domain_1" length="30" />
-  <domain name="domain_6" length="300" />
+  <domain name="domain_1" length="3000" />
+  <domain name="domain_2" length="60000" />
+  <domain name="domain_1" length="3000" />
+  <domain name="domain_3" length="30000" />
+  <domain name="domain_1" length="3000" />
+  <domain name="domain_4" length="30000" />
+  <domain name="domain_1" length="3000" />
+  <domain name="domain_5" length="30000" />
+  <domain name="domain_1" length="3000" />
+  <domain name="domain_6" length="30000" />
 </domain_schedule>
