@@ -1,0 +1,6 @@
+create vmm.a
+addlib libvmm.a
+addlib libsddf_util_debug.a
+addlib myvmm.a
+save
+end

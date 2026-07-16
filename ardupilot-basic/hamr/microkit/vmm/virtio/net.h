@@ -32,6 +32,7 @@
 #include <stdint.h>
 // #include <sddf/network/queue.h>
 #include <libvmm/virtio/mmio.h>
+#include <libvmm/virtio/virtio.h>
 
 /* The feature bitmap for virtio net */
 #define VIRTIO_NET_F_CSUM               0   /* Host handles pkts w/ partial csum */
@@ -220,14 +221,14 @@ struct virtio_net_device {
     struct virtio_queue_handler vqs[VIRTIO_NET_NUM_VIRTQ];
 };
 
-bool virtio_mmio_net_init(struct virtio_net_device *net_dev,
+bool custom_virtio_mmio_net_init(struct virtio_net_device *net_dev,
                           uint8_t mac[VIRTIO_NET_CONFIG_MAC_SZ],
                           uint16_t mtu,
                           uintptr_t region_base,
                           uintptr_t region_size,
                           size_t virq);
 
-bool virtio_net_handle_rx(struct virtio_net_device *state, void *buf, uint32_t size);
-void virtio_net_respond_to_guest(struct virtio_net_device *state);
+bool custom_virtio_net_handle_rx(struct virtio_net_device *state, void *buf, uint32_t size);
+void custom_virtio_net_respond_to_guest(struct virtio_net_device *state);
 
 void vmm_virtio_net_tx(void *tx_buf);

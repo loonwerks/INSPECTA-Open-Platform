@@ -118,10 +118,10 @@ void seL4_ArduPilot_ArduPilot_initialize(void) {
         LOG_VMM_ERR("Failed to initialise guest images\n");
         return;
     }
-    /* Initialise the virtual GIC driver */
-    bool success = virq_controller_init(GUEST_VCPU_ID);
+    arch_guest_init_t args = { .num_vcpus = 1 };
+    bool success = guest_init(args);
     if (!success) {
-        LOG_VMM_ERR("Failed to initialise emulated interrupt controller\n");
+        LOG_VMM_ERR("Failed to initialise guest\n");
         return;
     }
     /* Initialise the SMC SIP Handler */
@@ -132,14 +132,12 @@ void seL4_ArduPilot_ArduPilot_initialize(void) {
     }
     /* Register Pass-through device IRQs */
     for(int i=0; i<MAX_IRQS; i++) {
-        success = virq_register(GUEST_VCPU_ID, mk_irqs[i].irq, &pt_dev_ack, NULL);
-        /* Just in case there are already interrupts available to handle, we ack them here. */
-        microkit_irq_ack(mk_irqs[i].channel);
+        success = virq_register_passthrough(GUEST_BOOT_VCPU_ID, mk_irqs[i].irq, mk_irqs[i].channel);
     }
     
 
     uint8_t mac[VIRTIO_NET_CONFIG_MAC_SZ] = {0x00, 0x0A, 0x35, 0x03, 0x78, 0xA1};
-    success = virtio_mmio_net_init(&virtio_net,
+    success = custom_virtio_mmio_net_init(&virtio_net,
                                   mac,
                                   base_SW_RawEthernetMessage_Impl_SIZE,
                                   VIRTIO_NET_BASE,
@@ -152,7 +150,7 @@ void seL4_ArduPilot_ArduPilot_initialize(void) {
     }
     
     /* Finally start the guest */
-    guest_start(GUEST_VCPU_ID, kernel_pc, GUEST_DTB_VADDR, GUEST_INIT_RAM_DISK_VADDR);
+    guest_start(kernel_pc, GUEST_DTB_VADDR, GUEST_INIT_RAM_DISK_VADDR);
 }
 
 void seL4_ArduPilot_ArduPilot_notify(microkit_channel ch) {
@@ -167,10 +165,11 @@ void seL4_ArduPilot_ArduPilot_notify(microkit_channel ch) {
                 printf("Unexpected channel, ch: 0x%lx\n", ch);
             }
             else {
-                bool success = virq_inject(GUEST_VCPU_ID, irq);
+                bool success = virq_handle_passthrough(ch);
                 if (!success) {
-                    LOG_VMM_ERR("IRQ %d dropped on vCPU %d\n", irq, GUEST_VCPU_ID);
+                    LOG_VMM_ERR("IRQ %d dropped\n", irq);
                 }
+                break;
             }
             break;
         }
@@ -269,9 +268,9 @@ void seL4_ArduPilot_ArduPilot_timeTriggered(void) {
     base_SW_RawEthernetMessage_Impl rx;
     for(int i = 0; i < 8; i++){
         if (get_FirewallRx(i, &rx)) {
-            bool respond = virtio_net_handle_rx(&virtio_net, &rx, base_SW_RawEthernetMessage_Impl_SIZE);
+            bool respond = custom_virtio_net_handle_rx(&virtio_net, &rx, base_SW_RawEthernetMessage_Impl_SIZE);
             if (respond) {
-                 virtio_net_respond_to_guest(&virtio_net);
+                 custom_virtio_net_respond_to_guest(&virtio_net);
             }
             // int i;
             // LOG_VMM("Ardu: Rx Packet: ");
