@@ -1,5 +1,6 @@
 // @ HAMR: --platform Microkit --sel4-output-dir ../hamr/microkit
 
+//@ HAMR: --platform Microkit --verus-attribute-syntax --sel4-output-dir ../hamr/microkit_mcs
 //@ HAMR: --platform Microkit --verus-attribute-syntax --sel4-output-dir ../hamr/microkit_dev
 // @ HAMR: --platform Microkit --verus-attribute-syntax --sel4-output-dir ../hamr/microkit_initial
 package Platform {
@@ -15,7 +16,9 @@ package Platform {
   part def ZCU102_Impl :> System {
     part proc : Proc;
     part seL4 : SW::seL4;
-    
+
+    attribute :>> Scheduling = MCS;
+
     allocation allo :  Deployment_Properties::Actual_Processor_Binding
       allocate seL4 to proc; // (reference (proc)) applies to seL4
   }
