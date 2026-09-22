@@ -132,6 +132,21 @@ seL4_TxFirewall_TxFirewall_rust:
 seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_rust:
 	make -C ${CRATES_DIR}/seL4_LowLevelEthernetDriver_LowLevelEthernetDriver $(RUST_MAKE_TARGET)
 
+# monitor
+seL4_ArduPilot_ArduPilot_MON.o: $(TOP_DIR)/components/seL4_ArduPilot_ArduPilot/src/seL4_ArduPilot_ArduPilot_MON.c Makefile
+	$(CC) -c $(CFLAGS) $< -o $@ $(TOP_INCLUDE) -I$(TOP_DIR)/components/seL4_ArduPilot_ArduPilot/include
+
+# seL4_ArduPilot_ArduPilot.a contains a VM
+.PHONY: seL4_ArduPilot_ArduPilot.a
+seL4_ArduPilot_ArduPilot.a:
+ifeq (, $(wildcard $(TOP_DIR)/components/seL4_ArduPilot_ArduPilot/board/$(MICROKIT_BOARD)/Makefile))
+	$(error Didn't find: $(TOP_DIR)/components/seL4_ArduPilot_ArduPilot/board/$(MICROKIT_BOARD)/Makefile);
+endif
+	mkdir -p $(TOP_DIR)/components/seL4_ArduPilot_ArduPilot/build
+	cp $(TOP_DIR)/components/seL4_ArduPilot_ArduPilot/board/${MICROKIT_BOARD}/Makefile $(TOP_DIR)/components/seL4_ArduPilot_ArduPilot/build
+	make -C $(TOP_DIR)/components/seL4_ArduPilot_ArduPilot/build
+
+
 %.o: %.c ${SDDF}/include
 	${CC} ${CFLAGS} -c -o $@ $<
 
@@ -170,8 +185,8 @@ seL4_LowLevelEthernetDriver_LowLevelEthernetDriver.elf: $(UTIL_OBJS) $(TYPE_OBJS
 seL4_ArduPilot_ArduPilot_MON.elf: seL4_ArduPilot_ArduPilot_MON_user.o seL4_ArduPilot_ArduPilot_MON.o
 	$(LD) $(LDFLAGS) $^ $(LIBS) -o $@
 
-seL4_ArduPilot_ArduPilot.elf: $(UTIL_OBJS) $(TYPE_OBJS) seL4_ArduPilot_ArduPilot_user.o seL4_ArduPilot_ArduPilot.o
-	$(LD) $(LDFLAGS) $^ $(LIBS) -o $@
+seL4_ArduPilot_ArduPilot.elf: $(TYPE_OBJS) seL4_ArduPilot_ArduPilot.a
+	$(LD) $(LDFLAGS) $^ --start-group -lmicrokit -Tmicrokit.ld seL4_ArduPilot_ArduPilot.a --end-group -o $@
 
 
 
@@ -209,6 +224,7 @@ clean::
 	make -C ${CRATES_DIR}/seL4_RxFirewall_RxFirewall clean
 	make -C ${CRATES_DIR}/seL4_TxFirewall_TxFirewall clean
 	make -C ${CRATES_DIR}/seL4_LowLevelEthernetDriver_LowLevelEthernetDriver clean
+	rm -rf ${TOP_DIR}/components/seL4_ArduPilot_ArduPilot/build
 
 verus: 
 	make -C ${CRATES_DIR}/seL4_MavlinkFirewall_MavlinkFirewall verus

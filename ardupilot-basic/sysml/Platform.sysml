@@ -14,13 +14,10 @@ package Platform {
   }
   
   part def ZCU102_Impl :> System {
-    part proc : Proc;
     part seL4 : SW::seL4;
 
     attribute :>> Scheduling = MCS;
 
-    allocation allo :  Deployment_Properties::Actual_Processor_Binding
-      allocate seL4 to proc; // (reference (proc)) applies to seL4
   }
 
   part def ZCU102_Impl_MOCK :> ZCU102_Impl {

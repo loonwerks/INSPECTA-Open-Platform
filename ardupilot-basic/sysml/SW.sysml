@@ -526,11 +526,29 @@ package SW {
   }
 
   part def seL4 :> System {
+    part proc : Platform::Proc;
     part MavlinkFirewall : MavlinkFirewall_seL4;
     part RxFirewall : RxFirewall_seL4;
     part TxFirewall : TxFirewall_seL4;
     part LowLevelEthernetDriver : LowLevelEthernetDriver_seL4;
     part ArduPilot : ArduPilot_seL4;
+
+    part ardupilot_virt : VirtualProcessor;
+    allocation ardupilot_binding : Deployment_Properties::Actual_Processor_Binding
+      allocate ArduPilot to ardupilot_virt;
+
+    // Bind each native process and the VM's virtual processor explicitly.
+    // A binding on the enclosing system would also accumulate on ArduPilot.
+    allocation ardupilot_virt_binding : Deployment_Properties::Actual_Processor_Binding
+      allocate ardupilot_virt to proc;
+    allocation mavlink_binding : Deployment_Properties::Actual_Processor_Binding
+      allocate MavlinkFirewall to proc;
+    allocation rx_binding : Deployment_Properties::Actual_Processor_Binding
+      allocate RxFirewall to proc;
+    allocation tx_binding : Deployment_Properties::Actual_Processor_Binding
+      allocate TxFirewall to proc;
+    allocation ethernet_binding : Deployment_Properties::Actual_Processor_Binding
+      allocate LowLevelEthernetDriver to proc;
 
     attribute Domain : CASE_Scheduling::Domain = 2;
     connection c1 : PortConnection

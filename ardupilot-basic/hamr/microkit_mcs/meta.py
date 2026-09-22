@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 import argparse
 import struct
+import xml.etree.ElementTree as ET
 from random import randint
 from dataclasses import dataclass
 from typing import List, Tuple, Optional
@@ -140,11 +141,17 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
       passive=True,
       stack_size=0x100_000)
     seL4_ArduPilot_ArduPilot_MON.add_child_pd(seL4_ArduPilot_ArduPilot, child_id=1)
-
+    seL4_ArduPilot_ArduPilot.add_irq(IrqConventional(irq=33, id=1))
 
     #######################################
     # MEMORY REGIONS
     #######################################
+    ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM = MemoryRegion(sdf, "ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM", 0x10_000_000, paddr=0x40_000_000)
+    sdf.add_mr(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM)
+    ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_GIC = MemoryRegion(sdf, "ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_GIC", 0x1_000, paddr=0x8_040_000)
+    sdf.add_mr(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_GIC)
+    ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Serial = MemoryRegion(sdf, "ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Serial", 0x1_000, paddr=0x9_000_000)
+    sdf.add_mr(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Serial)
     ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out0_1_Memory_Region = MemoryRegion(sdf, "ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out0_1_Memory_Region", 0x1_000)
     sdf.add_mr(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out0_1_Memory_Region)
     ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out1_1_Memory_Region = MemoryRegion(sdf, "ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out1_1_Memory_Region", 0x1_000)
@@ -194,22 +201,23 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
     ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx3_1_Memory_Region = MemoryRegion(sdf, "ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx3_1_Memory_Region", 0x1_000)
     sdf.add_mr(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx3_1_Memory_Region)
 
+    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM, 0x40_000_000, perms="rw", setvar_vaddr="ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM_vaddr"))
     seL4_MavlinkFirewall_MavlinkFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out0_1_Memory_Region, 0x10_000_000, perms="rw", setvar_vaddr="Out0_queue_1"))
-    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out0_1_Memory_Region, 0x10_000_000, perms="r", setvar_vaddr="MavlinkRx0_queue_1"))
+    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out0_1_Memory_Region, 0x20_000_000, perms="r", setvar_vaddr="MavlinkRx0_queue_1"))
     seL4_MavlinkFirewall_MavlinkFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out1_1_Memory_Region, 0x10_001_000, perms="rw", setvar_vaddr="Out1_queue_1"))
-    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out1_1_Memory_Region, 0x10_001_000, perms="r", setvar_vaddr="MavlinkRx1_queue_1"))
+    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out1_1_Memory_Region, 0x20_001_000, perms="r", setvar_vaddr="MavlinkRx1_queue_1"))
     seL4_MavlinkFirewall_MavlinkFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out2_1_Memory_Region, 0x10_002_000, perms="rw", setvar_vaddr="Out2_queue_1"))
-    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out2_1_Memory_Region, 0x10_002_000, perms="r", setvar_vaddr="MavlinkRx2_queue_1"))
+    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out2_1_Memory_Region, 0x20_002_000, perms="r", setvar_vaddr="MavlinkRx2_queue_1"))
     seL4_MavlinkFirewall_MavlinkFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out3_1_Memory_Region, 0x10_003_000, perms="rw", setvar_vaddr="Out3_queue_1"))
-    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out3_1_Memory_Region, 0x10_003_000, perms="r", setvar_vaddr="MavlinkRx3_queue_1"))
+    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out3_1_Memory_Region, 0x20_003_000, perms="r", setvar_vaddr="MavlinkRx3_queue_1"))
     seL4_RxFirewall_RxFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_RxFirewall_RxFirewall_VmmOut0_1_Memory_Region, 0x10_000_000, perms="rw", setvar_vaddr="VmmOut0_queue_1"))
-    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_RxFirewall_RxFirewall_VmmOut0_1_Memory_Region, 0x10_004_000, perms="r", setvar_vaddr="FirewallRx0_queue_1"))
+    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_RxFirewall_RxFirewall_VmmOut0_1_Memory_Region, 0x20_004_000, perms="r", setvar_vaddr="FirewallRx0_queue_1"))
     seL4_RxFirewall_RxFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_RxFirewall_RxFirewall_VmmOut1_1_Memory_Region, 0x10_001_000, perms="rw", setvar_vaddr="VmmOut1_queue_1"))
-    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_RxFirewall_RxFirewall_VmmOut1_1_Memory_Region, 0x10_005_000, perms="r", setvar_vaddr="FirewallRx1_queue_1"))
+    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_RxFirewall_RxFirewall_VmmOut1_1_Memory_Region, 0x20_005_000, perms="r", setvar_vaddr="FirewallRx1_queue_1"))
     seL4_RxFirewall_RxFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_RxFirewall_RxFirewall_VmmOut2_1_Memory_Region, 0x10_002_000, perms="rw", setvar_vaddr="VmmOut2_queue_1"))
-    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_RxFirewall_RxFirewall_VmmOut2_1_Memory_Region, 0x10_006_000, perms="r", setvar_vaddr="FirewallRx2_queue_1"))
+    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_RxFirewall_RxFirewall_VmmOut2_1_Memory_Region, 0x20_006_000, perms="r", setvar_vaddr="FirewallRx2_queue_1"))
     seL4_RxFirewall_RxFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_RxFirewall_RxFirewall_VmmOut3_1_Memory_Region, 0x10_003_000, perms="rw", setvar_vaddr="VmmOut3_queue_1"))
-    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_RxFirewall_RxFirewall_VmmOut3_1_Memory_Region, 0x10_007_000, perms="r", setvar_vaddr="FirewallRx3_queue_1"))
+    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_RxFirewall_RxFirewall_VmmOut3_1_Memory_Region, 0x20_007_000, perms="r", setvar_vaddr="FirewallRx3_queue_1"))
     seL4_MavlinkFirewall_MavlinkFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_RxFirewall_RxFirewall_MavlinkOut0_1_Memory_Region, 0x10_004_000, perms="r", setvar_vaddr="In0_queue_1"))
     seL4_RxFirewall_RxFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_RxFirewall_RxFirewall_MavlinkOut0_1_Memory_Region, 0x10_004_000, perms="rw", setvar_vaddr="MavlinkOut0_queue_1"))
     seL4_MavlinkFirewall_MavlinkFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_RxFirewall_RxFirewall_MavlinkOut1_1_Memory_Region, 0x10_005_000, perms="r", setvar_vaddr="In1_queue_1"))
@@ -235,15 +243,22 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
     seL4_RxFirewall_RxFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_EthernetFramesRx3_1_Memory_Region, 0x10_00B_000, perms="r", setvar_vaddr="EthernetFramesRxIn3_queue_1"))
     seL4_LowLevelEthernetDriver_LowLevelEthernetDriver.add_map(Map(ZCU102_Impl_Instance_seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_EthernetFramesRx3_1_Memory_Region, 0x10_007_000, perms="rw", setvar_vaddr="EthernetFramesRx3_queue_1"))
     seL4_TxFirewall_TxFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx0_1_Memory_Region, 0x10_004_000, perms="r", setvar_vaddr="EthernetFramesTxIn0_queue_1"))
-    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx0_1_Memory_Region, 0x10_008_000, perms="rw", setvar_vaddr="EthernetFramesTx0_queue_1"))
+    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx0_1_Memory_Region, 0x20_008_000, perms="rw", setvar_vaddr="EthernetFramesTx0_queue_1"))
     seL4_TxFirewall_TxFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx1_1_Memory_Region, 0x10_005_000, perms="r", setvar_vaddr="EthernetFramesTxIn1_queue_1"))
-    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx1_1_Memory_Region, 0x10_009_000, perms="rw", setvar_vaddr="EthernetFramesTx1_queue_1"))
+    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx1_1_Memory_Region, 0x20_009_000, perms="rw", setvar_vaddr="EthernetFramesTx1_queue_1"))
     seL4_TxFirewall_TxFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx2_1_Memory_Region, 0x10_006_000, perms="r", setvar_vaddr="EthernetFramesTxIn2_queue_1"))
-    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx2_1_Memory_Region, 0x10_00A_000, perms="rw", setvar_vaddr="EthernetFramesTx2_queue_1"))
+    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx2_1_Memory_Region, 0x20_00A_000, perms="rw", setvar_vaddr="EthernetFramesTx2_queue_1"))
     seL4_TxFirewall_TxFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx3_1_Memory_Region, 0x10_007_000, perms="r", setvar_vaddr="EthernetFramesTxIn3_queue_1"))
-    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx3_1_Memory_Region, 0x10_00B_000, perms="rw", setvar_vaddr="EthernetFramesTx3_queue_1"))
+    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx3_1_Memory_Region, 0x20_00B_000, perms="rw", setvar_vaddr="EthernetFramesTx3_queue_1"))
 
-
+    #######################################
+    # VMMs
+    #######################################
+    seL4_ArduPilot_ArduPilot_VM_vm = VirtualMachine("seL4_ArduPilot_ArduPilot_VM", [VirtualMachine.Vcpu(id=0)])
+    seL4_ArduPilot_ArduPilot_VM_vm.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM, 0x40_000_000, perms="rwx"))
+    seL4_ArduPilot_ArduPilot_VM_vm.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_GIC, 0x8_010_000, perms="rw", cached=False))
+    seL4_ArduPilot_ArduPilot_VM_vm.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Serial, 0x9_000_000, perms="rw", cached=False))
+    seL4_ArduPilot_ArduPilot.set_virtual_machine(seL4_ArduPilot_ArduPilot_VM_vm)
 
     #######################################
     # CHANNELS
@@ -300,8 +315,23 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
                        user_schedule.section_name,
                        data_path)
 
+    # Post-process sdf.render() to add page_size attributes not yet
+    # supported by sdfgen's Python API.
+    def add_page_size(xml_str, mappings):
+        root = ET.fromstring(xml_str)
+        for mr in root.iter('memory_region'):
+            name = mr.get('name')
+            if name in mappings:
+                mr.set('page_size', mappings[name])
+        ET.indent(root, space='  ')
+        return ET.tostring(root, encoding='unicode', xml_declaration=True)
+
+    page_size_mappings = {
+        "ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM": "0x200_000"
+    }
+
     with open(f"{output_dir}/{sdf_path}", "w+") as f:
-        f.write(sdf.render())
+        f.write(add_page_size(sdf.render(), page_size_mappings))
 
 
 if __name__ == '__main__':
