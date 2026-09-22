@@ -4,6 +4,38 @@ use data::*;
 use crate::bridge::seL4_MavlinkFirewall_MavlinkFirewall_api::*;
 use vstd::prelude::*;
 
+use data::{
+    SW::{SW_EthIpUdpHeaders_DIM_0, SW_RawEthernetMessage_DIM_0, SW_UdpPayload_DIM_0},
+};
+
+use mavlink_parser_vest::{
+    parse_mavlink_msg, MavlinkMsg, MavlinkMsgMsg, MessageIdsV1, MessageIdsV2,
+};
+#[cfg(verus_keep_ghost)]
+use mavlink_parser_vest::spec_mavlink_msg;
+use mavlink_parser_vest::{MavlinkMsgSpec as SpecMavlinkMsg, MavlinkMsgMsgSpec as SpecMavlinkMsgMsg};
+use vest_lib::core::spec::SpecParser;
+
+
+// Need an allocator for the vest lib
+#[cfg(not(test))]
+use one_shot_mutex::sync::RawOneShotMutex;
+#[cfg(not(test))]
+use sel4_dlmalloc::{StaticDlmalloc, StaticHeap};
+
+extern crate alloc;
+
+#[cfg(not(test))]
+const HEAP_SIZE: usize = 16 * 1024;
+
+#[cfg(not(test))]
+static HEAP: StaticHeap<HEAP_SIZE> = StaticHeap::new();
+
+#[cfg(not(test))]
+#[global_allocator]
+static GLOBAL_ALLOCATOR: StaticDlmalloc<RawOneShotMutex> = StaticDlmalloc::new(HEAP.bounds());
+// Allocator END
+
 #[verus_verify]
 pub struct seL4_MavlinkFirewall_MavlinkFirewall {
   // PLACEHOLDER MARKER STATE VARS
@@ -115,7 +147,34 @@ impl seL4_MavlinkFirewall_MavlinkFirewall {
     &mut self,
     api: &mut seL4_MavlinkFirewall_MavlinkFirewall_Application_Api<API>)
   {
-    log_info("compute entrypoint invoked");
+    log_trace("compute entrypoint invoked");
+    if let Some(udp_frame) = api.get_In0() {
+        if can_send(udp_frame.payload) {
+            let output = raw_eth_from_udp_frame(udp_frame);
+            api.put_Out0(output);
+        }
+    }
+
+    if let Some(udp_frame) = api.get_In1() {
+        if can_send(udp_frame.payload) {
+            let output = raw_eth_from_udp_frame(udp_frame);
+            api.put_Out1(output);
+        }
+    }
+
+    if let Some(udp_frame) = api.get_In2() {
+        if can_send(udp_frame.payload) {
+            let output = raw_eth_from_udp_frame(udp_frame);
+            api.put_Out2(output);
+        }
+    }
+
+    if let Some(udp_frame) = api.get_In3() {
+        if can_send(udp_frame.payload) {
+            let output = raw_eth_from_udp_frame(udp_frame);
+            api.put_Out3(output);
+        }
+    }
   }
 
   pub fn notify(
@@ -179,11 +238,7 @@ verus! {
   /// This function may be freely refined as long as it remains a pure Verus `spec fn`.
   pub open spec fn msg_is_wellformed__developer_verus(msg: SW::UdpPayload) -> (res: bool)
   {
-    // This default implementation returns `true`, which is safe but weak:
-    // * In `assume` contexts, returning `false` may allow Verus to prove `false`.
-    // * To obtain meaningful guarantees, developers should strengthen this
-    //   specification to reflect the intended semantics of the GUMBO spec function.
-    true
+    spec_mavlink_msg().spec_parse(msg@).is_some()
   }
 
   /// Developer-supplied Verus realization of the GUMBO spec function `test`.
@@ -191,11 +246,10 @@ verus! {
   /// This function may be freely refined as long as it remains a pure Verus `spec fn`.
   pub open spec fn msg_is_mav_cmd_flash_bootloader__developer_verus(msg: SW::UdpPayload) -> (res: bool)
   {
-    // This default implementation returns `true`, which is safe but weak:
-    // * In `assume` contexts, returning `false` may allow Verus to prove `false`.
-    // * To obtain meaningful guarantees, developers should strengthen this
-    //   specification to reflect the intended semantics of the GUMBO spec function.
-    true
+    match spec_mavlink_msg().spec_parse(msg@) {
+        Some((_, msg)) => spec_msg_is_flash_bootloader(msg),
+        None => false,
+    }
   }
 
 }
@@ -209,11 +263,7 @@ verus! {
     ensures
       res == msg_is_wellformed__developer_verus(msg),
   {
-    // This default implementation returns `true`, which is safe but weak:
-    // * In `assume` contexts, returning `false` may allow GUMBOX to prove `false`.
-    // * To obtain meaningful guarantees, developers should strengthen this
-    //   specification to reflect the intended semantics of the GUMBO spec function.
-    true
+    parse_mavlink_msg(&msg).is_ok()
   }
 
   /// Developer-supplied GUMBOX realization of the GUMBO spec function `test`.
@@ -223,11 +273,224 @@ verus! {
     ensures
       res == msg_is_mav_cmd_flash_bootloader__developer_verus(msg),
   {
-    // This default implementation returns `true`, which is safe but weak:
-    // * In `assume` contexts, returning `false` may allow GUMBOX to prove `false`.
-    // * To obtain meaningful guarantees, developers should strengthen this
-    //   specification to reflect the intended semantics of the GUMBO spec function.
-    true
+    match parse_mavlink_msg(&msg) {
+        Ok((_, msg)) => msg_is_flash_bootloader(&msg),
+        Err(_) => false,
+    }
   }
 
+}
+
+// Application helpers
+verus! {
+// Spec Helpers
+    pub open spec fn spec_msg_is_flash_bootloader(msg: SpecMavlinkMsg) -> bool
+    {
+        spec_msg_v1_is_flash_bootloader(msg) || spec_msg_v2_is_flash_bootloader(msg)
+    }
+
+    pub open spec fn spec_msg_v1_is_flash_bootloader(msg: SpecMavlinkMsg) -> bool
+    {
+        msg.msg matches SpecMavlinkMsgMsg::MavLink1(mv1) &&
+            (mv1.msgid == MessageIdsV1::CommandInt || mv1.msgid == MessageIdsV1::CommandLong) &&
+            (spec_payload_get_cmd(mv1.payload) matches Some(cmd) && cmd == 42650)
+    }
+
+    pub open spec fn spec_msg_v2_is_flash_bootloader(msg: SpecMavlinkMsg) -> bool
+    {
+        msg.msg matches SpecMavlinkMsgMsg::MavLink2(mv2) &&
+            (mv2.msgid == MessageIdsV2::CommandInt || mv2.msgid == MessageIdsV2::CommandLong) &&
+            (spec_payload_get_cmd(mv2.payload) matches Some(cmd) && cmd == 42650)
+    }
+
+    pub open spec fn spec_payload_get_cmd(payload: Seq<u8>) -> Option<u16>
+    {
+        if payload.len() >= 30 {
+            Some((payload[28] as u16) | ((payload[29] as u16) << 8))
+        } else {
+            None
+        }
+    }
+
+    // Exec Code
+    fn raw_eth_from_udp_frame(value: SW::UdpFrame_Impl) -> (r: SW::RawEthernetMessage)
+        ensures
+            GumboLib::mav_input_eq_output_spec(value, r),
+     {
+        let mut frame = [0u8; SW_RawEthernetMessage_DIM_0];
+
+        let mut i = 0;
+        while i < SW_RawEthernetMessage_DIM_0
+            invariant
+                0 <= i <= SW_RawEthernetMessage_DIM_0,
+                forall |j: int| 0 <= j < i ==> {
+                  if j < SW_EthIpUdpHeaders_DIM_0@ {
+                    value.headers[j] == #[trigger] frame[j]
+                  } else {
+                    value.payload[j-SW_EthIpUdpHeaders_DIM_0@] == frame[j]
+                  }
+                },
+            decreases
+                SW_RawEthernetMessage_DIM_0 - i,
+
+        {
+          if i < SW_EthIpUdpHeaders_DIM_0 {
+            frame.set(i, value.headers[i]);
+          } else {
+            frame.set(i, value.payload[i - SW_EthIpUdpHeaders_DIM_0]);
+          }
+            i += 1;
+        }
+        frame
+    }
+
+    fn can_send(payload: SW::UdpPayload) -> (r: bool)
+        ensures
+            (msg_is_wellformed(payload) && !msg_is_blacklisted(payload)) == (r == true)
+    {
+        match parse_mavlink_msg(&payload) {
+            Ok((_, msg)) => !ex_msg_is_blacklisted(&msg),
+            Err(_) => {
+                log_info("Throw away malformed mavlink");
+                false
+            }
+        }
+    }
+
+    fn ex_msg_is_blacklisted(msg: &MavlinkMsg) -> (r: bool)
+        ensures
+            r == spec_msg_is_flash_bootloader(msg.deep_view()),
+    {
+        let res = msg_is_flash_bootloader(msg);
+        if res {
+            log_info("Throw away flash bootloader command");
+        }
+        res
+    }
+
+    fn msg_is_flash_bootloader(msg: &MavlinkMsg) -> (r: bool)
+        ensures
+             r == spec_msg_is_flash_bootloader(msg.deep_view())
+    {
+        // Upstream Vest makes deep views opaque; expose the generated field
+        // relationships before relating executable values to the specification.
+        proof {
+            msg.lemma_deep_view_fields();
+            msg.msg.lemma_deep_view_fields();
+            match &msg.msg {
+                MavlinkMsgMsg::MavLink1(v1) => {
+                    v1.lemma_deep_view_fields();
+                    v1.msgid.lemma_deep_view();
+                },
+                MavlinkMsgMsg::MavLink2(v2) => {
+                    v2.lemma_deep_view_fields();
+                    v2.msgid.lemma_deep_view();
+                },
+            }
+        }
+        let command = match &msg.msg {
+            MavlinkMsgMsg::MavLink1(v1_msg) =>
+                match v1_msg.msgid {
+                    MessageIdsV1::CommandInt | MessageIdsV1::CommandLong =>
+                    payload_get_cmd(v1_msg.payload),
+                    _ => None,
+                }
+            MavlinkMsgMsg::MavLink2(v2_msg) => {
+                let msgid = v2_msg.msgid;
+                match msgid {
+                MessageIdsV2::CommandInt | MessageIdsV2::CommandLong =>
+                    payload_get_cmd(v2_msg.payload),
+                    _ => None
+                }
+            },
+        };
+
+        match command {
+            Some(cmd) => cmd == 42650,
+            None => false,
+        }
+
+    }
+
+    /// Gets the command for a CommandInt or CommandLong payload
+    ///
+    /// Workaround for current vest deficiency
+    fn payload_get_cmd(payload: &[u8]) -> (o: Option<u16>)
+        ensures
+            o == spec_payload_get_cmd(payload@),
+    {
+        if payload.len() >= 30 {
+            Some((payload[28] as u16) | ((payload[29] as u16) << 8))
+        } else {
+            None
+        }
+    }
+
+#[verifier::external_body]
+pub fn log_trace(msg: &str) {
+    log::trace!("{0}", msg);
+}
+
+}
+
+#[cfg(test)]
+mod upstream_vest_tests {
+    use super::*;
+
+    fn command(version: u8, msgid: u8, cmd: u16, signed: bool) -> SW::UdpPayload {
+        let mut bytes = [0; SW_UdpPayload_DIM_0];
+        bytes[0] = if version == 1 { 0xfe } else { 0xfd };
+        bytes[1] = 30;
+        let payload_offset = if version == 1 {
+            bytes[3] = 1;
+            bytes[4] = 1;
+            bytes[5] = msgid;
+            6
+        } else {
+            bytes[2] = u8::from(signed);
+            bytes[5] = 1;
+            bytes[6] = 1;
+            bytes[7] = msgid;
+            10
+        };
+        bytes[payload_offset + 28..payload_offset + 30].copy_from_slice(&cmd.to_le_bytes());
+        bytes
+    }
+
+    #[test]
+    fn flash_bootloader_commands_are_blocked_for_both_versions() {
+        for version in [1, 2] {
+            for msgid in [75, 76] {
+                let bytes = command(version, msgid, 42650, false);
+                assert!(msg_is_wellformed__developer_gumbox(bytes));
+                assert!(msg_is_mav_cmd_flash_bootloader__developer_gumbox(bytes));
+                assert!(!can_send(bytes));
+            }
+        }
+    }
+
+    #[test]
+    fn other_commands_and_unknown_messages_remain_allowed() {
+        for version in [1, 2] {
+            assert!(can_send(command(version, 76, 400, false)));
+            assert!(can_send(command(version, 42, 42650, false)));
+        }
+    }
+
+    #[test]
+    fn signed_v2_requires_the_signature_bytes() {
+        let bytes = command(2, 76, 42650, true);
+        assert!(parse_mavlink_msg(&bytes[..55]).is_ok());
+        assert!(parse_mavlink_msg(&bytes[..54]).is_err());
+        assert!(!can_send(bytes));
+    }
+
+    #[test]
+    fn malformed_magic_and_truncated_payload_are_rejected() {
+        let mut bytes = command(1, 76, 400, false);
+        assert!(parse_mavlink_msg(&bytes[..35]).is_err());
+        bytes[0] = 0;
+        assert!(!msg_is_wellformed__developer_gumbox(bytes));
+        assert!(!can_send(bytes));
+    }
 }

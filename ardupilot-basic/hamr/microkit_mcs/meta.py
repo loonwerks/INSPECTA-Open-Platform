@@ -1,6 +1,7 @@
 # Copyright 2025, UNSW
 # SPDX-License-Identifier: BSD-2-Clause
 import argparse
+import sys
 import struct
 import xml.etree.ElementTree as ET
 from random import randint
@@ -35,6 +36,11 @@ class Board:
 
 BOARDS: List[Board] = [
     Board(
+        name="zcu102", arch=SystemDescription.Arch.AARCH64,
+        paddr_top=0xA0000000, serial="axi/serial@ff000000",
+        timer="axi/timer@ff140000", ethernet="axi/ethernet@ff0e0000", i2c=None,
+    ),
+    Board(
         name="qemu_virt_aarch64",
         arch=SystemDescription.Arch.AARCH64,
         paddr_top=0x6_0000_000,
@@ -61,6 +67,21 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
 
     scheduler = ProtectionDomain("scheduler", "scheduler.elf", priority=200)
 
+
+    if board.name == "qemu_virt_aarch64":
+        RAM = 0x4000_0000
+        RAM_SIZE = 0x1000_0000
+        GIC_VM = 0x8_010_000
+        GIC_VMM = 0x8_040_000
+        Serial = 0x9_000_000
+        Serial_IRQ = 33
+    elif board.name == "zcu102":
+        RAM = 0x8_0000_0000
+        RAM_SIZE = 0x4000_0000
+        GIC_VM = 0xf902_0000
+        GIC_VMM = 0xf906_0000
+        Serial = 0xff00_0000
+        Serial_IRQ = 53
 
     # BEGIN META MARKER
 
@@ -141,16 +162,22 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
       passive=True,
       stack_size=0x100_000)
     seL4_ArduPilot_ArduPilot_MON.add_child_pd(seL4_ArduPilot_ArduPilot, child_id=1)
-    seL4_ArduPilot_ArduPilot.add_irq(IrqConventional(irq=33, id=1))
+
+    #######################################
+    # Interrupts
+    #######################################
+    seL4_ArduPilot_ArduPilot.add_irq(IrqConventional(irq=Serial_IRQ, id=1))
+    if board.name == "zcu102":
+        seL4_ArduPilot_ArduPilot.add_irq(IrqConventional(irq=81, id=2))
 
     #######################################
     # MEMORY REGIONS
     #######################################
-    ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM = MemoryRegion(sdf, "ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM", 0x10_000_000, paddr=0x40_000_000)
+    ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM = MemoryRegion(sdf, "ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM", RAM_SIZE, paddr=RAM)
     sdf.add_mr(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM)
-    ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_GIC = MemoryRegion(sdf, "ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_GIC", 0x1_000, paddr=0x8_040_000)
+    ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_GIC = MemoryRegion(sdf, "ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_GIC", 0x1_000, paddr=GIC_VMM)
     sdf.add_mr(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_GIC)
-    ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Serial = MemoryRegion(sdf, "ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Serial", 0x1_000, paddr=0x9_000_000)
+    ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Serial = MemoryRegion(sdf, "ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Serial", 0x1_000, paddr=Serial)
     sdf.add_mr(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Serial)
     ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out0_1_Memory_Region = MemoryRegion(sdf, "ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out0_1_Memory_Region", 0x1_000)
     sdf.add_mr(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out0_1_Memory_Region)
@@ -201,7 +228,7 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
     ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx3_1_Memory_Region = MemoryRegion(sdf, "ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx3_1_Memory_Region", 0x1_000)
     sdf.add_mr(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_EthernetFramesTx3_1_Memory_Region)
 
-    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM, 0x40_000_000, perms="rw", setvar_vaddr="ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM_vaddr"))
+    seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM, RAM, perms="rw", setvar_vaddr="ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM_vaddr"))
     seL4_MavlinkFirewall_MavlinkFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out0_1_Memory_Region, 0x10_000_000, perms="rw", setvar_vaddr="Out0_queue_1"))
     seL4_ArduPilot_ArduPilot.add_map(Map(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out0_1_Memory_Region, 0x20_000_000, perms="r", setvar_vaddr="MavlinkRx0_queue_1"))
     seL4_MavlinkFirewall_MavlinkFirewall.add_map(Map(ZCU102_Impl_Instance_seL4_MavlinkFirewall_MavlinkFirewall_Out1_1_Memory_Region, 0x10_001_000, perms="rw", setvar_vaddr="Out1_queue_1"))
@@ -255,9 +282,9 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
     # VMMs
     #######################################
     seL4_ArduPilot_ArduPilot_VM_vm = VirtualMachine("seL4_ArduPilot_ArduPilot_VM", [VirtualMachine.Vcpu(id=0)])
-    seL4_ArduPilot_ArduPilot_VM_vm.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM, 0x40_000_000, perms="rwx"))
-    seL4_ArduPilot_ArduPilot_VM_vm.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_GIC, 0x8_010_000, perms="rw", cached=False))
-    seL4_ArduPilot_ArduPilot_VM_vm.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Serial, 0x9_000_000, perms="rw", cached=False))
+    seL4_ArduPilot_ArduPilot_VM_vm.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM, RAM, perms="rwx"))
+    seL4_ArduPilot_ArduPilot_VM_vm.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_GIC, GIC_VM, perms="rw", cached=False))
+    seL4_ArduPilot_ArduPilot_VM_vm.add_map(Map(ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Serial, Serial, perms="rw", cached=False))
     seL4_ArduPilot_ArduPilot.set_virtual_machine(seL4_ArduPilot_ArduPilot_VM_vm)
 
     #######################################
@@ -301,6 +328,19 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
 
     # END META MARKER
 
+    if board.name == "zcu102":
+        mmc = MemoryRegion(sdf, "zcu102_mmc", 0x1000, paddr=0xff170000)
+        sdf.add_mr(mmc)
+        seL4_ArduPilot_ArduPilot_VM_vm.add_map(Map(mmc, 0xff170000, perms="rw", cached=False))
+        gem = MemoryRegion(sdf, "gem_mmio", 0x1000, paddr=0xff0e0000)
+        dma = MemoryRegion(sdf, "net_driver_dma", 0x200000)
+        sdf.add_mr(gem)
+        sdf.add_mr(dma)
+        seL4_LowLevelEthernetDriver_LowLevelEthernetDriver.add_map(
+            Map(gem, 0xff0e0000, perms="rw", cached=False, setvar_vaddr="gem_register_block"))
+        seL4_LowLevelEthernetDriver_LowLevelEthernetDriver.add_map(
+            Map(dma, 0x80000000, perms="rw", cached=False, setvar_vaddr="net_driver_dma_vaddr"))
+
     sdf.add_pd(timer_driver)
     sdf.add_pd(scheduler)
     timer_system.add_client(scheduler)
@@ -323,12 +363,21 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
             name = mr.get('name')
             if name in mappings:
                 mr.set('page_size', mappings[name])
+        if board.name == "zcu102":
+            for pd in root.iter('protection_domain'):
+                if pd.get('name') == 'seL4_ArduPilot_ArduPilot':
+                    pd.set('smc', 'true')
+                if pd.get('name') == 'seL4_LowLevelEthernetDriver_LowLevelEthernetDriver':
+                    ET.SubElement(pd, 'setvar', symbol='net_driver_dma_paddr', region_paddr='net_driver_dma')
         ET.indent(root, space='  ')
         return ET.tostring(root, encoding='unicode', xml_declaration=True)
 
     page_size_mappings = {
         "ZCU102_Impl_Instance_seL4_ArduPilot_ArduPilot_VM_Guest_RAM": "0x200_000"
     }
+
+    if board.name == "zcu102":
+        page_size_mappings["net_driver_dma"] = "0x200000"
 
     with open(f"{output_dir}/{sdf_path}", "w+") as f:
         f.write(add_page_size(sdf.render(), page_size_mappings))

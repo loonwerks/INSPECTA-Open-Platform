@@ -10,10 +10,10 @@ sel4_include_dirs := $(firstword $(wildcard $(microkit_sdk_config_dir)/include \
 # The toolchain is pinned to a stable release channel (see rust-toolchain.toml),
 # which rejects the #![feature(..)] attributes the generated crates declare, so
 # every cargo invocation -- building, verifying and testing alike -- needs this.
-ENV_VARS = RUSTC_BOOTSTRAP=1
+ENV_VARS = RUSTC_BOOTSTRAP=1 \
+           SEL4_INCLUDE_DIRS=$(abspath $(sel4_include_dirs))
 
-BUILD_ENV_VARS = $(ENV_VARS) \
-                 SEL4_INCLUDE_DIRS=$(abspath $(sel4_include_dirs))
+BUILD_ENV_VARS = $(ENV_VARS)
 
 CARGO_FLAGS = -Z build-std=core,alloc,compiler_builtins \
               -Z build-std-features=compiler-builtins-mem \
@@ -69,10 +69,10 @@ verus-json: $(R2U2_BUILD_DEPS)
 #   Usage: make test args=proptest
 
 test-release: $(R2U2_BUILD_DEPS)
-	$(ENV_VARS) cargo test $(args) --release
+	@echo -e "No tests for low-level ethernet driver"
 
 test: $(R2U2_BUILD_DEPS)
-	$(ENV_VARS) cargo test $(args)
+	@echo -e "No tests for low-level ethernet driver"
 
 # Coverage Example:
 #   Generate a test coverage report combining the results of all unit tests

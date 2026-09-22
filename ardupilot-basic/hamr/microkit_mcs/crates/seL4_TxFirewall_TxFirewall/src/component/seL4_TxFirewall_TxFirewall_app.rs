@@ -4,6 +4,16 @@ use data::*;
 use crate::bridge::seL4_TxFirewall_TxFirewall_api::*;
 use vstd::prelude::*;
 
+#[cfg(feature = "sel4")]
+#[allow(unused_imports)]
+use log::{debug, error, info, trace, warn};
+
+use crate::bridge::seL4_TxFirewall_TxFirewall_GUMBOX as gumbox;
+use firewall_core::{Arp, EthFrame, EthernetRepr, Ipv4Packet, PacketType};
+mod config;
+use crate::SW::SW_RawEthernetMessage_DIM_0;
+use GumboLib::*;
+
 #[verus_verify]
 pub struct seL4_TxFirewall_TxFirewall {
   // PLACEHOLDER MARKER STATE VARS
@@ -123,7 +133,57 @@ impl seL4_TxFirewall_TxFirewall {
     &mut self,
     api: &mut seL4_TxFirewall_TxFirewall_Application_Api<API>)
   {
-    log_info("compute entrypoint invoked");
+    // Tx0 ports
+    if let Some(frame) = api.get_EthernetFramesTxIn0() {
+        if let Some(eth) = Self::get_frame_packet(&frame) {
+            if let Some(size) = can_send_packet(&eth.eth_type) {
+                let out = SW::SizedEthernetMessage_Impl {
+                    sz: size,
+                    amessage: frame,
+                };
+                api.put_EthernetFramesTxOut0(out);
+            }
+        }
+    }
+
+      // Tx1 ports
+      if let Some(frame) = api.get_EthernetFramesTxIn1() {
+          if let Some(eth) = Self::get_frame_packet(&frame) {
+              if let Some(size) = can_send_packet(&eth.eth_type) {
+                  let out = SW::SizedEthernetMessage_Impl {
+                      sz: size,
+                      amessage: frame,
+                  };
+                  api.put_EthernetFramesTxOut1(out);
+              }
+          }
+      }
+
+      // Tx2 ports
+      if let Some(frame) = api.get_EthernetFramesTxIn2() {
+          if let Some(eth) = Self::get_frame_packet(&frame) {
+              if let Some(size) = can_send_packet(&eth.eth_type) {
+                  let out = SW::SizedEthernetMessage_Impl {
+                      sz: size,
+                      amessage: frame,
+                  };
+                  api.put_EthernetFramesTxOut2(out);
+              }
+          }
+      }
+
+      // Tx3 ports
+      if let Some(frame) = api.get_EthernetFramesTxIn3() {
+          if let Some(eth) = Self::get_frame_packet(&frame) {
+              if let Some(size) = can_send_packet(&eth.eth_type) {
+                  let out = SW::SizedEthernetMessage_Impl {
+                      sz: size,
+                      amessage: frame,
+                  };
+                  api.put_EthernetFramesTxOut3(out);
+              }
+          }
+      }
   }
 
   pub fn notify(
@@ -152,3 +212,43 @@ pub fn log_warn_channel(channel: u32)
 }
 
 // PLACEHOLDER MARKER GUMBO METHODS
+
+// Application helpers
+verus! {
+fn can_send_packet(packet: &PacketType) -> (r: Option<u16>)
+      requires
+          (packet is Ipv4) ==> (firewall_core::ipv4_valid_length(*packet))
+      ensures
+          (packet is Arp || packet is Ipv4) == r.is_some(),
+          packet is Arp ==> (r == Some(64u16)),
+          packet is Ipv4 ==> (r == Some((packet->Ipv4_0.header.length + EthernetRepr::SIZE) as u16)),
+  {
+      match packet {
+          PacketType::Arp(_) => Some(64u16),
+          PacketType::Ipv4(ip) => Some(ip.header.length + EthernetRepr::SIZE as u16),
+          PacketType::Ipv6 => {
+              log_info("IPv6 packet: Throw it away.");
+              None
+          }
+      }
+  }
+
+
+
+  impl seL4_TxFirewall_TxFirewall {
+    fn get_frame_packet(frame: &SW::RawEthernetMessage) -> (r: Option<EthFrame>)
+    requires
+        frame@.len() == SW_RawEthernetMessage_DIM_0
+    ensures
+        valid_arp_spec(*frame) == firewall_core::res_is_arp(r),
+        valid_ipv4_spec(*frame) == firewall_core::res_is_ipv4(r),
+        valid_ipv4_spec(*frame) ==> firewall_core::ipv4_length_bytes_match(frame, r),
+    {
+        let eth = EthFrame::parse(frame);
+        if eth.is_none() {
+            log_info("Malformed packet. Throw it away.")
+        }
+        eth
+    }
+}
+}

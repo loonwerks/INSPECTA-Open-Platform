@@ -18,5 +18,6 @@
 compile_commands.json
 sysml-aadl-libraries
 .DS_Store
+**/Cargo.lock
 *.aaxl2
 **/microkit.system.merged
