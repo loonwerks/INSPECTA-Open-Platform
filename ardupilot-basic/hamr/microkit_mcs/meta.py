@@ -43,10 +43,12 @@ BOARDS: List[Board] = [
     Board(
         name="qemu_virt_aarch64",
         arch=SystemDescription.Arch.AARCH64,
+        # Keep generated Microkit/sDDF regions below the loader reservation.
+        # The Linux guest has its own fixed region at 0x8000_0000.
         paddr_top=0x6_0000_000,
         serial="pl011@9000000",
         timer="timer",
-        ethernet="virtio_mmio@a003e00",
+        ethernet="virtio_mmio@a000000",
         i2c=None,
     ),
 ]
@@ -69,8 +71,8 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
 
 
     if board.name == "qemu_virt_aarch64":
-        RAM = 0x4000_0000
-        RAM_SIZE = 0x1000_0000
+        RAM = 0x8000_0000
+        RAM_SIZE = 0x3f00_0000
         GIC_VM = 0x8_010_000
         GIC_VMM = 0x8_040_000
         Serial = 0x9_000_000
@@ -169,6 +171,8 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
     seL4_ArduPilot_ArduPilot.add_irq(IrqConventional(irq=Serial_IRQ, id=1))
     if board.name == "zcu102":
         seL4_ArduPilot_ArduPilot.add_irq(IrqConventional(irq=81, id=2))
+    elif board.name == "qemu_virt_aarch64":
+        seL4_ArduPilot_ArduPilot.add_irq(IrqConventional(irq=56, id=2))
 
     #######################################
     # MEMORY REGIONS
@@ -341,12 +345,55 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
         seL4_LowLevelEthernetDriver_LowLevelEthernetDriver.add_map(
             Map(dma, 0x80000000, perms="rw", cached=False, setvar_vaddr="net_driver_dma_vaddr"))
 
+    if board.name == "qemu_virt_aarch64":
+        qemu_virtio_blk = MemoryRegion(
+            sdf, "qemu_virtio_blk", 0x1000, paddr=0x0a001000)
+        sdf.add_mr(qemu_virtio_blk)
+        seL4_ArduPilot_ArduPilot.add_map(
+            Map(qemu_virtio_blk, 0x0a001000, perms="rw", cached=False))
+        seL4_ArduPilot_ArduPilot_VM_vm.add_map(
+            Map(qemu_virtio_blk, 0x0a001000, perms="rw", cached=False))
+
+    net_system = None
+    if board.name == "qemu_virt_aarch64":
+        # The low-level HAMR component remains the single bridge between the
+        # firewall pipeline and the external network. On QEMU it is an sDDF
+        # network client, while these helper PDs drive the physical virtio-mmio
+        # NIC exposed by QEMU.
+        ethernet_node = dtb.node(board.ethernet)
+        assert ethernet_node is not None
+
+        eth_driver = ProtectionDomain(
+            "eth_driver", "eth_driver_virtio.elf", priority=160,
+            budget=100, period=400)
+        net_virt_tx = ProtectionDomain(
+            "net_virt_tx", "network_virt_tx.elf", priority=159,
+            budget=20_000)
+        net_virt_rx = ProtectionDomain(
+            "net_virt_rx", "network_virt_rx.elf", priority=158)
+        net_copier = ProtectionDomain(
+            "low_level_net_copier", "network_copy.elf", priority=157,
+            budget=20_000)
+
+        for pd in (eth_driver, net_virt_tx, net_virt_rx, net_copier):
+            sdf.add_pd(pd)
+
+        net_system = Sddf.Net(
+            sdf, ethernet_node, eth_driver, net_virt_tx, net_virt_rx)
+        net_system.add_client_with_copier(
+            seL4_LowLevelEthernetDriver_LowLevelEthernetDriver,
+            net_copier,
+            mac_addr="00:0a:35:03:78:a1")
+
     sdf.add_pd(timer_driver)
     sdf.add_pd(scheduler)
     timer_system.add_client(scheduler)
 
     assert timer_system.connect()
     assert timer_system.serialise_config(output_dir)
+    if net_system is not None:
+        assert net_system.connect()
+        assert net_system.serialise_config(output_dir)
 
     data_path = output_dir + "/schedule_config.data"
     with open(data_path, "wb+") as f:

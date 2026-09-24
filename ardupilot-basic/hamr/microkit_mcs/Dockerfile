@@ -4,7 +4,7 @@ ARG VERUS_VERSION=0.2026.08.23.fbbbbcf
 
 USER root
 RUN apt-get update -q \
-    && apt-get install -y --no-install-recommends ca-certificates curl unzip \
+    && apt-get install -y --no-install-recommends ca-certificates cpio curl e2fsprogs unzip \
     && apt-get -y clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -18,7 +18,8 @@ RUN echo "Verus: Install Verus ${VERUS_VERSION}" && \
     && chown -R --reference=/home/microkit /home/microkit/provers/verus \
     && rm -f /tmp/verus.zip
 
-ENV MICROKIT_BOARD=zcu102
+ENV MICROKIT_BOARD=qemu_virt_aarch64
+ENV SYSTEM_MAKEFILE=qemu.system.mk
 
 USER microkit
 WORKDIR /home/microkit

@@ -36,6 +36,12 @@ CARGO_FLAGS = -Z build-std=core,alloc,compiler_builtins \
 #   be off the default and identical on every machine, not this number.
 SMT_OPTS ?= --rlimit 100 --smt-option smt.random_seed=7
 
+ifeq ($(MICROKIT_BOARD),qemu_virt_aarch64)
+PLATFORM_FEATURES = --no-default-features --features sel4,qemu-virtio
+else
+PLATFORM_FEATURES = --features sel4
+endif
+
 all: build-verus-release
 
 # NOTE: cargo-verus requires Verus-relevant cargo options (e.g. --features,
@@ -44,22 +50,22 @@ all: build-verus-release
 #       holds the Verus-irrelevant options, so it must come last.
 
 build-verus-release: $(R2U2_BUILD_DEPS)
-	$(BUILD_ENV_VARS) cargo-verus build --features sel4 --release $(CARGO_FLAGS) -- $(SMT_OPTS)
+	$(BUILD_ENV_VARS) cargo-verus build $(PLATFORM_FEATURES) --release $(CARGO_FLAGS) -- $(SMT_OPTS)
 
 build-verus: $(R2U2_BUILD_DEPS)
-	$(BUILD_ENV_VARS) cargo-verus build --features sel4 $(CARGO_FLAGS) -- $(SMT_OPTS)
+	$(BUILD_ENV_VARS) cargo-verus build $(PLATFORM_FEATURES) $(CARGO_FLAGS) -- $(SMT_OPTS)
 
 build-release: $(R2U2_BUILD_DEPS)
-	$(BUILD_ENV_VARS) cargo build --features sel4 $(CARGO_FLAGS) --release
+	$(BUILD_ENV_VARS) cargo build $(PLATFORM_FEATURES) $(CARGO_FLAGS) --release
 
 build: $(R2U2_BUILD_DEPS)
-	$(BUILD_ENV_VARS) cargo build --features sel4 $(CARGO_FLAGS)
+	$(BUILD_ENV_VARS) cargo build $(PLATFORM_FEATURES) $(CARGO_FLAGS)
 
 verus: $(R2U2_BUILD_DEPS)
-	$(ENV_VARS) cargo-verus verify $(CARGO_FLAGS) -- $(SMT_OPTS)
+	$(ENV_VARS) cargo-verus verify $(PLATFORM_FEATURES) $(CARGO_FLAGS) -- $(SMT_OPTS)
 
 verus-json: $(R2U2_BUILD_DEPS)
-	$(ENV_VARS) cargo-verus verify $(CARGO_FLAGS) -- $(SMT_OPTS) --output-json --time > verus_results.json
+	$(ENV_VARS) cargo-verus verify $(PLATFORM_FEATURES) $(CARGO_FLAGS) -- $(SMT_OPTS) --output-json --time > verus_results.json
 
 # Test Example:
 #   Run all unit tests

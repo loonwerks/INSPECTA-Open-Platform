@@ -6,10 +6,10 @@
 #include <libvmm/arch/aarch64/linux.h>
 #include <libvmm/arch/aarch64/fault.h>
 
-#if defined(BOARD_zcu102)
-#include <libvmm/arch/aarch64/smc.h>
 #include "virtio/net.h"
 static struct virtio_net_device virtio_net;
+#if defined(BOARD_zcu102)
+#include <libvmm/arch/aarch64/smc.h>
 #endif
 
 // This file will not be overwritten if HAMR codegen is rerun
@@ -99,12 +99,13 @@ void seL4_ArduPilot_ArduPilot_initialize(void) {
     LOG_VMM_ERR("Failed to initialise SMC SIP handler\n");
     return;
   }
+#endif
+
   uint8_t mac[VIRTIO_NET_CONFIG_MAC_SZ] = {0x00, 0x0a, 0x35, 0x03, 0x78, 0xa1};
   if (!custom_virtio_mmio_net_init(&virtio_net, mac, 1600, 0x150000, 0x1000, 129)) {
     LOG_VMM_ERR("Failed to initialise virtio network\n");
     return;
   }
-#endif
 
   // Finally start the guest
   success = guest_start(kernel_pc, GUEST_DTB_VADDR, GUEST_INIT_RAM_DISK_VADDR);
@@ -116,7 +117,6 @@ void seL4_ArduPilot_ArduPilot_initialize(void) {
   LOG_VMM("Guest started, leaving seL4_ArduPilot_ArduPilot_initialize\n");
 }
 
-#if defined(BOARD_zcu102)
 static uint8_t tx_idx = 0;
 
 void vmm_virtio_net_tx(void *tx_buf) {
@@ -223,10 +223,6 @@ void seL4_ArduPilot_ArduPilot_timeTriggered(void) {
         }
     }
 }
-
-#else
-void seL4_ArduPilot_ArduPilot_timeTriggered(void) {}
-#endif
 
 void seL4_ArduPilot_ArduPilot_notify(microkit_channel ch) {
   if (is_passthrough_irq_ch(ch)) {

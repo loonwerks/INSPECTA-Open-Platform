@@ -1,0 +1,8 @@
+KERNEL!="vda", GOTO="inspecta_qemu_data_end"
+
+ACTION=="add", ENV{mount_options}="relatime"
+ACTION=="add", IMPORT{program}="/sbin/blkid -o udev -p %N"
+ACTION=="add", ENV{ID_FS_TYPE}=="ext4", RUN+="/bin/mkdir -p /media/sd-mmcblk0p2", RUN+="/bin/ln -snf /media/sd-mmcblk0p2 /mnt/sd-mmcblk0p2", RUN+="/bin/mount -o $env{mount_options} /dev/%k /media/sd-mmcblk0p2"
+ACTION=="remove", RUN+="/bin/umount -l /media/sd-mmcblk0p2", RUN+="/bin/rmdir /media/sd-mmcblk0p2"
+
+LABEL="inspecta_qemu_data_end"

@@ -10,9 +10,9 @@
 // This file will not be overwritten if HAMR codegen is rerun
 
 #if defined(BOARD_qemu_virt_aarch64)
-#define GUEST_RAM_SIZE            0x10000000
-#define GUEST_DTB_VADDR             0x4f000000
-#define GUEST_INIT_RAM_DISK_VADDR   0x4d000000
+#define GUEST_RAM_SIZE            0x3f000000
+#define GUEST_DTB_VADDR             0xbef00000
+#define GUEST_INIT_RAM_DISK_VADDR   0xa0000000
 #elif defined(BOARD_zcu102)
 #define GUEST_RAM_SIZE            0x40000000
 #define GUEST_DTB_VADDR             0x820000000
@@ -21,7 +21,7 @@
 #error Need to define guest kernel image address and DTB address
 #endif
 
-#if defined(BOARD_zcu102)
+#if defined(BOARD_zcu102) || defined(BOARD_qemu_virt_aarch64)
 #define MAX_IRQS 2
 #else
 #define MAX_IRQS 1
@@ -30,6 +30,8 @@
 #if defined(BOARD_qemu_virt_aarch64)
 #define SERIAL_IRQ_CH 1
 #define SERIAL_IRQ 33
+#define VIRTIO_BLK_IRQ_CH 2
+#define VIRTIO_BLK_IRQ 56
 #elif defined(BOARD_zcu102)
 #define SERIAL_IRQ_CH 1
 #define SERIAL_IRQ 53
@@ -55,6 +57,11 @@ struct mk_irq mk_irqs[MAX_IRQS] = {
   , { 
      .irq = MMC_IRQ, 
      .channel = MMC_IRQ_CH 
+  }
+#elif defined(BOARD_qemu_virt_aarch64)
+  , {
+     .irq = VIRTIO_BLK_IRQ,
+     .channel = VIRTIO_BLK_IRQ_CH
   }
 #endif
 };

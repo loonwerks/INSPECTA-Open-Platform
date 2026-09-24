@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker compose -f docker_compose.yml run --rm microkit-provers
+docker compose -f docker_compose.yml run -P microkit_provers

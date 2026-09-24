@@ -39,10 +39,12 @@ LINUX_IMAGE_DIR := $(seL4_ArduPilot_ArduPilot_DIR)/board/$(MICROKIT_BOARD)
 LINUX := $(LINUX_IMAGE_DIR)/linux
 DTS := $(LINUX_IMAGE_DIR)/linux.dts
 DTB := $(TOP_BUILD_DIR)/linux.dtb
-INITRD := $(LINUX_IMAGE_DIR)/rootfs.cpio.gz
+INITRD_BASE := $(LINUX_IMAGE_DIR)/rootfs.cpio.gz
+INITRD_OVERLAY := $(LINUX_IMAGE_DIR)/rootfs-overlay
+INITRD := $(TOP_BUILD_DIR)/rootfs-qemu.cpio.gz
 
-LINUX_VER ?= 85000f3f42a882e4476e57003d53f2bbec8262b0-linux
-INITRD_VER ?= 6dcd1debf64e6d69b178cd0f46b8c4ae7cebe2a5-rootfs.cpio.gz
+IMAGE_URL ?= https://github.com/dornerworks/meta-inspecta-sut/releases/download
+IMAGE_VER ?= v0.2.0-phase-1
 
 # Toolchain flags
 # FIXME: For optimisation we should consider providing the flag -mcpu.
@@ -81,16 +83,23 @@ seL4_ArduPilot_ArduPilot_INCLUDE = -I$(seL4_ArduPilot_ArduPilot_DIR)/include
 all: $(TOP_BUILD_DIR)/seL4_ArduPilot_ArduPilot.a
 
 $(LINUX):
-	curl -L https://trustworthy.systems/Downloads/libvmm/images/${LINUX_VER}.tar.gz -o $@.tar.gz
-	tar -xf $@.tar.gz -C $(LINUX_IMAGE_DIR)
-	cp $(LINUX_IMAGE_DIR)/$(LINUX_VER)/linux $@
+	curl --fail --location $(IMAGE_URL)/$(IMAGE_VER)/linux -o $@.tmp
+	mv $@.tmp $@
 
-$(INITRD):
-	curl -L https://trustworthy.systems/Downloads/libvmm/images/${INITRD_VER}.tar.gz -o $@.tar.gz
-	tar xf $@.tar.gz -C $(LINUX_IMAGE_DIR)
-	cp $(LINUX_IMAGE_DIR)/$(INITRD_VER)/rootfs.cpio.gz $@
+$(INITRD_BASE):
+	curl --fail --location $(IMAGE_URL)/$(IMAGE_VER)/rootfs.cpio.gz -o $@.tmp
+	mv $@.tmp $@
 
-$(DTB):
+INITRD_OVERLAY_FILES := $(shell find $(INITRD_OVERLAY) -type f)
+
+$(INITRD): $(INITRD_BASE) $(INITRD_OVERLAY_FILES)
+	rm -f $(TOP_BUILD_DIR)/rootfs-overlay.cpio
+	cd $(INITRD_OVERLAY) && find . -print0 | cpio --null -o --format=newc > $(TOP_BUILD_DIR)/rootfs-overlay.cpio
+	(gzip -dc $(INITRD_BASE); cat $(TOP_BUILD_DIR)/rootfs-overlay.cpio) | gzip -n > $@.tmp
+	mv $@.tmp $@
+	rm -f $(TOP_BUILD_DIR)/rootfs-overlay.cpio
+
+$(DTB): $(DTS) $(LINUX_IMAGE_DIR)/overlay.dts
 ifeq ("", "$(shell which $(DTC))")
 	$(error "Could not find dependency: Device Tree Compiler (dtc)")
 endif
@@ -110,8 +119,10 @@ $(TOP_BUILD_DIR)/package_guest_images.o: $(LIBVMM_TOOLS_DIR)/package_guest_image
 
 # NOTE: the type libraries will be linked in via the top level makefile so here
 # we just need to include $(TOP_TYPES_INCLUDE)
-$(TOP_BUILD_DIR)/%.o: $(seL4_ArduPilot_ArduPilot_DIR)/src/%.c $(TOP_BUILD_DIR)/Makefile
+$(TOP_BUILD_DIR)/%.o: $(seL4_ArduPilot_ArduPilot_DIR)/src/%.c $(TOP_BUILD_DIR)/Makefile $(CHECK_FLAGS_BOARD_MD5)
 	$(CC) -c $(CFLAGS) $< -o $@ $(TOP_TYPES_INCLUDE) $(seL4_ArduPilot_ArduPilot_INCLUDE)
+
+$(TOP_BUILD_DIR)/seL4_ArduPilot_ArduPilot_user.o: $(seL4_ArduPilot_ArduPilot_DIR)/include/seL4_ArduPilot_ArduPilot_user.h
 
 -include vmm.d
 include $(LIBVMM)/vmm.mk
@@ -124,7 +135,10 @@ vpath %.c $(LIBVMM)
 # a generated system has no sddf serial virtualiser to supply one, so its
 # queue handle stays null and the first LOG_VMM faults the whole component.
 # libsddf_util_debug.a's putchar goes straight to seL4_DebugPutChar instead.
-$(TOP_BUILD_DIR)/seL4_ArduPilot_ArduPilot.a: libvmm.a libsddf_util_debug.a $(TOP_BUILD_DIR)/seL4_ArduPilot_ArduPilot.o $(TOP_BUILD_DIR)/seL4_ArduPilot_ArduPilot_user.o $(TOP_BUILD_DIR)/package_guest_images.o Makefile
+$(TOP_BUILD_DIR)/seL4_ArduPilot_ArduPilot.a: libvmm.a libsddf_util_debug.a $(TOP_BUILD_DIR)/seL4_ArduPilot_ArduPilot.o $(TOP_BUILD_DIR)/seL4_ArduPilot_ArduPilot_user.o $(TOP_BUILD_DIR)/package_guest_images.o $(TOP_BUILD_DIR)/virtio_net.o Makefile
 	mkdir -p libsddf_util; cd libsddf_util; $(AR) -x ../libsddf_util_debug.a
-	$(AR) r libvmm.a libsddf_util/*.o $(TOP_BUILD_DIR)/seL4_ArduPilot_ArduPilot.o $(TOP_BUILD_DIR)/seL4_ArduPilot_ArduPilot_user.o $(TOP_BUILD_DIR)/package_guest_images.o
+	$(AR) r libvmm.a libsddf_util/*.o $(TOP_BUILD_DIR)/seL4_ArduPilot_ArduPilot.o $(TOP_BUILD_DIR)/seL4_ArduPilot_ArduPilot_user.o $(TOP_BUILD_DIR)/package_guest_images.o $(TOP_BUILD_DIR)/virtio_net.o
 	cp libvmm.a $@
+
+$(TOP_BUILD_DIR)/virtio_net.o: $(seL4_ArduPilot_ArduPilot_DIR)/src/virtio/net.c $(seL4_ArduPilot_ArduPilot_DIR)/src/virtio/net.h $(CHECK_FLAGS_BOARD_MD5)
+	$(CC) -c $(CFLAGS) $< -o $@ $(TOP_TYPES_INCLUDE) $(seL4_ArduPilot_ArduPilot_INCLUDE)
