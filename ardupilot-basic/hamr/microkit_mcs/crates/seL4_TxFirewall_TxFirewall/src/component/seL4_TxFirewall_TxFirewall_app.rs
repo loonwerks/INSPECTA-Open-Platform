@@ -36,7 +36,6 @@ impl seL4_TxFirewall_TxFirewall {
     &mut self,
     api: &mut seL4_TxFirewall_TxFirewall_Application_Api<API>)
   {
-    log_info("initialize entrypoint invoked");
   }
 
   #[verus_spec(

@@ -44,8 +44,7 @@ package SW {
 
   part def LowLevelEthernetDriver :> Thread {
     attribute :>> Dispatch_Protocol = Periodic;
-    attribute :>> Period = 1000 [ms]; 
-    attribute :>> Compute_Execution_Time = 300[ms] .. 300[ms];
+    attribute :>> Compute_Execution_Time = 10[ms] .. 10[ms];
     attribute :>> Implementation_Language = Rust;
     attribute :>> Stack_Size = 1048576[byte];
 
@@ -107,8 +106,7 @@ package SW {
     port MavlinkOut3 : EventDataPort { out :>> type : UdpFrame_Impl; }
 
     attribute :>> Dispatch_Protocol = Periodic;
-    attribute :>> Period = 1000[ms]; 
-    attribute :>> Compute_Execution_Time =  300[ms] .. 300[ms];
+    attribute :>> Compute_Execution_Time = 10[ms] .. 10[ms];
     attribute :>> Stack_Size = 1048576[byte];
     attribute :>> Implementation_Language = Rust;			
 
@@ -232,8 +230,7 @@ package SW {
     port EthernetFramesTxOut3 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
   
     attribute :>> Dispatch_Protocol = Periodic;
-    attribute :>> Period = 1000 [ms];
-    attribute :>> Compute_Execution_Time = 300[ms] .. 300[ms];
+    attribute :>> Compute_Execution_Time = 10[ms] .. 10[ms];
     attribute :>> Stack_Size = 1048576[byte];
     attribute :>> Implementation_Language = Rust;
     
@@ -353,8 +350,7 @@ package SW {
     port Out3 : EventDataPort { out :>> type : RawEthernetMessage; }
     
     attribute :>> Dispatch_Protocol = Periodic;
-    attribute :>> Period = 1000[ms]; 
-    attribute :>> Compute_Execution_Time = 300 [ms] .. 300[ms];
+    attribute :>> Compute_Execution_Time = 10[ms] .. 10[ms];
     attribute :>> Stack_Size = 1048576[byte];
     attribute :>> Implementation_Language = Rust;
 
@@ -466,8 +462,7 @@ package SW {
     port EthernetFramesTx3 : EventDataPort { out :>> type : RawEthernetMessage; }
   
     attribute :>> Dispatch_Protocol = Periodic;
-    attribute :>> Period = 1000 [ms]; 
-    attribute :>> Compute_Execution_Time = 600[ms] .. 600 [ms];
+    attribute :>> Compute_Execution_Time = 60[ms] .. 60[ms];
     attribute :>> Stack_Size = 1048576[byte];
 
     attribute :>> SMC = true;

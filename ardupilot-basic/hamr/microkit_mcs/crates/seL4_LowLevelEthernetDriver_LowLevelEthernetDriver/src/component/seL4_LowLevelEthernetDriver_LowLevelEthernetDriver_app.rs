@@ -147,9 +147,6 @@ verus! {
 
     #[verifier::external_body]
     fn initialize_driver(drv: &mut PlatformDriver) {
-        #[cfg(feature = "sel4")]
-        log_info("initialize entrypoint invoked");
-
         #[cfg(feature = "zcu102")]
         {
         drv.handle_interrupt();
@@ -168,9 +165,6 @@ verus! {
         drv: &mut PlatformDriver,
         api: &mut seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_Application_Api<API>,
     ) {
-        #[cfg(feature = "sel4")]
-        trace!("compute entrypoint invoked");
-
         #[cfg(feature = "zcu102")]
         {
         for i in 0..NUM_MSGS {

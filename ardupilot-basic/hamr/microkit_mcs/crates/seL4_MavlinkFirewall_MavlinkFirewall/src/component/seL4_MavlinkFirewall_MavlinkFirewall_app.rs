@@ -58,7 +58,6 @@ impl seL4_MavlinkFirewall_MavlinkFirewall {
     &mut self,
     api: &mut seL4_MavlinkFirewall_MavlinkFirewall_Application_Api<API>)
   {
-    log_info("initialize entrypoint invoked");
   }
 
   #[verus_spec(
@@ -147,7 +146,6 @@ impl seL4_MavlinkFirewall_MavlinkFirewall {
     &mut self,
     api: &mut seL4_MavlinkFirewall_MavlinkFirewall_Application_Api<API>)
   {
-    log_trace("compute entrypoint invoked");
     if let Some(udp_frame) = api.get_In0() {
         if can_send(udp_frame.payload) {
             let output = raw_eth_from_udp_frame(udp_frame);
