@@ -202,6 +202,26 @@ bool get_FirewallRx(uint8_t idx, SW_RawEthernetMessage *data) {
     }
 }
 
+static size_t ethernet_frame_length(const SW_RawEthernetMessage *frame) {
+    const size_t max_standard_frame = 1514;
+    const uint16_t ether_type = ((uint16_t)(*frame)[12] << 8) | (*frame)[13];
+    size_t length = max_standard_frame;
+
+    if (ether_type == 0x0800) { /* IPv4 */
+        const size_t ip_length = ((size_t)(*frame)[16] << 8) | (*frame)[17];
+        if (ip_length >= 20) {
+            length = 14 + ip_length;
+        }
+    } else if (ether_type == 0x86dd) { /* IPv6 */
+        const size_t payload_length = ((size_t)(*frame)[18] << 8) | (*frame)[19];
+        length = 14 + 40 + payload_length;
+    } else if (ether_type == 0x0806) { /* Ethernet/IPv4 ARP */
+        length = 42;
+    }
+
+    return length <= sizeof(*frame) ? length : max_standard_frame;
+}
+
 
 void seL4_ArduPilot_ArduPilot_timeTriggered(void) {
     // printf("Ardupilot: Time Triggered\n");
@@ -209,7 +229,8 @@ void seL4_ArduPilot_ArduPilot_timeTriggered(void) {
     SW_RawEthernetMessage rx;
     for(int i = 0; i < 8; i++){
         if (get_FirewallRx(i, &rx)) {
-            bool respond = custom_virtio_net_handle_rx(&virtio_net, &rx, 1600);
+            size_t frame_length = ethernet_frame_length(&rx);
+            bool respond = custom_virtio_net_handle_rx(&virtio_net, &rx, frame_length);
             if (respond) {
                  custom_virtio_net_respond_to_guest(&virtio_net);
             }
