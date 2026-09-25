@@ -1,5 +1,8 @@
 # Microkit MCS build and run guide
 
+This directory is based on the SysML model in
+[`sysml_mcs`](../../sysml_mcs).
+
 Run these commands from this directory. The first build downloads dependencies and creates a
 4 GiB ArduPilot data image, so it takes longer than later builds.
 

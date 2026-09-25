@@ -44,8 +44,8 @@ package SW {
 
   part def LowLevelEthernetDriver :> Thread {
     attribute :>> Dispatch_Protocol = Periodic;
-    attribute :>> Period = 1000 [ms]; 
-    attribute :>> Compute_Execution_Time = 300[ms] .. 300[ms];
+    attribute :>> Period = 100 [ms];
+    attribute :>> Compute_Execution_Time = 10[ms] .. 10[ms];
     attribute :>> Implementation_Language = Rust;
     attribute :>> Stack_Size = 1048576[byte];
 
@@ -107,8 +107,8 @@ package SW {
     port MavlinkOut3 : EventDataPort { out :>> type : UdpFrame_Impl; }
 
     attribute :>> Dispatch_Protocol = Periodic;
-    attribute :>> Period = 1000[ms]; 
-    attribute :>> Compute_Execution_Time =  300[ms] .. 300[ms];
+    attribute :>> Period = 100 [ms];
+    attribute :>> Compute_Execution_Time = 10[ms] .. 10[ms];
     attribute :>> Stack_Size = 1048576[byte];
     attribute :>> Implementation_Language = Rust;			
 
@@ -232,8 +232,8 @@ package SW {
     port EthernetFramesTxOut3 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
   
     attribute :>> Dispatch_Protocol = Periodic;
-    attribute :>> Period = 1000 [ms];
-    attribute :>> Compute_Execution_Time = 300[ms] .. 300[ms];
+    attribute :>> Period = 100 [ms];
+    attribute :>> Compute_Execution_Time = 10[ms] .. 10[ms];
     attribute :>> Stack_Size = 1048576[byte];
     attribute :>> Implementation_Language = Rust;
     
@@ -353,8 +353,8 @@ package SW {
     port Out3 : EventDataPort { out :>> type : RawEthernetMessage; }
     
     attribute :>> Dispatch_Protocol = Periodic;
-    attribute :>> Period = 1000[ms]; 
-    attribute :>> Compute_Execution_Time = 300 [ms] .. 300[ms];
+    attribute :>> Period = 100 [ms];
+    attribute :>> Compute_Execution_Time = 10[ms] .. 10[ms];
     attribute :>> Stack_Size = 1048576[byte];
     attribute :>> Implementation_Language = Rust;
 
@@ -466,8 +466,8 @@ package SW {
     port EthernetFramesTx3 : EventDataPort { out :>> type : RawEthernetMessage; }
   
     attribute :>> Dispatch_Protocol = Periodic;
-    attribute :>> Period = 1000 [ms]; 
-    attribute :>> Compute_Execution_Time = 600[ms] .. 600 [ms];
+    attribute :>> Period = 100 [ms];
+    attribute :>> Compute_Execution_Time = 60[ms] .. 60[ms];
     attribute :>> Stack_Size = 1048576[byte];
 
     attribute :>> SMC = true;
@@ -526,11 +526,29 @@ package SW {
   }
 
   part def seL4 :> System {
+    part proc : Platform::Proc;
     part MavlinkFirewall : MavlinkFirewall_seL4;
     part RxFirewall : RxFirewall_seL4;
     part TxFirewall : TxFirewall_seL4;
     part LowLevelEthernetDriver : LowLevelEthernetDriver_seL4;
     part ArduPilot : ArduPilot_seL4;
+
+    part ardupilot_virt : VirtualProcessor;
+    allocation ardupilot_binding : Deployment_Properties::Actual_Processor_Binding
+      allocate ArduPilot to ardupilot_virt;
+
+    // Bind each native process and the VM's virtual processor explicitly.
+    // A binding on the enclosing system would also accumulate on ArduPilot.
+    allocation ardupilot_virt_binding : Deployment_Properties::Actual_Processor_Binding
+      allocate ardupilot_virt to proc;
+    allocation mavlink_binding : Deployment_Properties::Actual_Processor_Binding
+      allocate MavlinkFirewall to proc;
+    allocation rx_binding : Deployment_Properties::Actual_Processor_Binding
+      allocate RxFirewall to proc;
+    allocation tx_binding : Deployment_Properties::Actual_Processor_Binding
+      allocate TxFirewall to proc;
+    allocation ethernet_binding : Deployment_Properties::Actual_Processor_Binding
+      allocate LowLevelEthernetDriver to proc;
 
     attribute Domain : CASE_Scheduling::Domain = 2;
     connection c1 : PortConnection
