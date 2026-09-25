@@ -1,0 +1,3 @@
+# Application build configuration: make CONFIG=zcu102.mk ...
+export MICROKIT_BOARD := zcu102
+export SYSTEM_MAKEFILE := zcu102.system.mk

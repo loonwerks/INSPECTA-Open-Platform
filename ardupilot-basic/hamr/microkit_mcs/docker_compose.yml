@@ -1,0 +1,12 @@
+services:
+  microkit_provers:
+    platform: linux/amd64
+    build: .
+    working_dir: /home/microkit/open-platform/hamr/microkit_mcs
+    volumes:
+      - ../..:/home/microkit/open-platform
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    stdin_open: true
+    tty: true
+    command: /bin/bash

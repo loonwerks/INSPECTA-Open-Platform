@@ -1,0 +1,12 @@
+version: '3.6'
+services:
+  dockardu:
+    container_name: dockardu
+    image: dockardu:latest
+    environment:
+      - SPEEDUP=2
+      - UDPIP=@QGC_HOST_IP@
+    ports:
+      - "14550:14550"
+    volumes:
+      - "./startArdu.sh:/startArdu.sh:ro"

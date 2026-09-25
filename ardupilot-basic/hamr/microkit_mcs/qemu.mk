@@ -1,0 +1,3 @@
+# Application build configuration: make CONFIG=qemu.mk ...
+export MICROKIT_BOARD := qemu_virt_aarch64
+export SYSTEM_MAKEFILE := qemu.system.mk
