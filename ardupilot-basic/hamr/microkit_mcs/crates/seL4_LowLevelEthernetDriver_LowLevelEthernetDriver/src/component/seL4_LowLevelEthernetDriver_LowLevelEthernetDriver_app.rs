@@ -8,7 +8,7 @@ use log::{trace, debug};
 #[cfg(feature = "zcu102")]
 use sel4_driver_interfaces::HandleInterrupt;
 #[cfg(feature = "zcu102")]
-use sel4_microkit_base::memory_region_symbol;
+use sel4_microkit_base::{memory_region_symbol, var};
 #[cfg(feature = "zcu102")]
 use smoltcp::{
     phy::{Device, RxToken, TxToken},
@@ -229,14 +229,21 @@ verus! {
 #[cfg(feature = "zcu102")]
 fn create_driver() -> PlatformDriver {
     {
-        let dma = DmaDef {
-            vaddr: memory_region_symbol!(net_driver_dma_vaddr: *mut ()),
-            paddr: memory_region_symbol!(net_driver_dma_paddr: *mut ()),
-            size: config::sizes::DRIVER_DMA,
+        let descriptors = DmaDef {
+            vaddr: memory_region_symbol!(net_driver_dma_descriptors_vaddr: *mut ()),
+            // Physical address zero is valid; this is not a CPU pointer.
+            paddr: *var!(net_driver_dma_descriptors_paddr: usize = 0),
+            size: config::sizes::DMA_DESCRIPTORS,
+        };
+        let buffers = DmaDef {
+            vaddr: memory_region_symbol!(net_driver_dma_buffers_vaddr: *mut ()),
+            paddr: *var!(net_driver_dma_buffers_paddr: usize = 0),
+            size: config::sizes::DMA_BUFFERS,
         };
         Driver::new(
             memory_region_symbol!(gem_register_block: *mut ()).as_ptr(),
-            dma,
+            descriptors,
+            buffers,
         )
     }
 }

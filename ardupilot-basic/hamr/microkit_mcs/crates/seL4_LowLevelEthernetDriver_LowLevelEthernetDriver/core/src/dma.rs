@@ -14,6 +14,7 @@ use smoltcp::{
 use zynqmp_hal::gem::Running;
 
 mod alloc;
+mod cache;
 mod rx;
 mod tx;
 
@@ -98,7 +99,7 @@ impl<'a> TxToken for GemTxToken<'a> {
         let send_len = if len > MTU { MTU } else { len };
         let tx_packet = self.tx_ring.get_next_buffer(send_len);
         let result = f(&mut tx_packet[..send_len]);
-        let _desc_paddr = self.tx_ring.send_complete();
+        let _desc_paddr = self.tx_ring.send_complete(send_len);
         // TODO: Should we set tx_desc every time?
         self.dev.transmit();
         debug!("tx_desc: 0x{:0X}", self.dev.get_tx_desc());
@@ -106,8 +107,13 @@ impl<'a> TxToken for GemTxToken<'a> {
     }
 }
 
-// TODO: Alignment
-type BufPkt = [u8; MTU];
+// MTU and the base address are cache-line aligned, so adjacent packets never
+// share a line. Keep the stride used for descriptor addresses equal to MTU.
+#[repr(C, align(64))]
+struct BufPkt([u8; MTU]);
+
+const _: () = assert!(MTU % cache::CACHE_LINE_SIZE == 0);
+const _: () = assert!(core::mem::size_of::<BufPkt>() == MTU);
 
 struct DataBuf {
     buffer: *mut [BufPkt; NUM_BUFS],
@@ -119,7 +125,7 @@ impl DataBuf {
     }
 
     fn get(&mut self, curr_entry: usize) -> &mut [u8] {
-        &mut self[curr_entry]
+        &mut self[curr_entry].0
     }
 }
 

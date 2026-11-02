@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: BSD-2-Clause
 //
 
-use super::{DataBuf, DmaPtr, DmaPtrs, MTU, NUM_BUFS};
+use super::{cache, DataBuf, DmaPtr, DmaPtrs, MTU, NUM_BUFS};
 use core::ops::{Deref, DerefMut};
 
 mod descriptor;
@@ -60,10 +60,12 @@ impl TxRing {
         let mut ring = Self {
             curr_entry: 0,
             buffer: DataBuf::new(buf_ptr),
-            base_paddr: dma_ptrs.desc.paddr as usize,
+            base_paddr: dma_ptrs.desc.paddr,
             entries,
         };
-        ring.setup(dma_ptrs.buf.paddr as usize);
+        cache::check_line_size();
+        ring.setup(dma_ptrs.buf.paddr);
+        cache::barrier();
         ring
     }
 
@@ -84,13 +86,15 @@ impl TxRing {
     }
 
     pub fn get_next_buffer(&mut self, len: usize) -> &mut [u8] {
+        assert!(len <= MTU);
+        cache::barrier();
         let curr_entry = self.curr_entry;
         let desc = self.get_mut(curr_entry).unwrap();
         desc.clear_status();
         desc.set_len(len);
         // Assume only single buffer sized frames
         desc.mark_frame_end();
-        desc.mark_gem_owned();
+        // Retain software ownership while the caller fills the packet.
 
         self.buffer.get(self.curr_entry)
     }
@@ -104,8 +108,14 @@ impl TxRing {
         self.curr_entry = (self.curr_entry + 1) % entries_len;
     }
 
-    pub fn send_complete(&mut self) -> u32 {
+    pub fn send_complete(&mut self, len: usize) -> u32 {
+        assert!(len <= MTU);
         let curr_entry = self.curr_entry;
+        let packet = self.buffer.get(curr_entry);
+        cache::clean(packet.as_mut_ptr(), len);
+        self.get_mut(curr_entry).unwrap().mark_gem_owned();
+        // Ownership must be visible before the transmit MMIO doorbell.
+        cache::barrier();
         self.increment_idx();
         self.desc_paddr(curr_entry)
     }

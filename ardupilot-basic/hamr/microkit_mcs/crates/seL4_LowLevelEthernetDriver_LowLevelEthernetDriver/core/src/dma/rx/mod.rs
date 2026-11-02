@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: BSD-2-Clause
 //
 
-use super::{DataBuf, MTU, NUM_BUFS};
+use super::{cache, DataBuf, MTU, NUM_BUFS};
 use core::ops::{Deref, DerefMut};
 
 mod descriptor;
@@ -29,7 +29,11 @@ impl RxRing {
             buffer: DataBuf::new(buf_ptr),
             entries,
         };
-        ring.setup(dma_ptrs.buf.paddr as usize);
+        cache::check_line_size();
+        // Clear any dirty/stale cache lines before the first DMA write.
+        cache::clean_invalidate(dma_ptrs.buf.vaddr.cast(), MTU * NUM_BUFS);
+        ring.setup(dma_ptrs.buf.paddr);
+        cache::barrier();
         ring
     }
 
@@ -50,12 +54,20 @@ impl RxRing {
     }
 
     pub fn recv_next(&mut self) -> &mut [u8] {
-        self.buffer.get(self.curr_entry)
+        // The caller has observed GEM returning descriptor ownership. Finish
+        // that read before invalidating speculative/stale cached packet data.
+        // clean_invalidate already provides the required leading barrier.
+        let packet = self.buffer.get(self.curr_entry);
+        cache::clean_invalidate(packet.as_mut_ptr(), packet.len());
+        packet
     }
 
     pub fn mark_done(&mut self) {
         let curr_entry = self.curr_entry;
+        let packet = self.buffer.get(curr_entry);
+        cache::clean_invalidate(packet.as_mut_ptr(), packet.len());
         self.get_mut(curr_entry).unwrap().mark_done();
+        cache::barrier();
         let entries_len = self.len();
         self.curr_entry = (self.curr_entry + 1) % entries_len;
     }

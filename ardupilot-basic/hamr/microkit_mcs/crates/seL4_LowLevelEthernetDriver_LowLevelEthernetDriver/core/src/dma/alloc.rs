@@ -20,12 +20,13 @@ pub struct DmaPtrs {
 
 pub struct DmaPtr {
     pub vaddr: *mut (),
-    pub paddr: *mut (),
+    pub paddr: usize,
 }
 
 pub struct DmaDef {
     pub vaddr: NonNull<()>,
-    pub paddr: NonNull<()>,
+    /// GEM bus address, which may legitimately be zero.
+    pub paddr: usize,
     pub size: usize,
 }
 
@@ -34,56 +35,168 @@ use super::{MTU, NUM_BUFS};
 use super::rx::DESC_SIZE as RX_DESC_SIZE;
 use super::tx::DESC_SIZE as TX_DESC_SIZE;
 
-pub fn alloc_dma(dma: DmaDef) -> GemDmaPtrs {
-    // TODO: Still need to handle alignment
-    // TODO: Implement a more sophisticated allocator?
-    let rx_desc_size = (RX_DESC_SIZE * NUM_BUFS) as isize;
-    let tx_desc_size = (TX_DESC_SIZE * NUM_BUFS) as isize;
-    let buf_size = (MTU * NUM_BUFS) as isize;
+/// Descriptors use Device memory; packet buffers use cacheable Normal memory.
+/// Both regions must be disjoint, remain mapped for the driver's lifetime, and
+/// have no aliases with conflicting memory attributes.
+pub fn alloc_dma(descriptors: DmaDef, buffers: DmaDef) -> GemDmaPtrs {
+    let rx_desc_size = RX_DESC_SIZE * NUM_BUFS;
+    let tx_desc_size = TX_DESC_SIZE * NUM_BUFS;
+    let buf_size = MTU * NUM_BUFS;
+    let desc_size = rx_desc_size + tx_desc_size + TX_DESC_SIZE;
 
-    let rx_desc_vaddr = dma.vaddr;
-    let rx_desc_paddr = dma.paddr;
-    unsafe {
-        let rx_buf_vaddr = rx_desc_vaddr.byte_offset(rx_desc_size);
-        let tx_desc_vaddr = rx_buf_vaddr.byte_offset(buf_size);
-        let tx_buf_vaddr = tx_desc_vaddr.byte_offset(tx_desc_size);
-        let tx_dummy_vaddr = tx_buf_vaddr.byte_offset(buf_size);
+    assert!(descriptors.size >= desc_size);
+    assert!(buffers.size >= 2 * buf_size);
+    for region in [&descriptors, &buffers] {
+        assert_eq!(
+            region.vaddr.as_ptr() as usize % super::cache::CACHE_LINE_SIZE,
+            0
+        );
+        assert_eq!(region.paddr % super::cache::CACHE_LINE_SIZE, 0);
+        // GEM is configured for 32-bit DMA addresses.
+        assert!((region.paddr)
+            .checked_add(region.size - 1)
+            .is_some_and(|end| end <= u32::MAX as usize));
+    }
+    debug!(
+        "DMA descriptors: {desc_size} bytes; buffers: {} bytes",
+        2 * buf_size
+    );
 
-        let rx_buf_paddr = rx_desc_paddr.byte_offset(rx_desc_size);
-        let tx_desc_paddr = rx_buf_paddr.byte_offset(buf_size);
-        let tx_buf_paddr = tx_desc_paddr.byte_offset(tx_desc_size);
-        let tx_dummy_paddr = tx_buf_paddr.byte_offset(buf_size);
+    for (desc_base, buf_base) in [
+        (
+            descriptors.vaddr.as_ptr() as usize,
+            buffers.vaddr.as_ptr() as usize,
+        ),
+        (descriptors.paddr, buffers.paddr),
+    ] {
+        let desc_end = desc_base.checked_add(descriptors.size).unwrap();
+        let buf_end = buf_base.checked_add(buffers.size).unwrap();
+        assert!(
+            desc_end <= buf_base || buf_end <= desc_base,
+            "DMA regions overlap"
+        );
+    }
 
-        let end = tx_dummy_vaddr.byte_offset(TX_DESC_SIZE as isize);
-        let size = end.byte_offset_from(rx_desc_vaddr);
-        debug!("dma.size: {}, needed_size: {size}", dma.size);
-        assert!(dma.size >= size as usize);
-
-        GemDmaPtrs {
-            rx: DmaPtrs {
-                desc: DmaPtr {
-                    vaddr: rx_desc_vaddr.as_ptr(),
-                    paddr: rx_desc_paddr.as_ptr(),
-                },
-                buf: DmaPtr {
-                    vaddr: rx_buf_vaddr.as_ptr(),
-                    paddr: rx_buf_paddr.as_ptr(),
-                },
+    // Virtual addresses remain pointers; physical addresses use integer
+    // offsets, including when the descriptor region begins at address zero.
+    GemDmaPtrs {
+        rx: DmaPtrs {
+            desc: DmaPtr {
+                vaddr: descriptors.vaddr.as_ptr(),
+                paddr: descriptors.paddr,
             },
-            tx: DmaPtrs {
-                desc: DmaPtr {
-                    vaddr: tx_desc_vaddr.as_ptr(),
-                    paddr: tx_desc_paddr.as_ptr(),
-                },
-                buf: DmaPtr {
-                    vaddr: tx_buf_vaddr.as_ptr(),
-                    paddr: tx_buf_paddr.as_ptr(),
-                },
+            buf: DmaPtr {
+                vaddr: buffers.vaddr.as_ptr(),
+                paddr: buffers.paddr,
             },
-            tx_dummy: DmaPtr {
-                vaddr: tx_dummy_vaddr.as_ptr(),
-                paddr: tx_dummy_paddr.as_ptr(),
+        },
+        tx: DmaPtrs {
+            desc: DmaPtr {
+                vaddr: descriptors.vaddr.as_ptr().wrapping_byte_add(rx_desc_size),
+                paddr: descriptors.paddr + rx_desc_size,
             },
+            buf: DmaPtr {
+                vaddr: buffers.vaddr.as_ptr().wrapping_byte_add(buf_size),
+                paddr: buffers.paddr + buf_size,
+            },
+        },
+        tx_dummy: DmaPtr {
+            vaddr: descriptors
+                .vaddr
+                .as_ptr()
+                .wrapping_byte_add(rx_desc_size + tx_desc_size),
+            paddr: descriptors.paddr + rx_desc_size + tx_desc_size,
+        },
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // Layout calculations do not dereference these addresses.
+    fn region(vaddr: usize, paddr: usize, size: usize) -> DmaDef {
+        DmaDef {
+            vaddr: NonNull::new(vaddr as *mut ()).unwrap(),
+            paddr,
+            size,
         }
+    }
+
+    #[test]
+    fn separates_descriptors_and_cache_line_isolated_packets() {
+        let dma = alloc_dma(
+            region(0x80000000, 0x10000000, 4096),
+            region(0x80200000, 0x20000000, 0x200000),
+        );
+        assert_eq!(dma.rx.desc.vaddr as usize, 0x80000000);
+        assert_eq!(dma.tx.desc.vaddr as usize, 0x80000400);
+        assert_eq!(dma.tx_dummy.vaddr as usize, 0x80000800);
+        assert_eq!(dma.rx.buf.vaddr as usize, 0x80200000);
+        assert_eq!(dma.tx.buf.vaddr as usize, 0x80232000);
+        assert_eq!(dma.tx.desc.paddr as usize, 0x10000400);
+        assert_eq!(dma.tx.buf.paddr as usize, 0x20032000);
+        for i in 0..NUM_BUFS {
+            assert_eq!((dma.rx.buf.vaddr as usize + i * MTU) % 64, 0);
+            assert_eq!((dma.tx.buf.vaddr as usize + i * MTU) % 64, 0);
+        }
+    }
+
+    #[test]
+    fn accepts_descriptor_physical_address_zero() {
+        let dma = alloc_dma(
+            region(0x80000000, 0, 4096),
+            region(0x80200000, 0x09400000, 0x200000),
+        );
+        assert_eq!(dma.rx.desc.paddr, 0);
+        assert_eq!(dma.tx.desc.paddr, 0x400);
+        assert_eq!(dma.tx_dummy.paddr, 0x800);
+        assert_eq!(dma.rx.buf.paddr, 0x09400000);
+        assert_eq!(dma.tx.buf.paddr, 0x09432000);
+    }
+
+    #[test]
+    #[should_panic]
+    fn rejects_undersized_descriptors() {
+        alloc_dma(
+            region(0x80000000, 0x10000000, 2048),
+            region(0x80200000, 0x20000000, 0x200000),
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn rejects_undersized_buffers() {
+        alloc_dma(
+            region(0x80000000, 0x10000000, 4096),
+            region(0x80200000, 0x20000000, MTU * NUM_BUFS),
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn rejects_unaligned_buffers() {
+        alloc_dma(
+            region(0x80000000, 0x10000000, 4096),
+            region(0x80200001, 0x20000000, 0x200000),
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn rejects_physical_aliases() {
+        alloc_dma(
+            region(0x80000000, 0x20000000, 4096),
+            region(0x80200000, 0x20000000, 0x200000),
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn rejects_addresses_outside_gem_32_bit_range() {
+        alloc_dma(
+            region(0x80000000, 0x10000000, 4096),
+            region(0x80200000, 0xfffff000, 0x200000),
+        );
     }
 }

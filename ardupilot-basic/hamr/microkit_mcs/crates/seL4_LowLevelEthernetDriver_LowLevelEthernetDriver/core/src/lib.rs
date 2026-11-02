@@ -33,8 +33,8 @@ pub enum IrqType {
 const MAC: [u8; 6] = [0x00, 0x0A, 0x35, 0x03, 0x78, 0xA1];
 
 impl Driver {
-    pub fn new(ptr: *mut (), dma: DmaDef) -> Self {
-        let dma_ptrs = alloc_dma(dma);
+    pub fn new(ptr: *mut (), descriptors: DmaDef, buffers: DmaDef) -> Self {
+        let dma_ptrs = alloc_dma(descriptors, buffers);
         let rx_ring = RxRing::new(&dma_ptrs.rx);
         let tx_ring = TxRing::new(&dma_ptrs.tx);
         let _tx_dummy = TxDummy::new(&dma_ptrs.tx_dummy);

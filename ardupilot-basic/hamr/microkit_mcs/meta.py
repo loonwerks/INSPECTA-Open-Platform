@@ -311,13 +311,21 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
         sdf.add_mr(mmc)
         seL4_ArduPilot_ArduPilot_VM_vm.add_map(Map(mmc, 0xff170000, perms="rw", cached=False))
         gem = MemoryRegion(sdf, "gem_mmio", 0x1000, paddr=0xff0e0000)
-        dma = MemoryRegion(sdf, "net_driver_dma", 0x200000)
+        # Keep Device-mapped descriptors separate from Normal cached packet
+        # data: optimized memcpy may make unaligned accesses to packet bytes.
+        dma_descriptors = MemoryRegion(sdf, "net_driver_dma_descriptors", 0x1000)
+        dma_buffers = MemoryRegion(sdf, "net_driver_dma_buffers", 0x200000)
         sdf.add_mr(gem)
-        sdf.add_mr(dma)
+        sdf.add_mr(dma_descriptors)
+        sdf.add_mr(dma_buffers)
         seL4_LowLevelEthernetDriver_LowLevelEthernetDriver.add_map(
             Map(gem, 0xff0e0000, perms="rw", cached=False, setvar_vaddr="gem_register_block"))
         seL4_LowLevelEthernetDriver_LowLevelEthernetDriver.add_map(
-            Map(dma, 0x80000000, perms="rw", cached=False, setvar_vaddr="net_driver_dma_vaddr"))
+            Map(dma_descriptors, 0x80000000, perms="rw", cached=False,
+                setvar_vaddr="net_driver_dma_descriptors_vaddr"))
+        seL4_LowLevelEthernetDriver_LowLevelEthernetDriver.add_map(
+            Map(dma_buffers, 0x80200000, perms="rw", cached=True,
+                setvar_vaddr="net_driver_dma_buffers_vaddr"))
 
     if board.name == "qemu_virt_aarch64":
         qemu_virtio_blk = MemoryRegion(
@@ -458,7 +466,8 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
                 if pd.get('name') == 'seL4_ArduPilot_ArduPilot':
                     pd.set('smc', 'true')
                 if pd.get('name') == 'seL4_LowLevelEthernetDriver_LowLevelEthernetDriver':
-                    ET.SubElement(pd, 'setvar', symbol='net_driver_dma_paddr', region_paddr='net_driver_dma')
+                    for region in ('net_driver_dma_descriptors', 'net_driver_dma_buffers'):
+                        ET.SubElement(pd, 'setvar', symbol=f'{region}_paddr', region_paddr=region)
         ET.indent(root, space='  ')
         return ET.tostring(root, encoding='unicode', xml_declaration=True)
 
@@ -467,7 +476,8 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
     }
 
     if board.name == "zcu102":
-        page_size_mappings["net_driver_dma"] = "0x200000"
+        page_size_mappings["net_driver_dma_descriptors"] = "0x1000"
+        page_size_mappings["net_driver_dma_buffers"] = "0x200000"
 
     with open(f"{output_dir}/{sdf_path}", "w+") as f:
         f.write(apply_platform_overrides(sdf.render(), page_size_mappings))

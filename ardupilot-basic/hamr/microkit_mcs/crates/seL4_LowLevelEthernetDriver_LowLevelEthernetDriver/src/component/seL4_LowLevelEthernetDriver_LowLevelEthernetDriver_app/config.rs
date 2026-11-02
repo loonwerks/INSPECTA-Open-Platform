@@ -5,7 +5,8 @@
 //
 
 pub mod sizes {
-    pub const DRIVER_DMA: usize = 0x20_0000;
+    pub const DMA_DESCRIPTORS: usize = 0x1000;
+    pub const DMA_BUFFERS: usize = 0x20_0000;
 }
 
 #[cfg(feature = "sel4")]
