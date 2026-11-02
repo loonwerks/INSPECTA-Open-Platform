@@ -290,11 +290,11 @@ def generate(sdf_path: str, output_dir: str, dtb: DeviceTree):
     #######################################
     # SCHEDULE
     #######################################
-    ts_seL4_ArduPilot_ArduPilot_MON = (channel_seL4_ArduPilot_ArduPilot_MON, 60000000, True)
-    ts_seL4_TxFirewall_TxFirewall_MON = (channel_seL4_TxFirewall_TxFirewall_MON, 10000000, True)
-    ts_seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_MON = (channel_seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_MON, 10000000, True)
-    ts_seL4_RxFirewall_RxFirewall_MON = (channel_seL4_RxFirewall_RxFirewall_MON, 10000000, True)
-    ts_seL4_MavlinkFirewall_MavlinkFirewall_MON = (channel_seL4_MavlinkFirewall_MavlinkFirewall_MON, 10000000, True)
+    ts_seL4_ArduPilot_ArduPilot_MON = (channel_seL4_ArduPilot_ArduPilot_MON, 600000, True)
+    ts_seL4_TxFirewall_TxFirewall_MON = (channel_seL4_TxFirewall_TxFirewall_MON, 300000, True)
+    ts_seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_MON = (channel_seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_MON, 300000, True)
+    ts_seL4_RxFirewall_RxFirewall_MON = (channel_seL4_RxFirewall_RxFirewall_MON, 300000, True)
+    ts_seL4_MavlinkFirewall_MavlinkFirewall_MON = (channel_seL4_MavlinkFirewall_MavlinkFirewall_MON, 300000, True)
 
     user_schedule = schedule(
       ts_seL4_ArduPilot_ArduPilot_MON,
