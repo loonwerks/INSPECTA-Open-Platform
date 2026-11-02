@@ -15,9 +15,9 @@ const LOG_LEVEL: LevelFilter = {
   // LevelFilter::Off // lowest level of logging
   // LevelFilter::Error
   // LevelFilter::Warn
-  // LevelFilter::Info
+  LevelFilter::Info
   // LevelFilter::Debug
-  LevelFilter::Trace // highest level of logging
+//   LevelFilter::Trace // highest level of logging
 };
 
 #[cfg(feature = "sel4")]

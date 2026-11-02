@@ -16,8 +16,8 @@ pub mod log {
     const LOG_LEVEL: LevelFilter = {
         // LevelFilter::Trace
         // LevelFilter::Debug
-        // LevelFilter::Info
-        LevelFilter::Warn
+        LevelFilter::Info
+        // LevelFilter::Warn
     };
 
     pub static LOGGER: Logger = LoggerBuilder::const_default()
