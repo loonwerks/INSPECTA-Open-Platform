@@ -43,7 +43,7 @@ package SW {
   }
 
   part def LowLevelEthernetDriver :> Thread {
-    attribute :>> Dispatch_Protocol = Periodic;
+    attribute :>> Dispatch_Protocol = AADL_Project::Supported_Dispatch_Protocols::Periodic;
     attribute :>> Period = 100 [ms];
     attribute :>> Compute_Execution_Time = 10[ms] .. 10[ms];
     attribute :>> Implementation_Language = Rust;
@@ -106,7 +106,7 @@ package SW {
     port MavlinkOut2 : EventDataPort { out :>> type : UdpFrame_Impl; }
     port MavlinkOut3 : EventDataPort { out :>> type : UdpFrame_Impl; }
 
-    attribute :>> Dispatch_Protocol = Periodic;
+    attribute :>> Dispatch_Protocol = AADL_Project::Supported_Dispatch_Protocols::Periodic;
     attribute :>> Period = 100 [ms];
     attribute :>> Compute_Execution_Time = 10[ms] .. 10[ms];
     attribute :>> Stack_Size = 1048576[byte];
@@ -231,7 +231,7 @@ package SW {
     port EthernetFramesTxOut2 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
     port EthernetFramesTxOut3 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
   
-    attribute :>> Dispatch_Protocol = Periodic;
+    attribute :>> Dispatch_Protocol = AADL_Project::Supported_Dispatch_Protocols::Periodic;
     attribute :>> Period = 100 [ms];
     attribute :>> Compute_Execution_Time = 10[ms] .. 10[ms];
     attribute :>> Stack_Size = 1048576[byte];
@@ -352,7 +352,7 @@ package SW {
     port Out2 : EventDataPort { out :>> type : RawEthernetMessage; }
     port Out3 : EventDataPort { out :>> type : RawEthernetMessage; }
     
-    attribute :>> Dispatch_Protocol = Periodic;
+    attribute :>> Dispatch_Protocol = AADL_Project::Supported_Dispatch_Protocols::Periodic;
     attribute :>> Period = 100 [ms];
     attribute :>> Compute_Execution_Time = 10[ms] .. 10[ms];
     attribute :>> Stack_Size = 1048576[byte];
@@ -465,7 +465,7 @@ package SW {
     port EthernetFramesTx2 : EventDataPort { out :>> type : RawEthernetMessage; }
     port EthernetFramesTx3 : EventDataPort { out :>> type : RawEthernetMessage; }
   
-    attribute :>> Dispatch_Protocol = Periodic;
+    attribute :>> Dispatch_Protocol = AADL_Project::Supported_Dispatch_Protocols::Periodic;
     attribute :>> Period = 100 [ms];
     attribute :>> Compute_Execution_Time = 60[ms] .. 60[ms];
     attribute :>> Stack_Size = 1048576[byte];

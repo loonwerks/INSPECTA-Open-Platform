@@ -44,7 +44,7 @@ val sel4_output_dir =
 val hamrDir = sysmlDir.up / "hamr"
 
 var sourcePath: String = sysmlDir.string
-if (Os.envs.contains("SYSML_AADL_LIBRARIES")) {
+if (!(sysmlDir / "aadl-lib" ).exists && Os.envs.contains("SYSML_AADL_LIBRARIES")) {
   sourcePath = s"$sourcePath:${Os.env("SYSML_AADL_LIBRARIES").get}"
 }
 
