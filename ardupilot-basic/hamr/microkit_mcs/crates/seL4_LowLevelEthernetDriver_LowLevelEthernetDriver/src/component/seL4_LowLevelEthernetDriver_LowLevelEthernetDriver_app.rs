@@ -140,6 +140,11 @@ verus! {
     #[verifier::external_body]
     pub struct ExternalDriver(Driver);
 
+    #[cfg(feature = "qemu-virtio")]
+    #[verifier::external_type_specification]
+    #[verifier::external_body]
+    pub struct ExternalQemuVirtioDriver(QemuVirtioDriver);
+
     #[verifier::external_body]
     fn new_driver() -> PlatformDriver {
         create_driver()
