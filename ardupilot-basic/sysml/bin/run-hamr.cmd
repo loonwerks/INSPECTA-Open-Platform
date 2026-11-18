@@ -38,7 +38,7 @@ val packageName = "firewall"
 val excludeComponentImpl = F
 
 val sel4_output_dir = 
-  if (platform == "Microkit") "microkit_mcs"
+  if (platform == "Microkit") "microkit"
   else "sysml"
 
 val hamrDir = sysmlDir.up / "hamr"
