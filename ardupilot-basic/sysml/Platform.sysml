@@ -4,8 +4,8 @@ package Platform {
   private import SW::*;
   
   part def Proc :> Processor {
-    attribute :>> Frame_Period = 100 [ms];
-    attribute :>> Clock_Period = 2 [ms];
+    attribute :>> Frame_Period = 180 [us];
+    attribute :>> Clock_Period = 1 [us];
     attribute :>> Max_Domain = 6;
   }
   
