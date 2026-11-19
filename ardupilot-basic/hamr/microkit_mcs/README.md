@@ -38,6 +38,16 @@ Then you can either (a) run the QEMU simulation, (b) run on the ZCU102 board, or
    The guest sends telemetry to the Docker host automatically. Allow incoming
    UDP traffic if the host operating system asks.
 
+   The outer build container uses bridge `172.29.240.0/24`, with
+   `host.docker.internal` set to its host gateway `172.29.240.1`. This avoids
+   the guest's own Docker networks (`172.17.0.0/16` and `172.18.0.0/16`) and
+   keeps QGroundControl's reply source consistent with the telemetry destination.
+   If this subnet conflicts with your network, change both the bridge IPAM
+   settings and `extra_hosts` in `docker_compose.yml` together. Normally no
+   `QGC_HOST_IP` override is needed.
+   After changing Compose networking, exit the old container and start a new
+   one with the command above.
+
 3. Stop QEMU with `Ctrl-A`, then `X`. Exit the container with `exit`.
 
 ### (b) Run the ZCU102 Board

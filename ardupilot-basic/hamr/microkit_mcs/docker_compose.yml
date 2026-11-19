@@ -6,7 +6,19 @@ services:
     volumes:
       - ../..:/home/microkit/open-platform
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      # Match the host-side address of this bridge. The guest also runs Docker
+      # on 172.17/16 and 172.18/16, so neither default bridge is suitable.
+      - "host.docker.internal:172.29.240.1"
+    networks:
+      - qemu_host
     stdin_open: true
     tty: true
     command: /bin/bash
+
+networks:
+  qemu_host:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.29.240.0/24
+          gateway: 172.29.240.1
