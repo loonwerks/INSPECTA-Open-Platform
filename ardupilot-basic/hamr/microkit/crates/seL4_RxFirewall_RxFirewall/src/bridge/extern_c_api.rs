@@ -12,9 +12,13 @@ use std::sync::Mutex;
 #[cfg(not(test))]
 extern "C" {
   fn get_EthernetFramesRxIn0(value: *mut SW::RawEthernetMessage) -> bool;
+  fn get_EthernetFramesRxIn0_num_invalid() -> u64;
   fn get_EthernetFramesRxIn1(value: *mut SW::RawEthernetMessage) -> bool;
+  fn get_EthernetFramesRxIn1_num_invalid() -> u64;
   fn get_EthernetFramesRxIn2(value: *mut SW::RawEthernetMessage) -> bool;
+  fn get_EthernetFramesRxIn2_num_invalid() -> u64;
   fn get_EthernetFramesRxIn3(value: *mut SW::RawEthernetMessage) -> bool;
+  fn get_EthernetFramesRxIn3_num_invalid() -> u64;
   fn put_VmmOut0(value: *mut SW::RawEthernetMessage) -> bool;
   fn put_VmmOut1(value: *mut SW::RawEthernetMessage) -> bool;
   fn put_VmmOut2(value: *mut SW::RawEthernetMessage) -> bool;
@@ -37,6 +41,13 @@ pub fn unsafe_get_EthernetFramesRxIn0() -> Option<SW::RawEthernetMessage>
   }
 }
 
+pub fn unsafe_get_EthernetFramesRxIn0_num_invalid() -> u64
+{
+  unsafe {
+    return get_EthernetFramesRxIn0_num_invalid();
+  }
+}
+
 pub fn unsafe_get_EthernetFramesRxIn1() -> Option<SW::RawEthernetMessage>
 {
   unsafe {
@@ -46,6 +57,13 @@ pub fn unsafe_get_EthernetFramesRxIn1() -> Option<SW::RawEthernetMessage>
     } else {
       return None;
     }
+  }
+}
+
+pub fn unsafe_get_EthernetFramesRxIn1_num_invalid() -> u64
+{
+  unsafe {
+    return get_EthernetFramesRxIn1_num_invalid();
   }
 }
 
@@ -61,6 +79,13 @@ pub fn unsafe_get_EthernetFramesRxIn2() -> Option<SW::RawEthernetMessage>
   }
 }
 
+pub fn unsafe_get_EthernetFramesRxIn2_num_invalid() -> u64
+{
+  unsafe {
+    return get_EthernetFramesRxIn2_num_invalid();
+  }
+}
+
 pub fn unsafe_get_EthernetFramesRxIn3() -> Option<SW::RawEthernetMessage>
 {
   unsafe {
@@ -70,6 +95,13 @@ pub fn unsafe_get_EthernetFramesRxIn3() -> Option<SW::RawEthernetMessage>
     } else {
       return None;
     }
+  }
+}
+
+pub fn unsafe_get_EthernetFramesRxIn3_num_invalid() -> u64
+{
+  unsafe {
+    return get_EthernetFramesRxIn3_num_invalid();
   }
 }
 
@@ -185,6 +217,12 @@ pub fn get_EthernetFramesRxIn0(value: *mut SW::RawEthernetMessage) -> bool
 }
 
 #[cfg(test)]
+pub fn get_EthernetFramesRxIn0_num_invalid() -> u64
+{
+  return 0;
+}
+
+#[cfg(test)]
 pub fn get_EthernetFramesRxIn1(value: *mut SW::RawEthernetMessage) -> bool
 {
   unsafe {
@@ -196,6 +234,12 @@ pub fn get_EthernetFramesRxIn1(value: *mut SW::RawEthernetMessage) -> bool
       None => return false,
     }
   }
+}
+
+#[cfg(test)]
+pub fn get_EthernetFramesRxIn1_num_invalid() -> u64
+{
+  return 0;
 }
 
 #[cfg(test)]
@@ -213,6 +257,12 @@ pub fn get_EthernetFramesRxIn2(value: *mut SW::RawEthernetMessage) -> bool
 }
 
 #[cfg(test)]
+pub fn get_EthernetFramesRxIn2_num_invalid() -> u64
+{
+  return 0;
+}
+
+#[cfg(test)]
 pub fn get_EthernetFramesRxIn3(value: *mut SW::RawEthernetMessage) -> bool
 {
   unsafe {
@@ -224,6 +274,12 @@ pub fn get_EthernetFramesRxIn3(value: *mut SW::RawEthernetMessage) -> bool
       None => return false,
     }
   }
+}
+
+#[cfg(test)]
+pub fn get_EthernetFramesRxIn3_num_invalid() -> u64
+{
+  return 0;
 }
 
 #[cfg(test)]

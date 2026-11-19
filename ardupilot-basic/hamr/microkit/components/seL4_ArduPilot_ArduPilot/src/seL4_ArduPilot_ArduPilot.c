@@ -42,6 +42,10 @@ bool get_MavlinkRx0(SW_RawEthernetMessage *data) {
   return get_MavlinkRx0_poll (&numDropped, data);
 }
 
+uintmax_t get_MavlinkRx0_num_invalid(void) {
+  return sb_queue_SW_RawEthernetMessage_1_numInvalid((sb_queue_SW_RawEthernetMessage_1_Recv_t *) &MavlinkRx0_recv_queue);
+}
+
 bool MavlinkRx1_is_empty(void) {
   return sb_queue_SW_RawEthernetMessage_1_is_empty(&MavlinkRx1_recv_queue);
 }
@@ -53,6 +57,10 @@ bool get_MavlinkRx1_poll(sb_event_counter_t *numDropped, SW_RawEthernetMessage *
 bool get_MavlinkRx1(SW_RawEthernetMessage *data) {
   sb_event_counter_t numDropped;
   return get_MavlinkRx1_poll (&numDropped, data);
+}
+
+uintmax_t get_MavlinkRx1_num_invalid(void) {
+  return sb_queue_SW_RawEthernetMessage_1_numInvalid((sb_queue_SW_RawEthernetMessage_1_Recv_t *) &MavlinkRx1_recv_queue);
 }
 
 bool MavlinkRx2_is_empty(void) {
@@ -68,6 +76,10 @@ bool get_MavlinkRx2(SW_RawEthernetMessage *data) {
   return get_MavlinkRx2_poll (&numDropped, data);
 }
 
+uintmax_t get_MavlinkRx2_num_invalid(void) {
+  return sb_queue_SW_RawEthernetMessage_1_numInvalid((sb_queue_SW_RawEthernetMessage_1_Recv_t *) &MavlinkRx2_recv_queue);
+}
+
 bool MavlinkRx3_is_empty(void) {
   return sb_queue_SW_RawEthernetMessage_1_is_empty(&MavlinkRx3_recv_queue);
 }
@@ -79,6 +91,10 @@ bool get_MavlinkRx3_poll(sb_event_counter_t *numDropped, SW_RawEthernetMessage *
 bool get_MavlinkRx3(SW_RawEthernetMessage *data) {
   sb_event_counter_t numDropped;
   return get_MavlinkRx3_poll (&numDropped, data);
+}
+
+uintmax_t get_MavlinkRx3_num_invalid(void) {
+  return sb_queue_SW_RawEthernetMessage_1_numInvalid((sb_queue_SW_RawEthernetMessage_1_Recv_t *) &MavlinkRx3_recv_queue);
 }
 
 bool FirewallRx0_is_empty(void) {
@@ -94,6 +110,10 @@ bool get_FirewallRx0(SW_RawEthernetMessage *data) {
   return get_FirewallRx0_poll (&numDropped, data);
 }
 
+uintmax_t get_FirewallRx0_num_invalid(void) {
+  return sb_queue_SW_RawEthernetMessage_1_numInvalid((sb_queue_SW_RawEthernetMessage_1_Recv_t *) &FirewallRx0_recv_queue);
+}
+
 bool FirewallRx1_is_empty(void) {
   return sb_queue_SW_RawEthernetMessage_1_is_empty(&FirewallRx1_recv_queue);
 }
@@ -105,6 +125,10 @@ bool get_FirewallRx1_poll(sb_event_counter_t *numDropped, SW_RawEthernetMessage 
 bool get_FirewallRx1(SW_RawEthernetMessage *data) {
   sb_event_counter_t numDropped;
   return get_FirewallRx1_poll (&numDropped, data);
+}
+
+uintmax_t get_FirewallRx1_num_invalid(void) {
+  return sb_queue_SW_RawEthernetMessage_1_numInvalid((sb_queue_SW_RawEthernetMessage_1_Recv_t *) &FirewallRx1_recv_queue);
 }
 
 bool FirewallRx2_is_empty(void) {
@@ -120,6 +144,10 @@ bool get_FirewallRx2(SW_RawEthernetMessage *data) {
   return get_FirewallRx2_poll (&numDropped, data);
 }
 
+uintmax_t get_FirewallRx2_num_invalid(void) {
+  return sb_queue_SW_RawEthernetMessage_1_numInvalid((sb_queue_SW_RawEthernetMessage_1_Recv_t *) &FirewallRx2_recv_queue);
+}
+
 bool FirewallRx3_is_empty(void) {
   return sb_queue_SW_RawEthernetMessage_1_is_empty(&FirewallRx3_recv_queue);
 }
@@ -131,6 +159,10 @@ bool get_FirewallRx3_poll(sb_event_counter_t *numDropped, SW_RawEthernetMessage 
 bool get_FirewallRx3(SW_RawEthernetMessage *data) {
   sb_event_counter_t numDropped;
   return get_FirewallRx3_poll (&numDropped, data);
+}
+
+uintmax_t get_FirewallRx3_num_invalid(void) {
+  return sb_queue_SW_RawEthernetMessage_1_numInvalid((sb_queue_SW_RawEthernetMessage_1_Recv_t *) &FirewallRx3_recv_queue);
 }
 
 bool put_EthernetFramesTx0(const SW_RawEthernetMessage *data) {
@@ -193,6 +225,13 @@ void notified(microkit_channel channel) {
   switch (channel) {
     case PORT_FROM_MON:
       seL4_ArduPilot_ArduPilot_timeTriggered();
+      // Report that this dispatch has finished.  The _MON wrapper forwards it to
+      // the scheduler.  The default scheduler ignores runtime signals from
+      // partitions -- the schedule is static and each partition runs for its full
+      // allotted time -- so this is inert there; the test scheduler uses it as the
+      // slot-complete event, which is what lets it step as fast as threads run
+      // rather than waiting out each slot's wall-clock budget.
+      microkit_notify(PORT_FROM_MON);
       break;
     default:
       seL4_ArduPilot_ArduPilot_notify(channel);

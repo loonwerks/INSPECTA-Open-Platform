@@ -54,6 +54,12 @@ verus! {
     }
 
     #[verifier::external_body]
+    fn unverified_get_EthernetFramesTxIn0_num_invalid(&self) -> u64
+    {
+      return extern_api::unsafe_get_EthernetFramesTxIn0_num_invalid();
+    }
+
+    #[verifier::external_body]
     fn unverified_get_EthernetFramesTxIn1(
       &mut self,
       value: &Ghost<Option<SW::RawEthernetMessage>>) -> (res : Option<SW::RawEthernetMessage>)
@@ -61,6 +67,12 @@ verus! {
         res == value@,
     {
       return extern_api::unsafe_get_EthernetFramesTxIn1();
+    }
+
+    #[verifier::external_body]
+    fn unverified_get_EthernetFramesTxIn1_num_invalid(&self) -> u64
+    {
+      return extern_api::unsafe_get_EthernetFramesTxIn1_num_invalid();
     }
 
     #[verifier::external_body]
@@ -74,6 +86,12 @@ verus! {
     }
 
     #[verifier::external_body]
+    fn unverified_get_EthernetFramesTxIn2_num_invalid(&self) -> u64
+    {
+      return extern_api::unsafe_get_EthernetFramesTxIn2_num_invalid();
+    }
+
+    #[verifier::external_body]
     fn unverified_get_EthernetFramesTxIn3(
       &mut self,
       value: &Ghost<Option<SW::RawEthernetMessage>>) -> (res : Option<SW::RawEthernetMessage>)
@@ -81,6 +99,12 @@ verus! {
         res == value@,
     {
       return extern_api::unsafe_get_EthernetFramesTxIn3();
+    }
+
+    #[verifier::external_body]
+    fn unverified_get_EthernetFramesTxIn3_num_invalid(&self) -> u64
+    {
+      return extern_api::unsafe_get_EthernetFramesTxIn3_num_invalid();
     }
   }
 
@@ -200,6 +224,12 @@ verus! {
         old(self).EthernetFramesTxOut3 == final(self).EthernetFramesTxOut3,
     {
       self.api.unverified_get_EthernetFramesTxIn0(&Ghost(self.EthernetFramesTxIn0))
+    }/// The number of messages received on EthernetFramesTxIn0 that were dropped because they held
+    /// an invalid bit pattern (an out-of-range enum, a bool that is neither 0 nor 1, or a
+    /// string with no terminating NUL)
+    pub fn get_EthernetFramesTxIn0_num_invalid(&self) -> u64
+    {
+      self.api.unverified_get_EthernetFramesTxIn0_num_invalid()
     }
     pub fn get_EthernetFramesTxIn1(&mut self) -> (res : Option<SW::RawEthernetMessage>)
       ensures
@@ -214,6 +244,12 @@ verus! {
         old(self).EthernetFramesTxOut3 == final(self).EthernetFramesTxOut3,
     {
       self.api.unverified_get_EthernetFramesTxIn1(&Ghost(self.EthernetFramesTxIn1))
+    }/// The number of messages received on EthernetFramesTxIn1 that were dropped because they held
+    /// an invalid bit pattern (an out-of-range enum, a bool that is neither 0 nor 1, or a
+    /// string with no terminating NUL)
+    pub fn get_EthernetFramesTxIn1_num_invalid(&self) -> u64
+    {
+      self.api.unverified_get_EthernetFramesTxIn1_num_invalid()
     }
     pub fn get_EthernetFramesTxIn2(&mut self) -> (res : Option<SW::RawEthernetMessage>)
       ensures
@@ -228,6 +264,12 @@ verus! {
         old(self).EthernetFramesTxOut3 == final(self).EthernetFramesTxOut3,
     {
       self.api.unverified_get_EthernetFramesTxIn2(&Ghost(self.EthernetFramesTxIn2))
+    }/// The number of messages received on EthernetFramesTxIn2 that were dropped because they held
+    /// an invalid bit pattern (an out-of-range enum, a bool that is neither 0 nor 1, or a
+    /// string with no terminating NUL)
+    pub fn get_EthernetFramesTxIn2_num_invalid(&self) -> u64
+    {
+      self.api.unverified_get_EthernetFramesTxIn2_num_invalid()
     }
     pub fn get_EthernetFramesTxIn3(&mut self) -> (res : Option<SW::RawEthernetMessage>)
       ensures
@@ -242,6 +284,12 @@ verus! {
         old(self).EthernetFramesTxOut3 == final(self).EthernetFramesTxOut3,
     {
       self.api.unverified_get_EthernetFramesTxIn3(&Ghost(self.EthernetFramesTxIn3))
+    }/// The number of messages received on EthernetFramesTxIn3 that were dropped because they held
+    /// an invalid bit pattern (an out-of-range enum, a bool that is neither 0 nor 1, or a
+    /// string with no terminating NUL)
+    pub fn get_EthernetFramesTxIn3_num_invalid(&self) -> u64
+    {
+      self.api.unverified_get_EthernetFramesTxIn3_num_invalid()
     }
   }
 

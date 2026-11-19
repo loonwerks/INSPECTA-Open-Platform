@@ -12,9 +12,13 @@ use std::sync::Mutex;
 #[cfg(not(test))]
 extern "C" {
   fn get_In0(value: *mut SW::UdpFrame_Impl) -> bool;
+  fn get_In0_num_invalid() -> u64;
   fn get_In1(value: *mut SW::UdpFrame_Impl) -> bool;
+  fn get_In1_num_invalid() -> u64;
   fn get_In2(value: *mut SW::UdpFrame_Impl) -> bool;
+  fn get_In2_num_invalid() -> u64;
   fn get_In3(value: *mut SW::UdpFrame_Impl) -> bool;
+  fn get_In3_num_invalid() -> u64;
   fn put_Out0(value: *mut SW::RawEthernetMessage) -> bool;
   fn put_Out1(value: *mut SW::RawEthernetMessage) -> bool;
   fn put_Out2(value: *mut SW::RawEthernetMessage) -> bool;
@@ -33,6 +37,13 @@ pub fn unsafe_get_In0() -> Option<SW::UdpFrame_Impl>
   }
 }
 
+pub fn unsafe_get_In0_num_invalid() -> u64
+{
+  unsafe {
+    return get_In0_num_invalid();
+  }
+}
+
 pub fn unsafe_get_In1() -> Option<SW::UdpFrame_Impl>
 {
   unsafe {
@@ -42,6 +53,13 @@ pub fn unsafe_get_In1() -> Option<SW::UdpFrame_Impl>
     } else {
       return None;
     }
+  }
+}
+
+pub fn unsafe_get_In1_num_invalid() -> u64
+{
+  unsafe {
+    return get_In1_num_invalid();
   }
 }
 
@@ -57,6 +75,13 @@ pub fn unsafe_get_In2() -> Option<SW::UdpFrame_Impl>
   }
 }
 
+pub fn unsafe_get_In2_num_invalid() -> u64
+{
+  unsafe {
+    return get_In2_num_invalid();
+  }
+}
+
 pub fn unsafe_get_In3() -> Option<SW::UdpFrame_Impl>
 {
   unsafe {
@@ -66,6 +91,13 @@ pub fn unsafe_get_In3() -> Option<SW::UdpFrame_Impl>
     } else {
       return None;
     }
+  }
+}
+
+pub fn unsafe_get_In3_num_invalid() -> u64
+{
+  unsafe {
+    return get_In3_num_invalid();
   }
 }
 
@@ -145,6 +177,12 @@ pub fn get_In0(value: *mut SW::UdpFrame_Impl) -> bool
 }
 
 #[cfg(test)]
+pub fn get_In0_num_invalid() -> u64
+{
+  return 0;
+}
+
+#[cfg(test)]
 pub fn get_In1(value: *mut SW::UdpFrame_Impl) -> bool
 {
   unsafe {
@@ -156,6 +194,12 @@ pub fn get_In1(value: *mut SW::UdpFrame_Impl) -> bool
       None => return false,
     }
   }
+}
+
+#[cfg(test)]
+pub fn get_In1_num_invalid() -> u64
+{
+  return 0;
 }
 
 #[cfg(test)]
@@ -173,6 +217,12 @@ pub fn get_In2(value: *mut SW::UdpFrame_Impl) -> bool
 }
 
 #[cfg(test)]
+pub fn get_In2_num_invalid() -> u64
+{
+  return 0;
+}
+
+#[cfg(test)]
 pub fn get_In3(value: *mut SW::UdpFrame_Impl) -> bool
 {
   unsafe {
@@ -184,6 +234,12 @@ pub fn get_In3(value: *mut SW::UdpFrame_Impl) -> bool
       None => return false,
     }
   }
+}
+
+#[cfg(test)]
+pub fn get_In3_num_invalid() -> u64
+{
+  return 0;
 }
 
 #[cfg(test)]

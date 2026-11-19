@@ -6,9 +6,12 @@ use super::*;
 
 verus! {
 
-  pub const SW_UdpPayload_BYTE_SIZE: usize = 1558;
   pub const SW_UdpPayload_DIM_0: usize = 1558;
 
   pub type UdpPayload = [u8; SW_UdpPayload_DIM_0];
 
 }
+
+// Memory layout as HAMR computes it
+const _: () = assert!(core::mem::size_of::<UdpPayload>() == 1558);
+const _: () = assert!(core::mem::align_of::<UdpPayload>() == 1);

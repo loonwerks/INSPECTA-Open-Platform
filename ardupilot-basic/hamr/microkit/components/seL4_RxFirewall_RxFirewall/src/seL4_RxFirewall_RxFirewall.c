@@ -86,6 +86,10 @@ bool get_EthernetFramesRxIn0(SW_RawEthernetMessage *data) {
   return get_EthernetFramesRxIn0_poll (&numDropped, data);
 }
 
+uintmax_t get_EthernetFramesRxIn0_num_invalid(void) {
+  return sb_queue_SW_RawEthernetMessage_1_numInvalid((sb_queue_SW_RawEthernetMessage_1_Recv_t *) &EthernetFramesRxIn0_recv_queue);
+}
+
 bool EthernetFramesRxIn1_is_empty(void) {
   return sb_queue_SW_RawEthernetMessage_1_is_empty(&EthernetFramesRxIn1_recv_queue);
 }
@@ -97,6 +101,10 @@ bool get_EthernetFramesRxIn1_poll(sb_event_counter_t *numDropped, SW_RawEthernet
 bool get_EthernetFramesRxIn1(SW_RawEthernetMessage *data) {
   sb_event_counter_t numDropped;
   return get_EthernetFramesRxIn1_poll (&numDropped, data);
+}
+
+uintmax_t get_EthernetFramesRxIn1_num_invalid(void) {
+  return sb_queue_SW_RawEthernetMessage_1_numInvalid((sb_queue_SW_RawEthernetMessage_1_Recv_t *) &EthernetFramesRxIn1_recv_queue);
 }
 
 bool EthernetFramesRxIn2_is_empty(void) {
@@ -112,6 +120,10 @@ bool get_EthernetFramesRxIn2(SW_RawEthernetMessage *data) {
   return get_EthernetFramesRxIn2_poll (&numDropped, data);
 }
 
+uintmax_t get_EthernetFramesRxIn2_num_invalid(void) {
+  return sb_queue_SW_RawEthernetMessage_1_numInvalid((sb_queue_SW_RawEthernetMessage_1_Recv_t *) &EthernetFramesRxIn2_recv_queue);
+}
+
 bool EthernetFramesRxIn3_is_empty(void) {
   return sb_queue_SW_RawEthernetMessage_1_is_empty(&EthernetFramesRxIn3_recv_queue);
 }
@@ -123,6 +135,10 @@ bool get_EthernetFramesRxIn3_poll(sb_event_counter_t *numDropped, SW_RawEthernet
 bool get_EthernetFramesRxIn3(SW_RawEthernetMessage *data) {
   sb_event_counter_t numDropped;
   return get_EthernetFramesRxIn3_poll (&numDropped, data);
+}
+
+uintmax_t get_EthernetFramesRxIn3_num_invalid(void) {
+  return sb_queue_SW_RawEthernetMessage_1_numInvalid((sb_queue_SW_RawEthernetMessage_1_Recv_t *) &EthernetFramesRxIn3_recv_queue);
 }
 
 void init(void) {
@@ -161,6 +177,13 @@ void notified(microkit_channel channel) {
   switch (channel) {
     case PORT_FROM_MON:
       seL4_RxFirewall_RxFirewall_timeTriggered();
+      // Report that this dispatch has finished.  The _MON wrapper forwards it to
+      // the scheduler.  The default scheduler ignores runtime signals from
+      // partitions -- the schedule is static and each partition runs for its full
+      // allotted time -- so this is inert there; the test scheduler uses it as the
+      // slot-complete event, which is what lets it step as fast as threads run
+      // rather than waiting out each slot's wall-clock budget.
+      microkit_notify(PORT_FROM_MON);
       break;
     default:
       seL4_RxFirewall_RxFirewall_notify(channel);

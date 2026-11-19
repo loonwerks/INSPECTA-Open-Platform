@@ -58,6 +58,10 @@ bool get_In0(SW_UdpFrame_Impl *data) {
   return get_In0_poll (&numDropped, data);
 }
 
+uintmax_t get_In0_num_invalid(void) {
+  return sb_queue_SW_UdpFrame_Impl_1_numInvalid((sb_queue_SW_UdpFrame_Impl_1_Recv_t *) &In0_recv_queue);
+}
+
 bool In1_is_empty(void) {
   return sb_queue_SW_UdpFrame_Impl_1_is_empty(&In1_recv_queue);
 }
@@ -69,6 +73,10 @@ bool get_In1_poll(sb_event_counter_t *numDropped, SW_UdpFrame_Impl *data) {
 bool get_In1(SW_UdpFrame_Impl *data) {
   sb_event_counter_t numDropped;
   return get_In1_poll (&numDropped, data);
+}
+
+uintmax_t get_In1_num_invalid(void) {
+  return sb_queue_SW_UdpFrame_Impl_1_numInvalid((sb_queue_SW_UdpFrame_Impl_1_Recv_t *) &In1_recv_queue);
 }
 
 bool In2_is_empty(void) {
@@ -84,6 +92,10 @@ bool get_In2(SW_UdpFrame_Impl *data) {
   return get_In2_poll (&numDropped, data);
 }
 
+uintmax_t get_In2_num_invalid(void) {
+  return sb_queue_SW_UdpFrame_Impl_1_numInvalid((sb_queue_SW_UdpFrame_Impl_1_Recv_t *) &In2_recv_queue);
+}
+
 bool In3_is_empty(void) {
   return sb_queue_SW_UdpFrame_Impl_1_is_empty(&In3_recv_queue);
 }
@@ -95,6 +107,10 @@ bool get_In3_poll(sb_event_counter_t *numDropped, SW_UdpFrame_Impl *data) {
 bool get_In3(SW_UdpFrame_Impl *data) {
   sb_event_counter_t numDropped;
   return get_In3_poll (&numDropped, data);
+}
+
+uintmax_t get_In3_num_invalid(void) {
+  return sb_queue_SW_UdpFrame_Impl_1_numInvalid((sb_queue_SW_UdpFrame_Impl_1_Recv_t *) &In3_recv_queue);
 }
 
 void init(void) {
@@ -125,6 +141,13 @@ void notified(microkit_channel channel) {
   switch (channel) {
     case PORT_FROM_MON:
       seL4_MavlinkFirewall_MavlinkFirewall_timeTriggered();
+      // Report that this dispatch has finished.  The _MON wrapper forwards it to
+      // the scheduler.  The default scheduler ignores runtime signals from
+      // partitions -- the schedule is static and each partition runs for its full
+      // allotted time -- so this is inert there; the test scheduler uses it as the
+      // slot-complete event, which is what lets it step as fast as threads run
+      // rather than waiting out each slot's wall-clock budget.
+      microkit_notify(PORT_FROM_MON);
       break;
     default:
       seL4_MavlinkFirewall_MavlinkFirewall_notify(channel);

@@ -21,3 +21,9 @@ verus! {
   }
 
 }
+
+// Memory layout as HAMR computes it
+const _: () = assert!(core::mem::size_of::<SizedEthernetMessage_Impl>() == 1602);
+const _: () = assert!(core::mem::align_of::<SizedEthernetMessage_Impl>() == 2);
+const _: () = assert!(core::mem::offset_of!(SizedEthernetMessage_Impl, amessage) == 0);
+const _: () = assert!(core::mem::offset_of!(SizedEthernetMessage_Impl, sz) == 1600);

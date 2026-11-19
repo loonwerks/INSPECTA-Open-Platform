@@ -58,19 +58,19 @@ impl seL4_RxFirewall_RxFirewall {
       // guarantee hlr_05_rx0_can_send_arp_to_vmm
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
       final(api).EthernetFramesRxIn0.is_some() && GumboLib::valid_arp_spec(final(api).EthernetFramesRxIn0.unwrap()) ==>
-        ((final(api).VmmOut0.is_some() &&
-          (final(api).EthernetFramesRxIn0.unwrap() == final(api).VmmOut0.unwrap())) &&
+        (final(api).VmmOut0.is_some() &&
+          (final(api).EthernetFramesRxIn0.unwrap() == final(api).VmmOut0.unwrap()) &&
           final(api).MavlinkOut0.is_none()),
       // guarantee hlr_18_rx0_can_send_mavlink_udp
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
       final(api).EthernetFramesRxIn0.is_some() && GumboLib::valid_ipv4_udp_mavlink_spec(final(api).EthernetFramesRxIn0.unwrap()) ==>
-        ((final(api).MavlinkOut0.is_some() && GumboLib::input_eq_mav_output_spec(final(api).EthernetFramesRxIn0.unwrap(), final(api).MavlinkOut0.unwrap())) &&
+        (final(api).MavlinkOut0.is_some() && GumboLib::input_eq_mav_output_spec(final(api).EthernetFramesRxIn0.unwrap(), final(api).MavlinkOut0.unwrap()) &&
           final(api).VmmOut0.is_none()),
       // guarantee hlr_13_rx0_can_send_ipv4_udp
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
       final(api).EthernetFramesRxIn0.is_some() && GumboLib::valid_ipv4_udp_port_spec(final(api).EthernetFramesRxIn0.unwrap()) ==>
-        ((final(api).VmmOut0.is_some() &&
-          (final(api).EthernetFramesRxIn0.unwrap() == final(api).VmmOut0.unwrap())) &&
+        (final(api).VmmOut0.is_some() &&
+          (final(api).EthernetFramesRxIn0.unwrap() == final(api).VmmOut0.unwrap()) &&
           final(api).MavlinkOut0.is_none()),
       // guarantee hlr_15_rx0_disallow
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
@@ -83,19 +83,19 @@ impl seL4_RxFirewall_RxFirewall {
       // guarantee hlr_05_rx1_can_send_arp_to_vmm
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
       final(api).EthernetFramesRxIn1.is_some() && GumboLib::valid_arp_spec(final(api).EthernetFramesRxIn1.unwrap()) ==>
-        ((final(api).VmmOut1.is_some() &&
-          (final(api).EthernetFramesRxIn1.unwrap() == final(api).VmmOut1.unwrap())) &&
+        (final(api).VmmOut1.is_some() &&
+          (final(api).EthernetFramesRxIn1.unwrap() == final(api).VmmOut1.unwrap()) &&
           final(api).MavlinkOut1.is_none()),
       // guarantee hlr_18_rx1_can_send_mavlink_udp
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
       final(api).EthernetFramesRxIn1.is_some() && GumboLib::valid_ipv4_udp_mavlink_spec(final(api).EthernetFramesRxIn1.unwrap()) ==>
-        ((final(api).MavlinkOut1.is_some() && GumboLib::input_eq_mav_output_spec(final(api).EthernetFramesRxIn1.unwrap(), final(api).MavlinkOut1.unwrap())) &&
+        (final(api).MavlinkOut1.is_some() && GumboLib::input_eq_mav_output_spec(final(api).EthernetFramesRxIn1.unwrap(), final(api).MavlinkOut1.unwrap()) &&
           final(api).VmmOut1.is_none()),
       // guarantee hlr_13_rx1_can_send_ipv4_udp
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
       final(api).EthernetFramesRxIn1.is_some() && GumboLib::valid_ipv4_udp_port_spec(final(api).EthernetFramesRxIn1.unwrap()) ==>
-        ((final(api).VmmOut1.is_some() &&
-          (final(api).EthernetFramesRxIn1.unwrap() == final(api).VmmOut1.unwrap())) &&
+        (final(api).VmmOut1.is_some() &&
+          (final(api).EthernetFramesRxIn1.unwrap() == final(api).VmmOut1.unwrap()) &&
           final(api).MavlinkOut1.is_none()),
       // guarantee hlr_15_rx1_disallow
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
@@ -108,19 +108,19 @@ impl seL4_RxFirewall_RxFirewall {
       // guarantee hlr_05_rx2_can_send_arp_to_vmm
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
       final(api).EthernetFramesRxIn2.is_some() && GumboLib::valid_arp_spec(final(api).EthernetFramesRxIn2.unwrap()) ==>
-        ((final(api).VmmOut2.is_some() &&
-          (final(api).EthernetFramesRxIn2.unwrap() == final(api).VmmOut2.unwrap())) &&
+        (final(api).VmmOut2.is_some() &&
+          (final(api).EthernetFramesRxIn2.unwrap() == final(api).VmmOut2.unwrap()) &&
           final(api).MavlinkOut2.is_none()),
       // guarantee hlr_18_rx2_can_send_mavlink_udp
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
       final(api).EthernetFramesRxIn2.is_some() && GumboLib::valid_ipv4_udp_mavlink_spec(final(api).EthernetFramesRxIn2.unwrap()) ==>
-        ((final(api).MavlinkOut2.is_some() && GumboLib::input_eq_mav_output_spec(final(api).EthernetFramesRxIn2.unwrap(), final(api).MavlinkOut2.unwrap())) &&
+        (final(api).MavlinkOut2.is_some() && GumboLib::input_eq_mav_output_spec(final(api).EthernetFramesRxIn2.unwrap(), final(api).MavlinkOut2.unwrap()) &&
           final(api).VmmOut2.is_none()),
       // guarantee hlr_13_rx2_can_send_ipv4_udp
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
       final(api).EthernetFramesRxIn2.is_some() && GumboLib::valid_ipv4_udp_port_spec(final(api).EthernetFramesRxIn2.unwrap()) ==>
-        ((final(api).VmmOut2.is_some() &&
-          (final(api).EthernetFramesRxIn2.unwrap() == final(api).VmmOut2.unwrap())) &&
+        (final(api).VmmOut2.is_some() &&
+          (final(api).EthernetFramesRxIn2.unwrap() == final(api).VmmOut2.unwrap()) &&
           final(api).MavlinkOut2.is_none()),
       // guarantee hlr_15_rx2_disallow
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
@@ -133,19 +133,19 @@ impl seL4_RxFirewall_RxFirewall {
       // guarantee hlr_05_rx3_can_send_arp_to_vmm
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
       final(api).EthernetFramesRxIn3.is_some() && GumboLib::valid_arp_spec(final(api).EthernetFramesRxIn3.unwrap()) ==>
-        ((final(api).VmmOut3.is_some() &&
-          (final(api).EthernetFramesRxIn3.unwrap() == final(api).VmmOut3.unwrap())) &&
+        (final(api).VmmOut3.is_some() &&
+          (final(api).EthernetFramesRxIn3.unwrap() == final(api).VmmOut3.unwrap()) &&
           final(api).MavlinkOut3.is_none()),
       // guarantee hlr_18_rx3_can_send_mavlink_udp
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
       final(api).EthernetFramesRxIn3.is_some() && GumboLib::valid_ipv4_udp_mavlink_spec(final(api).EthernetFramesRxIn3.unwrap()) ==>
-        ((final(api).MavlinkOut3.is_some() && GumboLib::input_eq_mav_output_spec(final(api).EthernetFramesRxIn3.unwrap(), final(api).MavlinkOut3.unwrap())) &&
+        (final(api).MavlinkOut3.is_some() && GumboLib::input_eq_mav_output_spec(final(api).EthernetFramesRxIn3.unwrap(), final(api).MavlinkOut3.unwrap()) &&
           final(api).VmmOut3.is_none()),
       // guarantee hlr_13_rx3_can_send_ipv4_udp
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
       final(api).EthernetFramesRxIn3.is_some() && GumboLib::valid_ipv4_udp_port_spec(final(api).EthernetFramesRxIn3.unwrap()) ==>
-        ((final(api).VmmOut3.is_some() &&
-          (final(api).EthernetFramesRxIn3.unwrap() == final(api).VmmOut3.unwrap())) &&
+        (final(api).VmmOut3.is_some() &&
+          (final(api).EthernetFramesRxIn3.unwrap() == final(api).VmmOut3.unwrap()) &&
           final(api).MavlinkOut3.is_none()),
       // guarantee hlr_15_rx3_disallow
       //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4

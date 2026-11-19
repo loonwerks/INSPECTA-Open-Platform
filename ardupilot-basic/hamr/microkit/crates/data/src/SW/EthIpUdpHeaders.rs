@@ -6,9 +6,12 @@ use super::*;
 
 verus! {
 
-  pub const SW_EthIpUdpHeaders_BYTE_SIZE: usize = 42;
   pub const SW_EthIpUdpHeaders_DIM_0: usize = 42;
 
   pub type EthIpUdpHeaders = [u8; SW_EthIpUdpHeaders_DIM_0];
 
 }
+
+// Memory layout as HAMR computes it
+const _: () = assert!(core::mem::size_of::<EthIpUdpHeaders>() == 42);
+const _: () = assert!(core::mem::align_of::<EthIpUdpHeaders>() == 1);

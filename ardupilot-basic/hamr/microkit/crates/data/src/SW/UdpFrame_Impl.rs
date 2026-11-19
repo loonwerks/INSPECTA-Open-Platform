@@ -21,3 +21,9 @@ verus! {
   }
 
 }
+
+// Memory layout as HAMR computes it
+const _: () = assert!(core::mem::size_of::<UdpFrame_Impl>() == 1600);
+const _: () = assert!(core::mem::align_of::<UdpFrame_Impl>() == 1);
+const _: () = assert!(core::mem::offset_of!(UdpFrame_Impl, headers) == 0);
+const _: () = assert!(core::mem::offset_of!(UdpFrame_Impl, payload) == 42);

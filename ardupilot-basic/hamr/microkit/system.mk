@@ -31,6 +31,13 @@ MICROKIT_TOOL ?= $(MICROKIT_SDK)/bin/microkit
 DTC := dtc
 PYTHON ?= python3
 
+# Which cargo profile directory the Rust staticlibs land in.  The crate Makefiles'
+# default target is build-verus-release, and the *-release targets pass --release, so
+# those produce target/<triple>/release; the plain build / build-verus targets do not
+# and produce target/<triple>/debug.  The link rules below have to look in whichever
+# one RUST_MAKE_TARGET actually populated.
+RUST_PROFILE_DIR := $(if $(RUST_MAKE_TARGET),$(if $(filter %-release,$(RUST_MAKE_TARGET)),release,debug),release)
+
 SYSTEM_FILE := arinc_scheduling.system
 IMAGE_FILE := loader.img
 REPORT_FILE := report.txt
@@ -64,6 +71,7 @@ CFLAGS += \
 	-I$(SDDF)/include/microkit \
 	-I$(TOP_DIR)/scheduler/include \
 	$(TOP_TYPES_INCLUDE) \
+	$(MON_CFLAGS) \
 	-I$(TOP_DIR)/components/seL4_MavlinkFirewall_MavlinkFirewall/include \
 	-I$(TOP_DIR)/components/seL4_RxFirewall_RxFirewall/include \
 	-I$(TOP_DIR)/components/seL4_TxFirewall_TxFirewall/include \
@@ -78,17 +86,47 @@ TYPE_OBJS := \
 	sb_queue_SW_UdpFrame_Impl_1.o \
 	sb_queue_SW_SizedEthernetMessage_Impl_1.o
 
+# The queue objects as an archive: each protection domain's link pulls in only the
+# queues it uses, not every queue in the system
+TYPES_LIB := libhamr_types.a
+
 
 all: cache.o
 
 # Sentinel file whose name encodes a hash of build-affecting variables.
 # When any of these change the old sentinel is removed and a new one is created,
 # forcing dependent targets to rebuild.
-CHECK_FLAGS_BOARD_MD5:=.board_cflags-$(shell echo -- ${CFLAGS} ${BOARD} ${MICROKIT_CONFIG} ${MICROKIT_SDK} ${MSD} ${SCHEDULER_C} ${SCHEDULER_CONFIG_HEADERS}| shasum | sed 's/ *-//')
+# TESTS, LIST_TESTS, GUMBO_CHECKS, SYSVERIF_CHECKS and PROPTEST_SEED are part of the hash because they
+# are patched into an ELF section by the MSD step below (all but TESTS through its
+# environment, so a meta.py written before they existed still runs).  Without them,
+# changing one leaves this stamp -- and therefore $(SYSTEM_FILE) -- up to date, the
+# metaprogram never re-runs, and the image silently keeps running the previous
+# selection.  Each is hashed with its name: unlabelled, GUMBO_CHECKS=off and
+# SYSVERIF_CHECKS=off hash alike, since an empty variable leaves no trace.
+# TESTS reaches the MSD step through its environment ("$$TESTS"), so no character in it is
+# re-parsed by the shell; in the hash, a quote is replaced (after %, so no two filters hash
+# alike) so it cannot end the quoting.
+export TESTS
+CHECK_FLAGS_BOARD_MD5:=.hamr_flags-$(shell echo -- ${CFLAGS} ${BOARD} ${MICROKIT_CONFIG} ${MICROKIT_SDK} ${MSD} ${SCHEDULER_C} ${SCHEDULER_CONFIG_HEADERS} 'TESTS=$(subst ',%27,$(subst %,%25,$(TESTS)))' LIST_TESTS=${LIST_TESTS} GUMBO_CHECKS=${GUMBO_CHECKS} SYSVERIF_CHECKS=${SYSVERIF_CHECKS} PROPTEST_SEED=${PROPTEST_SEED}| shasum | sed 's/ *-//')
 
 ${CHECK_FLAGS_BOARD_MD5}:
-	-rm -f .board_cflags-*
+	-rm -f .hamr_flags-*
 	touch $@
+
+# The stamp above relinks the images.  It is named .hamr_flags-*, not .board_cflags-*:
+# sDDF's own stamp (board/common.mk), which every C object depends on, has that name, and
+# each rule deletes its name's stamps, so sharing it made each delete the other and every
+# make rebuild everything.  sDDF's hash is taken before CFLAGS is extended above, so it
+# does not see a variant's MON_CFLAGS, and every variant builds here: an object compiled
+# for one could be linked into another.  So when the final CFLAGS changes, every object
+# and archive compiled here is removed before anything is built -- only in the build
+# directory, where the top Makefile runs this one (make -C), never in a tree it is run
+# from by hand.  sDDF's stamp is created with it: made only once objects exist, it would
+# otherwise be newer than all of them on the build after a clean one, and recompile them.
+CHECK_CFLAGS_MD5:=.cflags-$(shell echo -- ${CFLAGS} | shasum | sed 's/ *-//')
+ifeq ($(CURDIR)$(wildcard $(CHECK_CFLAGS_MD5)),$(abspath $(TOP_BUILD_DIR)))
+$(shell find . \( -name '*.o' -o -name '*.a' -o -name '.cflags-*' \) -delete; touch $(CHECK_CFLAGS_MD5) $(CHECK_FLAGS_BOARD_HASH))
+endif
 
 
 vpath %.c $(SDDF) \
@@ -101,6 +139,8 @@ vpath %.c $(SDDF) \
 	$(TOP_DIR)/components/seL4_ArduPilot_ArduPilot/src
 
 
+# EXTRA_IMAGES: protection domains only a variant has (the test controller, set by
+# test_scheduler.mk); empty for the shipped image
 IMAGES := timer_driver.elf scheduler.elf \
 	seL4_MavlinkFirewall_MavlinkFirewall.elf \
 	seL4_MavlinkFirewall_MavlinkFirewall_MON.elf \
@@ -111,7 +151,8 @@ IMAGES := timer_driver.elf scheduler.elf \
 	seL4_LowLevelEthernetDriver_LowLevelEthernetDriver.elf \
 	seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_MON.elf \
 	seL4_ArduPilot_ArduPilot.elf \
-	seL4_ArduPilot_ArduPilot_MON.elf
+	seL4_ArduPilot_ArduPilot_MON.elf \
+	$(EXTRA_IMAGES)
 
 ${IMAGES}: libsddf_util_debug.a ${CHECK_FLAGS_BOARD_MD5}
 
@@ -155,44 +196,48 @@ SCHEDULER_OBJ := $(notdir $(basename $(SCHEDULER_C))).o
 $(SCHEDULER_OBJ): $(SCHEDULER_C) ${SDDF}/include
 	${CC} ${CFLAGS} -c -o $@ $<
 
-scheduler.elf: $(UTIL_OBJS) $(TYPE_OBJS) $(SCHEDULER_OBJ) ${CHECK_FLAGS_BOARD_MD5}
-	$(LD) $(LDFLAGS) $(filter %.o, $^) $(LIBS) -o $@
+$(TYPES_LIB): $(TYPE_OBJS)
+	rm -f $@
+	$(AR) rcs $@ $^
+
+scheduler.elf: $(UTIL_OBJS) $(SCHEDULER_OBJ) $(TYPES_LIB) ${CHECK_FLAGS_BOARD_MD5}
+	$(LD) $(LDFLAGS) $(filter %.o, $^) $(TYPES_LIB) $(LIBS) -o $@
 
 seL4_MavlinkFirewall_MavlinkFirewall_MON.elf: seL4_MavlinkFirewall_MavlinkFirewall_MON_user.o seL4_MavlinkFirewall_MavlinkFirewall_MON.o
 	$(LD) $(LDFLAGS) $^ $(LIBS) -o $@
 
-seL4_MavlinkFirewall_MavlinkFirewall.elf: $(UTIL_OBJS) $(TYPE_OBJS) seL4_MavlinkFirewall_MavlinkFirewall_rust seL4_MavlinkFirewall_MavlinkFirewall.o
-	$(LD) $(LDFLAGS) -L ${CRATES_DIR}/seL4_MavlinkFirewall_MavlinkFirewall/target/aarch64-unknown-none/release $(filter %.o, $^) $(LIBS) -lseL4_MavlinkFirewall_MavlinkFirewall -o $@
+seL4_MavlinkFirewall_MavlinkFirewall.elf: $(UTIL_OBJS) seL4_MavlinkFirewall_MavlinkFirewall_rust seL4_MavlinkFirewall_MavlinkFirewall.o $(TYPES_LIB)
+	$(LD) $(LDFLAGS) -L ${CRATES_DIR}/seL4_MavlinkFirewall_MavlinkFirewall/target/aarch64-unknown-none/$(RUST_PROFILE_DIR) $(filter %.o, $^) $(TYPES_LIB) $(LIBS) -lseL4_MavlinkFirewall_MavlinkFirewall -o $@
 
 seL4_RxFirewall_RxFirewall_MON.elf: seL4_RxFirewall_RxFirewall_MON_user.o seL4_RxFirewall_RxFirewall_MON.o
 	$(LD) $(LDFLAGS) $^ $(LIBS) -o $@
 
-seL4_RxFirewall_RxFirewall.elf: $(UTIL_OBJS) $(TYPE_OBJS) seL4_RxFirewall_RxFirewall_rust seL4_RxFirewall_RxFirewall.o
-	$(LD) $(LDFLAGS) -L ${CRATES_DIR}/seL4_RxFirewall_RxFirewall/target/aarch64-unknown-none/release $(filter %.o, $^) $(LIBS) -lseL4_RxFirewall_RxFirewall -o $@
+seL4_RxFirewall_RxFirewall.elf: $(UTIL_OBJS) seL4_RxFirewall_RxFirewall_rust seL4_RxFirewall_RxFirewall.o $(TYPES_LIB)
+	$(LD) $(LDFLAGS) -L ${CRATES_DIR}/seL4_RxFirewall_RxFirewall/target/aarch64-unknown-none/$(RUST_PROFILE_DIR) $(filter %.o, $^) $(TYPES_LIB) $(LIBS) -lseL4_RxFirewall_RxFirewall -o $@
 
 seL4_TxFirewall_TxFirewall_MON.elf: seL4_TxFirewall_TxFirewall_MON_user.o seL4_TxFirewall_TxFirewall_MON.o
 	$(LD) $(LDFLAGS) $^ $(LIBS) -o $@
 
-seL4_TxFirewall_TxFirewall.elf: $(UTIL_OBJS) $(TYPE_OBJS) seL4_TxFirewall_TxFirewall_rust seL4_TxFirewall_TxFirewall.o
-	$(LD) $(LDFLAGS) -L ${CRATES_DIR}/seL4_TxFirewall_TxFirewall/target/aarch64-unknown-none/release $(filter %.o, $^) $(LIBS) -lseL4_TxFirewall_TxFirewall -o $@
+seL4_TxFirewall_TxFirewall.elf: $(UTIL_OBJS) seL4_TxFirewall_TxFirewall_rust seL4_TxFirewall_TxFirewall.o $(TYPES_LIB)
+	$(LD) $(LDFLAGS) -L ${CRATES_DIR}/seL4_TxFirewall_TxFirewall/target/aarch64-unknown-none/$(RUST_PROFILE_DIR) $(filter %.o, $^) $(TYPES_LIB) $(LIBS) -lseL4_TxFirewall_TxFirewall -o $@
 
 seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_MON.elf: seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_MON_user.o seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_MON.o
 	$(LD) $(LDFLAGS) $^ $(LIBS) -o $@
 
-seL4_LowLevelEthernetDriver_LowLevelEthernetDriver.elf: $(UTIL_OBJS) $(TYPE_OBJS) seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_rust seL4_LowLevelEthernetDriver_LowLevelEthernetDriver.o
-	$(LD) $(LDFLAGS) -L ${CRATES_DIR}/seL4_LowLevelEthernetDriver_LowLevelEthernetDriver/target/aarch64-unknown-none/release $(filter %.o, $^) $(LIBS) -lseL4_LowLevelEthernetDriver_LowLevelEthernetDriver -o $@
+seL4_LowLevelEthernetDriver_LowLevelEthernetDriver.elf: $(UTIL_OBJS) seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_rust seL4_LowLevelEthernetDriver_LowLevelEthernetDriver.o $(TYPES_LIB)
+	$(LD) $(LDFLAGS) -L ${CRATES_DIR}/seL4_LowLevelEthernetDriver_LowLevelEthernetDriver/target/aarch64-unknown-none/$(RUST_PROFILE_DIR) $(filter %.o, $^) $(TYPES_LIB) $(LIBS) -lseL4_LowLevelEthernetDriver_LowLevelEthernetDriver -o $@
 
 seL4_ArduPilot_ArduPilot_MON.elf: seL4_ArduPilot_ArduPilot_MON_user.o seL4_ArduPilot_ArduPilot_MON.o
 	$(LD) $(LDFLAGS) $^ $(LIBS) -o $@
 
-seL4_ArduPilot_ArduPilot.elf: $(TYPE_OBJS) seL4_ArduPilot_ArduPilot.a
-	$(LD) $(LDFLAGS) $^ --start-group -lmicrokit -Tmicrokit.ld seL4_ArduPilot_ArduPilot.a --end-group -o $@
+seL4_ArduPilot_ArduPilot.elf: $(TYPES_LIB) seL4_ArduPilot_ArduPilot.a
+	$(LD) $(LDFLAGS) $^ --start-group -lmicrokit -Tmicrokit.ld seL4_ArduPilot_ArduPilot.a $(TYPES_LIB) --end-group -o $@
 
 
 
 $(SYSTEM_FILE): $(IMAGES) $(DTB) ${CHECK_FLAGS_BOARD_MD5}
 	$(PYTHON) $(SDFGEN_HELPER) --macros "$(SDFGEN_UNKOWN_MACROS)" --configs "$(SCHEDULER_CONFIG_HEADERS)" --output $(TOP_BUILD_DIR)/config_structs.py
-	$(PYTHON) $(MSD) --sddf $(SDDF) --board $(MICROKIT_BOARD) --dtb $(DTB) --output . --sdf $(SYSTEM_FILE) --objcopy $(OBJCOPY)
+	LIST_TESTS="$(LIST_TESTS)" GUMBO_CHECKS="$(GUMBO_CHECKS)" SYSVERIF_CHECKS="$(SYSVERIF_CHECKS)" PROPTEST_SEED="$(PROPTEST_SEED)" $(PYTHON) $(MSD) --sddf $(SDDF) --board $(MICROKIT_BOARD) --dtb $(DTB) --output . --sdf $(SYSTEM_FILE) --objcopy $(OBJCOPY) --tests="$$TESTS"
 	$(OBJCOPY) --update-section .device_resources=timer_driver_device_resources.data timer_driver.elf
 	$(OBJCOPY) --update-section .timer_client_config=timer_client_scheduler.data scheduler.elf
 
@@ -225,6 +270,13 @@ clean::
 	make -C ${CRATES_DIR}/seL4_TxFirewall_TxFirewall clean
 	make -C ${CRATES_DIR}/seL4_LowLevelEthernetDriver_LowLevelEthernetDriver clean
 	rm -rf ${TOP_DIR}/components/seL4_ArduPilot_ArduPilot/build
+
+coverage: 
+	@open=; if [ ! -f $(TOP_DIR)/target/coverage/report/index.html ]; then open=open; fi; \
+	$(TOP_DIR)/bin/coverage-report.cmd ${CRATES_DIR}/seL4_MavlinkFirewall_MavlinkFirewall ${CRATES_DIR}/seL4_RxFirewall_RxFirewall ${CRATES_DIR}/seL4_TxFirewall_TxFirewall ${CRATES_DIR}/seL4_LowLevelEthernetDriver_LowLevelEthernetDriver out=$(TOP_DIR)/target/coverage $$open $(args)
+
+coverage-report: 
+	$(TOP_DIR)/bin/coverage-report.cmd ${CRATES_DIR}/seL4_MavlinkFirewall_MavlinkFirewall ${CRATES_DIR}/seL4_RxFirewall_RxFirewall ${CRATES_DIR}/seL4_TxFirewall_TxFirewall ${CRATES_DIR}/seL4_LowLevelEthernetDriver_LowLevelEthernetDriver out=$(TOP_DIR)/target/coverage no-run
 
 verus: 
 	make -C ${CRATES_DIR}/seL4_MavlinkFirewall_MavlinkFirewall verus

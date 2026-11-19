@@ -44,8 +44,8 @@ package SW {
 
   part def LowLevelEthernetDriver :> Thread {
     attribute :>> Dispatch_Protocol = AADL_Project::Supported_Dispatch_Protocols::Periodic;
-    attribute :>> Period = 180 [us];
-    attribute :>> Compute_Execution_Time = 30[us] .. 30[us];
+    attribute :>> Period = 1800 [us];
+    attribute :>> Compute_Execution_Time = 300[us] .. 300[us];
     attribute :>> Implementation_Language = Rust;
     attribute :>> Stack_Size = 1048576[byte];
 
@@ -107,8 +107,8 @@ package SW {
     port MavlinkOut3 : EventDataPort { out :>> type : UdpFrame_Impl; }
 
     attribute :>> Dispatch_Protocol = AADL_Project::Supported_Dispatch_Protocols::Periodic;
-    attribute :>> Period = 180 [us];
-    attribute :>> Compute_Execution_Time = 30[us] .. 30[us];
+    attribute :>> Period = 1800 [us];
+    attribute :>> Compute_Execution_Time = 300[us] .. 300[us];
     attribute :>> Stack_Size = 1048576[byte];
     attribute :>> Implementation_Language = Rust;			
 
@@ -232,8 +232,8 @@ package SW {
     port EthernetFramesTxOut3 : EventDataPort { out :>> type : SizedEthernetMessage_Impl; }
   
     attribute :>> Dispatch_Protocol = AADL_Project::Supported_Dispatch_Protocols::Periodic;
-    attribute :>> Period = 180 [us];
-    attribute :>> Compute_Execution_Time = 30[us] .. 30[us];
+    attribute :>> Period = 1800 [us];
+    attribute :>> Compute_Execution_Time = 300[us] .. 300[us];
     attribute :>> Stack_Size = 1048576[byte];
     attribute :>> Implementation_Language = Rust;
     
@@ -353,8 +353,8 @@ package SW {
     port Out3 : EventDataPort { out :>> type : RawEthernetMessage; }
     
     attribute :>> Dispatch_Protocol = AADL_Project::Supported_Dispatch_Protocols::Periodic;
-    attribute :>> Period = 180 [us];
-    attribute :>> Compute_Execution_Time = 30[us] .. 30[us];
+    attribute :>> Period = 1800 [us];
+    attribute :>> Compute_Execution_Time = 300[us] .. 300[us];
     attribute :>> Stack_Size = 1048576[byte];
     attribute :>> Implementation_Language = Rust;
 
@@ -466,8 +466,8 @@ package SW {
     port EthernetFramesTx3 : EventDataPort { out :>> type : RawEthernetMessage; }
   
     attribute :>> Dispatch_Protocol = AADL_Project::Supported_Dispatch_Protocols::Periodic;
-    attribute :>> Period = 180 [us];
-    attribute :>> Compute_Execution_Time = 60[us] .. 60[us];
+    attribute :>> Period = 1800 [us];
+    attribute :>> Compute_Execution_Time = 600[us] .. 600[us];
     attribute :>> Stack_Size = 1048576[byte];
 
     attribute :>> SMC = true;

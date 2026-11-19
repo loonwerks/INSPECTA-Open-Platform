@@ -34,6 +34,10 @@ bool get_EthernetFramesTx0(SW_SizedEthernetMessage_Impl *data) {
   return get_EthernetFramesTx0_poll (&numDropped, data);
 }
 
+uintmax_t get_EthernetFramesTx0_num_invalid(void) {
+  return sb_queue_SW_SizedEthernetMessage_Impl_1_numInvalid((sb_queue_SW_SizedEthernetMessage_Impl_1_Recv_t *) &EthernetFramesTx0_recv_queue);
+}
+
 bool EthernetFramesTx1_is_empty(void) {
   return sb_queue_SW_SizedEthernetMessage_Impl_1_is_empty(&EthernetFramesTx1_recv_queue);
 }
@@ -45,6 +49,10 @@ bool get_EthernetFramesTx1_poll(sb_event_counter_t *numDropped, SW_SizedEthernet
 bool get_EthernetFramesTx1(SW_SizedEthernetMessage_Impl *data) {
   sb_event_counter_t numDropped;
   return get_EthernetFramesTx1_poll (&numDropped, data);
+}
+
+uintmax_t get_EthernetFramesTx1_num_invalid(void) {
+  return sb_queue_SW_SizedEthernetMessage_Impl_1_numInvalid((sb_queue_SW_SizedEthernetMessage_Impl_1_Recv_t *) &EthernetFramesTx1_recv_queue);
 }
 
 bool EthernetFramesTx2_is_empty(void) {
@@ -60,6 +68,10 @@ bool get_EthernetFramesTx2(SW_SizedEthernetMessage_Impl *data) {
   return get_EthernetFramesTx2_poll (&numDropped, data);
 }
 
+uintmax_t get_EthernetFramesTx2_num_invalid(void) {
+  return sb_queue_SW_SizedEthernetMessage_Impl_1_numInvalid((sb_queue_SW_SizedEthernetMessage_Impl_1_Recv_t *) &EthernetFramesTx2_recv_queue);
+}
+
 bool EthernetFramesTx3_is_empty(void) {
   return sb_queue_SW_SizedEthernetMessage_Impl_1_is_empty(&EthernetFramesTx3_recv_queue);
 }
@@ -71,6 +83,10 @@ bool get_EthernetFramesTx3_poll(sb_event_counter_t *numDropped, SW_SizedEthernet
 bool get_EthernetFramesTx3(SW_SizedEthernetMessage_Impl *data) {
   sb_event_counter_t numDropped;
   return get_EthernetFramesTx3_poll (&numDropped, data);
+}
+
+uintmax_t get_EthernetFramesTx3_num_invalid(void) {
+  return sb_queue_SW_SizedEthernetMessage_Impl_1_numInvalid((sb_queue_SW_SizedEthernetMessage_Impl_1_Recv_t *) &EthernetFramesTx3_recv_queue);
 }
 
 bool put_EthernetFramesRx0(const SW_RawEthernetMessage *data) {
@@ -125,6 +141,13 @@ void notified(microkit_channel channel) {
   switch (channel) {
     case PORT_FROM_MON:
       seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_timeTriggered();
+      // Report that this dispatch has finished.  The _MON wrapper forwards it to
+      // the scheduler.  The default scheduler ignores runtime signals from
+      // partitions -- the schedule is static and each partition runs for its full
+      // allotted time -- so this is inert there; the test scheduler uses it as the
+      // slot-complete event, which is what lets it step as fast as threads run
+      // rather than waiting out each slot's wall-clock budget.
+      microkit_notify(PORT_FROM_MON);
       break;
     default:
       seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_notify(channel);

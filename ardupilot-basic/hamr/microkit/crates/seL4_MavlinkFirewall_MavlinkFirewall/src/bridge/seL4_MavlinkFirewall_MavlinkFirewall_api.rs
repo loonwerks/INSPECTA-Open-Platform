@@ -54,6 +54,12 @@ verus! {
     }
 
     #[verifier::external_body]
+    fn unverified_get_In0_num_invalid(&self) -> u64
+    {
+      return extern_api::unsafe_get_In0_num_invalid();
+    }
+
+    #[verifier::external_body]
     fn unverified_get_In1(
       &mut self,
       value: &Ghost<Option<SW::UdpFrame_Impl>>) -> (res : Option<SW::UdpFrame_Impl>)
@@ -61,6 +67,12 @@ verus! {
         res == value@,
     {
       return extern_api::unsafe_get_In1();
+    }
+
+    #[verifier::external_body]
+    fn unverified_get_In1_num_invalid(&self) -> u64
+    {
+      return extern_api::unsafe_get_In1_num_invalid();
     }
 
     #[verifier::external_body]
@@ -74,6 +86,12 @@ verus! {
     }
 
     #[verifier::external_body]
+    fn unverified_get_In2_num_invalid(&self) -> u64
+    {
+      return extern_api::unsafe_get_In2_num_invalid();
+    }
+
+    #[verifier::external_body]
     fn unverified_get_In3(
       &mut self,
       value: &Ghost<Option<SW::UdpFrame_Impl>>) -> (res : Option<SW::UdpFrame_Impl>)
@@ -81,6 +99,12 @@ verus! {
         res == value@,
     {
       return extern_api::unsafe_get_In3();
+    }
+
+    #[verifier::external_body]
+    fn unverified_get_In3_num_invalid(&self) -> u64
+    {
+      return extern_api::unsafe_get_In3_num_invalid();
     }
   }
 
@@ -180,6 +204,12 @@ verus! {
         old(self).Out3 == final(self).Out3,
     {
       self.api.unverified_get_In0(&Ghost(self.In0))
+    }/// The number of messages received on In0 that were dropped because they held
+    /// an invalid bit pattern (an out-of-range enum, a bool that is neither 0 nor 1, or a
+    /// string with no terminating NUL)
+    pub fn get_In0_num_invalid(&self) -> u64
+    {
+      self.api.unverified_get_In0_num_invalid()
     }
     pub fn get_In1(&mut self) -> (res : Option<SW::UdpFrame_Impl>)
       ensures
@@ -194,6 +224,12 @@ verus! {
         old(self).Out3 == final(self).Out3,
     {
       self.api.unverified_get_In1(&Ghost(self.In1))
+    }/// The number of messages received on In1 that were dropped because they held
+    /// an invalid bit pattern (an out-of-range enum, a bool that is neither 0 nor 1, or a
+    /// string with no terminating NUL)
+    pub fn get_In1_num_invalid(&self) -> u64
+    {
+      self.api.unverified_get_In1_num_invalid()
     }
     pub fn get_In2(&mut self) -> (res : Option<SW::UdpFrame_Impl>)
       ensures
@@ -208,6 +244,12 @@ verus! {
         old(self).Out3 == final(self).Out3,
     {
       self.api.unverified_get_In2(&Ghost(self.In2))
+    }/// The number of messages received on In2 that were dropped because they held
+    /// an invalid bit pattern (an out-of-range enum, a bool that is neither 0 nor 1, or a
+    /// string with no terminating NUL)
+    pub fn get_In2_num_invalid(&self) -> u64
+    {
+      self.api.unverified_get_In2_num_invalid()
     }
     pub fn get_In3(&mut self) -> (res : Option<SW::UdpFrame_Impl>)
       ensures
@@ -222,6 +264,12 @@ verus! {
         old(self).Out3 == final(self).Out3,
     {
       self.api.unverified_get_In3(&Ghost(self.In3))
+    }/// The number of messages received on In3 that were dropped because they held
+    /// an invalid bit pattern (an out-of-range enum, a bool that is neither 0 nor 1, or a
+    /// string with no terminating NUL)
+    pub fn get_In3_num_invalid(&self) -> u64
+    {
+      self.api.unverified_get_In3_num_invalid()
     }
   }
 

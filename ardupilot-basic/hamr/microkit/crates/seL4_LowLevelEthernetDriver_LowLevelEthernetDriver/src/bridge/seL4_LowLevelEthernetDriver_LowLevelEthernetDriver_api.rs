@@ -54,6 +54,12 @@ verus! {
     }
 
     #[verifier::external_body]
+    fn unverified_get_EthernetFramesTx0_num_invalid(&self) -> u64
+    {
+      return extern_api::unsafe_get_EthernetFramesTx0_num_invalid();
+    }
+
+    #[verifier::external_body]
     fn unverified_get_EthernetFramesTx1(
       &mut self,
       value: &Ghost<Option<SW::SizedEthernetMessage_Impl>>) -> (res : Option<SW::SizedEthernetMessage_Impl>)
@@ -61,6 +67,12 @@ verus! {
         res == value@,
     {
       return extern_api::unsafe_get_EthernetFramesTx1();
+    }
+
+    #[verifier::external_body]
+    fn unverified_get_EthernetFramesTx1_num_invalid(&self) -> u64
+    {
+      return extern_api::unsafe_get_EthernetFramesTx1_num_invalid();
     }
 
     #[verifier::external_body]
@@ -74,6 +86,12 @@ verus! {
     }
 
     #[verifier::external_body]
+    fn unverified_get_EthernetFramesTx2_num_invalid(&self) -> u64
+    {
+      return extern_api::unsafe_get_EthernetFramesTx2_num_invalid();
+    }
+
+    #[verifier::external_body]
     fn unverified_get_EthernetFramesTx3(
       &mut self,
       value: &Ghost<Option<SW::SizedEthernetMessage_Impl>>) -> (res : Option<SW::SizedEthernetMessage_Impl>)
@@ -81,6 +99,12 @@ verus! {
         res == value@,
     {
       return extern_api::unsafe_get_EthernetFramesTx3();
+    }
+
+    #[verifier::external_body]
+    fn unverified_get_EthernetFramesTx3_num_invalid(&self) -> u64
+    {
+      return extern_api::unsafe_get_EthernetFramesTx3_num_invalid();
     }
   }
 
@@ -180,6 +204,12 @@ verus! {
         old(self).EthernetFramesTx3 == final(self).EthernetFramesTx3,
     {
       self.api.unverified_get_EthernetFramesTx0(&Ghost(self.EthernetFramesTx0))
+    }/// The number of messages received on EthernetFramesTx0 that were dropped because they held
+    /// an invalid bit pattern (an out-of-range enum, a bool that is neither 0 nor 1, or a
+    /// string with no terminating NUL)
+    pub fn get_EthernetFramesTx0_num_invalid(&self) -> u64
+    {
+      self.api.unverified_get_EthernetFramesTx0_num_invalid()
     }
     pub fn get_EthernetFramesTx1(&mut self) -> (res : Option<SW::SizedEthernetMessage_Impl>)
       ensures
@@ -194,6 +224,12 @@ verus! {
         old(self).EthernetFramesTx3 == final(self).EthernetFramesTx3,
     {
       self.api.unverified_get_EthernetFramesTx1(&Ghost(self.EthernetFramesTx1))
+    }/// The number of messages received on EthernetFramesTx1 that were dropped because they held
+    /// an invalid bit pattern (an out-of-range enum, a bool that is neither 0 nor 1, or a
+    /// string with no terminating NUL)
+    pub fn get_EthernetFramesTx1_num_invalid(&self) -> u64
+    {
+      self.api.unverified_get_EthernetFramesTx1_num_invalid()
     }
     pub fn get_EthernetFramesTx2(&mut self) -> (res : Option<SW::SizedEthernetMessage_Impl>)
       ensures
@@ -208,6 +244,12 @@ verus! {
         old(self).EthernetFramesTx3 == final(self).EthernetFramesTx3,
     {
       self.api.unverified_get_EthernetFramesTx2(&Ghost(self.EthernetFramesTx2))
+    }/// The number of messages received on EthernetFramesTx2 that were dropped because they held
+    /// an invalid bit pattern (an out-of-range enum, a bool that is neither 0 nor 1, or a
+    /// string with no terminating NUL)
+    pub fn get_EthernetFramesTx2_num_invalid(&self) -> u64
+    {
+      self.api.unverified_get_EthernetFramesTx2_num_invalid()
     }
     pub fn get_EthernetFramesTx3(&mut self) -> (res : Option<SW::SizedEthernetMessage_Impl>)
       ensures
@@ -222,6 +264,12 @@ verus! {
         res == final(self).EthernetFramesTx3,
     {
       self.api.unverified_get_EthernetFramesTx3(&Ghost(self.EthernetFramesTx3))
+    }/// The number of messages received on EthernetFramesTx3 that were dropped because they held
+    /// an invalid bit pattern (an out-of-range enum, a bool that is neither 0 nor 1, or a
+    /// string with no terminating NUL)
+    pub fn get_EthernetFramesTx3_num_invalid(&self) -> u64
+    {
+      self.api.unverified_get_EthernetFramesTx3_num_invalid()
     }
   }
 
