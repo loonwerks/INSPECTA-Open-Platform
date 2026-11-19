@@ -1,8 +1,9 @@
-# INSPECTA Open Platform
+# INSPECTA Open Platform - SHARP
 
-## Open Platform Overview
-  brief description of purpose of code-base; identification as part of INSPECTA project
-  explanation that there are several variants of the artifacts provided
+## SHARP Overview
+The Secure Hardened Autonomous Remote Platform (SHARP) is an example system which was created with the INSPECTA tools.
+The INSPECTA tools provide modelling, code generation, testing, and formal verification when creating systems.
+SHARP was chosen because it is general enough to be openly available, but has real-world applications.  
 
 ### Contents
 - [ConOps and High-level System Architecture](#conops-and-high-level-system-architecture) 
